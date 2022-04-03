@@ -108,3 +108,71 @@ func TestKeys(t *testing.T) {
 		t.Error("the returned keys didn't match the collection keys")
 	}
 }
+
+func TestSort(t *testing.T) {
+	collection := Collect(3, 2, 1)
+
+	collection.Sort(func(current, next int) bool {
+		return current < next
+	})
+
+	expectedCurrent := 1
+
+	collection.Each(func(_, value int) {
+		if value != expectedCurrent {
+			t.Error("Collection wasn't sorted!")
+		}
+
+		expectedCurrent++
+	})
+}
+
+func TestMap(t *testing.T) {
+	collection := Collect(1, 2, 3, 4)
+
+	allEven := collection.Map(func(_ int, v int) int {
+		if v%2 == 0 {
+			return v
+		}
+
+		return v + 1
+	})
+
+	allEven.Each(func(_ int, v int) {
+		if v%2 != 0 {
+			t.Error("Expected all values to be even!")
+		}
+	})
+}
+
+func TestFirst(t *testing.T) {
+	collection := Collect(1, 2, 3)
+
+	if collection.First() != 1 {
+		t.Error("The value returned wasn't the first value on the collection!")
+	}
+}
+
+func TestFirstEmpty(t *testing.T) {
+	collection := Collect[any]()
+
+	if collection.First() != nil {
+		t.Error("The collection is empty. No value should've been returned")
+	}
+}
+
+func TestLast(t *testing.T) {
+	collection := Collect(1, 2, 3)
+
+	if collection.Last() != 3 {
+		t.Error("The value returned wasn't the first value on the collection!")
+	}
+}
+
+func TestLastEmpty(t *testing.T) {
+	collection := Collect[any]()
+
+	if collection.Last() != nil {
+		t.Error("The collection is empty. No value should've been returned")
+	}
+}

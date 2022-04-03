@@ -85,3 +85,37 @@ func (c Collection[K, V]) Search(value V) (K, error) {
 func (c Collection[K, V]) Keys() []K {
 	return c.keys
 }
+
+func (c Collection[K, V]) Sort(closure func(current, next V) bool) Collection[K, V] {
+	sort.Slice(c.keys, func(i, j int) bool {
+		return closure(c.values[c.keys[i]], c.values[c.keys[j]])
+	})
+
+	return c
+}
+
+func (c Collection[K, V]) Map(closure func(k K, v V) V) Collection[K, V] {
+	mappedValues := make(map[K]V)
+
+	c.Each(func(k K, v V) {
+		mappedValues[k] = closure(k, v)
+	})
+
+	return CollectMap(mappedValues)
+}
+
+func (c Collection[K, V]) First() V {
+	if len(c.keys) == 0 {
+		return *new(V)
+	}
+
+	return c.values[c.keys[0]]
+}
+
+func (c Collection[K, V]) Last() V {
+	if len(c.keys) == 0 {
+		return *new(V)
+	}
+
+	return c.values[c.keys[len(c.keys)-1]]
+}
