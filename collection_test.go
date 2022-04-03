@@ -12,7 +12,7 @@ func TestCollectSliceMethod(t *testing.T) {
 	collection := CollectSlice(intSlice)
 
 	for k, v := range intSlice {
-		if collection[k] != v {
+		if item, _ := collection.Get(k); item != v {
 			t.Error("The keys weren't preserved!")
 		}
 	}
@@ -24,7 +24,7 @@ func TestCollectMapMethod(t *testing.T) {
 	collection := CollectMap(mapString)
 
 	for k, v := range mapString {
-		if collection[k] != v {
+		if item, _ := collection.Get(k); item != v {
 			t.Error("The keys weren't preserved!")
 		}
 	}
@@ -77,9 +77,10 @@ func TestEachMethod(t *testing.T) {
 }
 
 func TestSearchMethod(t *testing.T) {
-	collection := Collect[any]("foo", 1, 1.5)
+	items := map[string]any{"foo": "foo", "int": 1, "float": 1.0}
+	collection := CollectMap(items)
 
-	for k, v := range collection {
+	for k, v := range items {
 		foundKey, err := collection.Search(v)
 
 		if foundKey != k {
@@ -98,7 +99,7 @@ func TestSearchMethod(t *testing.T) {
 }
 
 func TestKeys(t *testing.T) {
-	collection := Collection[string, string]{"foo": "foo", "bar": "bar", "baz": "baz"}
+	collection := CollectMap(map[string]string{"foo": "foo", "bar": "bar", "baz": "baz"})
 
 	keys := collection.Keys()
 	sort.Strings(keys)
