@@ -8,8 +8,8 @@ import (
 )
 
 type Collection[K comparable, V any] struct {
-	keys     []K
-	keyValue map[K]V
+	keys   []K
+	values map[K]V
 }
 
 func Collect[T any](items ...T) Collection[int, T] {
@@ -18,13 +18,13 @@ func Collect[T any](items ...T) Collection[int, T] {
 
 func CollectSlice[T any](items []T) Collection[int, T] {
 	collection := Collection[int, T]{
-		keys:     make([]int, len(items)),
-		keyValue: make(map[int]T, len(items)),
+		keys:   make([]int, len(items)),
+		values: make(map[int]T, len(items)),
 	}
 
 	for key, item := range items {
 		collection.keys[key] = key
-		collection.keyValue[key] = item
+		collection.values[key] = item
 	}
 
 	return collection
@@ -32,8 +32,8 @@ func CollectSlice[T any](items []T) Collection[int, T] {
 
 func CollectMap[K comparable, V any](items map[K]V) Collection[K, V] {
 	collection := Collection[K, V]{
-		keys:     make([]K, len(items)),
-		keyValue: make(map[K]V, len(items)),
+		keys:   make([]K, len(items)),
+		values: make(map[K]V, len(items)),
 	}
 
 	keys := make([]K, len(items))
@@ -48,14 +48,14 @@ func CollectMap[K comparable, V any](items map[K]V) Collection[K, V] {
 
 	for i, k := range keys {
 		collection.keys[i] = k
-		collection.keyValue[k] = items[k]
+		collection.values[k] = items[k]
 	}
 
 	return collection
 }
 
 func (c Collection[K, V]) Get(k K) (V, error) {
-	if item, found := c.keyValue[k]; found {
+	if item, found := c.values[k]; found {
 		return item, nil
 	}
 
@@ -68,13 +68,13 @@ func (c Collection[K, V]) Count() int {
 
 func (c Collection[K, V]) Each(closure func(k K, v V)) {
 	for _, key := range c.keys {
-		closure(key, c.keyValue[key])
+		closure(key, c.values[key])
 	}
 }
 
 func (c Collection[K, V]) Search(value V) (K, error) {
 	for _, v := range c.keys {
-		if reflect.DeepEqual(c.keyValue[v], value) {
+		if reflect.DeepEqual(c.values[v], value) {
 			return v, nil
 		}
 	}
