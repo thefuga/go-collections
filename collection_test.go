@@ -8,8 +8,7 @@ import (
 
 func TestCollectSliceMethod(t *testing.T) {
 	intSlice := []int{1, 2, 3, 4, 5}
-
-	collection := CollectSlice(intSlice)
+	collection := CollectSlice[int](intSlice)
 
 	for k, v := range intSlice {
 		if item, _ := collection.Get(k); item != v {
@@ -19,7 +18,7 @@ func TestCollectSliceMethod(t *testing.T) {
 }
 
 func TestCollectMapMethod(t *testing.T) {
-	mapString := map[string]any{"foo": "bar", "1": 1}
+	mapString := map[any]any{"foo": "bar", "1": 1}
 
 	collection := CollectMap(mapString)
 
@@ -40,7 +39,7 @@ func TestEachMethod(t *testing.T) {
 		count       int
 	)
 
-	collection.Each(func(k int, v any) {
+	collection.Each(func(k any, v any) {
 		switch v {
 		case "foo":
 			foundString = true
@@ -77,7 +76,7 @@ func TestEachMethod(t *testing.T) {
 }
 
 func TestSearchMethod(t *testing.T) {
-	items := map[string]any{"foo": "foo", "int": 1, "float": 1.0}
+	items := map[any]any{"foo": "foo", "int": 1, "float": 1.0}
 	collection := CollectMap(items)
 
 	for k, v := range items {
@@ -99,12 +98,14 @@ func TestSearchMethod(t *testing.T) {
 }
 
 func TestKeys(t *testing.T) {
-	collection := CollectMap(map[string]string{"foo": "foo", "bar": "bar", "baz": "baz"})
+	collection := CollectMap(map[any]string{"foo": "foo", "bar": "bar", "baz": "baz"})
 
 	keys := collection.Keys()
-	sort.Strings(keys)
+	sort.Slice(keys, func(i, j int) bool {
+		return keys[i].(string) < keys[j].(string)
+	})
 
-	if !reflect.DeepEqual(keys, []string{"bar", "baz", "foo"}) {
+	if !reflect.DeepEqual(keys, []any{"bar", "baz", "foo"}) {
 		t.Error("the returned keys didn't match the collection keys")
 	}
 }
@@ -118,7 +119,7 @@ func TestSort(t *testing.T) {
 
 	expectedCurrent := 1
 
-	collection.Each(func(_, value int) {
+	collection.Each(func(_ any, value int) {
 		if value != expectedCurrent {
 			t.Error("Collection wasn't sorted!")
 		}
@@ -130,7 +131,7 @@ func TestSort(t *testing.T) {
 func TestMap(t *testing.T) {
 	collection := Collect(1, 2, 3, 4)
 
-	allEven := collection.Map(func(_ int, v int) int {
+	allEven := collection.Map(func(_ any, v int) int {
 		if v%2 == 0 {
 			return v
 		}
@@ -138,7 +139,7 @@ func TestMap(t *testing.T) {
 		return v + 1
 	})
 
-	allEven.Each(func(_ int, v int) {
+	allEven.Each(func(_ any, v int) {
 		if v%2 != 0 {
 			t.Error("Expected all values to be even!")
 		}
@@ -174,5 +175,45 @@ func TestLastEmpty(t *testing.T) {
 
 	if collection.Last() != nil {
 		t.Error("The collection is empty. No value should've been returned")
+	}
+}
+
+func TestPut(t *testing.T) {
+	collection := Collect[any](1, "foo", true)
+
+	collection.Put("float", 1.0)
+
+	key, err := collection.Search(1.0)
+
+	if err != nil {
+		t.Error("Element wasn't inserted")
+	}
+
+	if key != "float" {
+		t.Error("The given key wasn't preserved")
+	}
+
+	if item, _ := collection.Get(key); item != 1.0 {
+		t.Error("The keys were messed up :/")
+	}
+}
+
+func TestPush(t *testing.T) {
+	collection := Collect[any](1, "foo", true)
+
+	collection.Push(1.0)
+
+	key, err := collection.Search(1.0)
+
+	if err != nil {
+		t.Error("Element wasn't inserted")
+	}
+
+	if key != 3 {
+		t.Error("The inserted key should be the former lenght of the collection")
+	}
+
+	if item, _ := collection.Get(key); item != 1.0 {
+		t.Error("The keys were messed up :/")
 	}
 }
