@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
          go-version: "^1.18"
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.cache/app/vendor
@@ -41,7 +41,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
          go-version: "^1.18"
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.cache/app/vendor
@@ -60,7 +60,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
          go-version: "^1.18"
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.cache/app/vendor
