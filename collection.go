@@ -117,3 +117,11 @@ func (c Collection[V]) Last() V {
 
 	return c.values[c.keys[len(c.keys)-1]]
 }
+
+func (c Collection[V]) Merge(other Collection[V]) (Collection[V], error) {
+	other.Each(func(_ any, v V) {
+		c.Push(v)
+	})
+
+	return c, nil
+}
