@@ -119,9 +119,15 @@ func (c Collection[V]) Last() V {
 }
 
 func (c Collection[V]) Merge(other Collection[V]) (Collection[V], error) {
-	other.Each(func(_ any, v V) {
-		c.Push(v)
+	newCollection := makeCollection[V](0)
+
+	c.Each(func(_ any, v V) {
+		newCollection.Push(v)
 	})
 
-	return c, nil
+	other.Each(func(_ any, v V) {
+		newCollection.Push(v)
+	})
+
+	return newCollection, nil
 }
