@@ -226,7 +226,7 @@ func TestMerge(t *testing.T) {
 	collection, err := collection.Merge(collectionToMerge)
 
 	if err != nil {
-		t.Error("The collection shouldn't have returned an error")
+		t.Error("The collection should not have returned an error")
 	}
 
 	for _, v := range []any{1, 2, "foo", 3, 4, "bar"} {
@@ -234,7 +234,7 @@ func TestMerge(t *testing.T) {
 		_, err := collection.Search(v)
 
 		if err != nil {
-			t.Errorf("Expect %v to be in the collection %v but it was not", v, collection)
+			t.Errorf("Expected %v to be in the collection %v but it was not", v, collection)
 		}
 	}
 }
