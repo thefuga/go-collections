@@ -217,3 +217,24 @@ func TestPush(t *testing.T) {
 		t.Error("The keys were messed up :/")
 	}
 }
+
+func TestMerge(t *testing.T) {
+	collection := Collect[any](1, 2, "foo")
+
+	collectionToMerge := Collect[any](3, 4, "bar")
+
+	collection, err := collection.Merge(collectionToMerge)
+
+	if err != nil {
+		t.Error("The collection shouldn't have returned an error")
+	}
+
+	for _, v := range []any{1, 2, "foo", 3, 4, "bar"} {
+
+		_, err := collection.Search(v)
+
+		if err != nil {
+			t.Errorf("Expect %v to be in the collection %v but it was not", v, collection)
+		}
+	}
+}
