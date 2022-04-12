@@ -68,5 +68,23 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-      - run: go test ./...
+      - run: go test -coverprofile=coverage.txt ./...
+      - uses: actions/upload-artifact@v3
+        with:
+          name: test-coverage
+          path: ./coverage.txt
+          if-no-files-found: error
 
+  coverage:
+    name: Codecov
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v3
+        with:
+          name: test-coverage
+      - uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: true
+          verbose: true
