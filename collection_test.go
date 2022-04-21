@@ -91,8 +91,8 @@ func TestSearchMethod(t *testing.T) {
 		}
 	}
 
-	if _, err := collection.Search('a'); err == nil {
-		t.Error("searching an unexisting  item should return an error")
+	if _, err := collection.Search('a'); err.Error() != "Value wasn't found in the collection!" {
+		t.Error("searching an unexisting item must return an error")
 	}
 
 }

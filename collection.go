@@ -1,8 +1,6 @@
 package main
 
 import (
-	"errors"
-	"fmt"
 	"reflect"
 	"sort"
 )
@@ -57,7 +55,7 @@ func (c Collection[V]) Get(k any) (V, error) {
 		return item, nil
 	}
 
-	return *new(V), fmt.Errorf("Item not found")
+	return *new(V), NewKeyNotFoundError(k)
 }
 
 func (c Collection[V]) Count() int {
@@ -77,7 +75,7 @@ func (c Collection[V]) Search(value V) (any, error) {
 		}
 	}
 
-	return nil, errors.New("Value not found")
+	return nil, NewValueNotFoundError()
 }
 
 func (c Collection[V]) Keys() []any {
