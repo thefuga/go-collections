@@ -217,3 +217,36 @@ func TestPush(t *testing.T) {
 		t.Error("The keys were messed up :/")
 	}
 }
+
+func TestAssert(t *testing.T) {
+	var concreteType string
+	defer func() {
+		if assertionErr := recover(); assertionErr != nil {
+			t.Error("Unexpected error casting value.")
+		}
+	}()
+
+	underlyingValue := "generic value"
+	var genericType any = underlyingValue
+
+	concreteType = Assert[string](genericType)
+
+	if concreteType != underlyingValue {
+		t.Error("Expected concreteType to have the value of underlyingValue")
+	}
+}
+
+func TestAssertE(t *testing.T) {
+	underlyingValue := "generic value"
+	var genericType any = underlyingValue
+
+	concreteType, assertionErr := AssertE[string](genericType)
+
+	if assertionErr != nil {
+		t.Error("Unexpected error casting value.")
+	}
+
+	if concreteType != underlyingValue {
+		t.Error("Expected concreteType to have the value of underlyingValue")
+	}
+}

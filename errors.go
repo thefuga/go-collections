@@ -31,9 +31,9 @@ func NewTypeError[T any](from *any) TypeError {
 	expected := fmt.Sprintf("%T", *new(T))
 
 	return TypeError(fmt.Sprintf(
-		"Expected type to be '%s'. Got '%s' instead",
-		expected,
+		"interface conversion: interface {} is %s, not %s",
 		actual,
+		expected,
 	))
 }
 

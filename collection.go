@@ -41,6 +41,18 @@ func makeCollection[V any](capacity int) Collection[V] {
 	}
 }
 
+func Assert[T any](from any) T {
+	return from.(T)
+}
+
+func AssertE[T any](from any) (T, error) {
+	if to, ok := from.(T); ok {
+		return to, nil
+	}
+
+	return *new(T), NewTypeError[T](&from)
+}
+
 func (c *Collection[V]) Put(k any, v V) {
 	c.keys = append(c.keys, k)
 	c.values[k] = v
