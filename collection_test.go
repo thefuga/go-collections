@@ -8,7 +8,7 @@ import (
 
 func TestCollectSliceMethod(t *testing.T) {
 	intSlice := []int{1, 2, 3, 4, 5}
-	collection := CollectSlice[int](intSlice)
+	collection := CollectSlice(intSlice)
 
 	for k, v := range intSlice {
 		if item, _ := collection.Get(k); item != v {
@@ -26,6 +26,25 @@ func TestCollectMapMethod(t *testing.T) {
 		if item, _ := collection.Get(k); item != v {
 			t.Error("The keys weren't preserved!")
 		}
+	}
+}
+
+func TestGetMethod(t *testing.T) {
+	collection := Collect(1, 2)
+
+	value, err := collection.Get(0)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if value != 1 {
+		t.Error("Wrong value returned!")
+	}
+
+	if _, err = collection.Get(3); err.Error() != "Key '3' wasn't found in the collection!" {
+		t.Error(err)
+		t.Error("Getting an unexisting key must return an error!")
 	}
 }
 
@@ -218,6 +237,7 @@ func TestPush(t *testing.T) {
 	}
 }
 
+
 func TestAssert(t *testing.T) {
 	var concreteType string
 	defer func() {
@@ -248,5 +268,15 @@ func TestAssertE(t *testing.T) {
 
 	if concreteType != underlyingValue {
 		t.Error("Expected concreteType to have the value of underlyingValue")
+	}
+
+	zeroValue, assertionErr := AssertE[int](genericType)
+
+	if zeroValue != 0 {
+		t.Error("Cast value should be zeroed when an invalid type is given")
+	}
+
+	if assertionErr.Error() != "interface conversion: interface {} is string, not int" {
+		t.Error("Trying to get a value with the wrong type parameter must return a type error!")
 	}
 }
