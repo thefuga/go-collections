@@ -74,7 +74,7 @@ func TestEachMethod(t *testing.T) {
 	})
 
 	if !foundString {
-		t.Error("Tha string wasn't found!")
+		t.Error("The string wasn't found!")
 	}
 
 	if !foundInt {
@@ -229,7 +229,7 @@ func TestPush(t *testing.T) {
 	}
 
 	if key != 3 {
-		t.Error("The inserted key should be the former lenght of the collection")
+		t.Error("The inserted key should be the former length of the collection")
 	}
 
 	if item, _ := collection.Get(key); item != 1.0 {
@@ -278,5 +278,26 @@ func TestAssertE(t *testing.T) {
 
 	if assertionErr.Error() != "interface conversion: interface {} is string, not int" {
 		t.Error("Trying to get a value with the wrong type parameter must return a type error!")
+	}
+}
+
+func TestToSlice(t *testing.T) {
+	values := []int{1, 2, 3, 4}
+	collection := CollectSlice(values)
+
+	slice := collection.ToSlice()
+
+	if !reflect.DeepEqual(slice, values) {
+		t.Error("ToSlice method didn't return the correct underlying values")
+	}
+
+	valuesLen := len(values)
+	sliceCap := cap(slice)
+	sliceLen := len(slice)
+
+	if sliceCap != valuesLen || sliceLen != valuesLen {
+		t.Errorf("Expected sliceLen and sliceCap to equal valuesLen\n"+
+			"sliceCap: %d\n"+"sliceLen: %d\n"+"valuesLen: %d\n",
+			sliceCap, sliceLen, valuesLen)
 	}
 }

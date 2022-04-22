@@ -127,3 +127,13 @@ func (c Collection[V]) Last() V {
 
 	return c.values[c.keys[len(c.keys)-1]]
 }
+
+func (c Collection[V]) ToSlice() []V {
+	slice := make([]V, len(c.keys))
+
+	for i, key := range c.keys {
+		slice[i] = c.values[key]
+	}
+
+	return slice
+}
