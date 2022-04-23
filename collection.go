@@ -1,8 +1,6 @@
 package main
 
 import (
-	"errors"
-	"fmt"
 	"reflect"
 	"sort"
 )
@@ -43,6 +41,18 @@ func makeCollection[V any](capacity int) Collection[V] {
 	}
 }
 
+func Assert[T any](from any) T {
+	return from.(T)
+}
+
+func AssertE[T any](from any) (T, error) {
+	if to, ok := from.(T); ok {
+		return to, nil
+	}
+
+	return *new(T), NewTypeError[T](&from)
+}
+
 func (c *Collection[V]) Put(k any, v V) {
 	c.keys = append(c.keys, k)
 	c.values[k] = v
@@ -57,7 +67,7 @@ func (c Collection[V]) Get(k any) (V, error) {
 		return item, nil
 	}
 
-	return *new(V), fmt.Errorf("Item not found")
+	return *new(V), NewKeyNotFoundError(k)
 }
 
 func (c Collection[V]) Count() int {
@@ -77,7 +87,7 @@ func (c Collection[V]) Search(value V) (any, error) {
 		}
 	}
 
-	return nil, errors.New("Value not found")
+	return nil, NewValueNotFoundError()
 }
 
 func (c Collection[V]) Keys() []any {
@@ -130,4 +140,12 @@ func (c Collection[V]) Merge(other Collection[V]) (Collection[V], error) {
 	})
 
 	return newCollection, nil
+func (c Collection[V]) ToSlice() []V {
+	slice := make([]V, len(c.keys))
+
+	for i, key := range c.keys {
+		slice[i] = c.values[key]
+	}
+
+	return slice
 }

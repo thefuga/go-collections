@@ -8,7 +8,7 @@ import (
 
 func TestCollectSliceMethod(t *testing.T) {
 	intSlice := []int{1, 2, 3, 4, 5}
-	collection := CollectSlice[int](intSlice)
+	collection := CollectSlice(intSlice)
 
 	for k, v := range intSlice {
 		if item, _ := collection.Get(k); item != v {
@@ -26,6 +26,25 @@ func TestCollectMapMethod(t *testing.T) {
 		if item, _ := collection.Get(k); item != v {
 			t.Error("The keys weren't preserved!")
 		}
+	}
+}
+
+func TestGetMethod(t *testing.T) {
+	collection := Collect(1, 2)
+
+	value, err := collection.Get(0)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if value != 1 {
+		t.Error("Wrong value returned!")
+	}
+
+	if _, err = collection.Get(3); err.Error() != "Key '3' wasn't found in the collection!" {
+		t.Error(err)
+		t.Error("Getting an unexisting key must return an error!")
 	}
 }
 
@@ -55,7 +74,7 @@ func TestEachMethod(t *testing.T) {
 	})
 
 	if !foundString {
-		t.Error("Tha string wasn't found!")
+		t.Error("The string wasn't found!")
 	}
 
 	if !foundInt {
@@ -91,8 +110,8 @@ func TestSearchMethod(t *testing.T) {
 		}
 	}
 
-	if _, err := collection.Search('a'); err == nil {
-		t.Error("searching an unexisting  item should return an error")
+	if _, err := collection.Search('a'); err.Error() != "Value wasn't found in the collection!" {
+		t.Error("searching an unexisting item must return an error")
 	}
 
 }
@@ -210,7 +229,7 @@ func TestPush(t *testing.T) {
 	}
 
 	if key != 3 {
-		t.Error("The inserted key should be the former lenght of the collection")
+		t.Error("The inserted key should be the former length of the collection")
 	}
 
 	if item, _ := collection.Get(key); item != 1.0 {
@@ -236,5 +255,67 @@ func TestMerge(t *testing.T) {
 		if err != nil {
 			t.Errorf("Expected %v to be in the collection %v but it was not", v, collection)
 		}
+
+func TestAssert(t *testing.T) {
+	var concreteType string
+	defer func() {
+		if assertionErr := recover(); assertionErr != nil {
+			t.Error("Unexpected error casting value.")
+		}
+	}()
+
+	underlyingValue := "generic value"
+	var genericType any = underlyingValue
+
+	concreteType = Assert[string](genericType)
+
+	if concreteType != underlyingValue {
+		t.Error("Expected concreteType to have the value of underlyingValue")
+	}
+}
+
+func TestAssertE(t *testing.T) {
+	underlyingValue := "generic value"
+	var genericType any = underlyingValue
+
+	concreteType, assertionErr := AssertE[string](genericType)
+
+	if assertionErr != nil {
+		t.Error("Unexpected error casting value.")
+	}
+
+	if concreteType != underlyingValue {
+		t.Error("Expected concreteType to have the value of underlyingValue")
+	}
+
+	zeroValue, assertionErr := AssertE[int](genericType)
+
+	if zeroValue != 0 {
+		t.Error("Cast value should be zeroed when an invalid type is given")
+	}
+
+	if assertionErr.Error() != "interface conversion: interface {} is string, not int" {
+		t.Error("Trying to get a value with the wrong type parameter must return a type error!")
+	}
+}
+
+func TestToSlice(t *testing.T) {
+	values := []int{1, 2, 3, 4}
+	collection := CollectSlice(values)
+
+	slice := collection.ToSlice()
+
+	if !reflect.DeepEqual(slice, values) {
+		t.Error("ToSlice method didn't return the correct underlying values")
+	}
+
+	valuesLen := len(values)
+	sliceCap := cap(slice)
+	sliceLen := len(slice)
+
+	if sliceCap != valuesLen || sliceLen != valuesLen {
+		t.Errorf("Expected sliceLen and sliceCap to equal valuesLen\n"+
+			"sliceCap: %d\n"+"sliceLen: %d\n"+"valuesLen: %d\n",
+			sliceCap, sliceLen, valuesLen)
 	}
 }
