@@ -72,7 +72,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] pluck
 - [x] pop
 - [ ] prepend
-- [] pull
+- [ ] pull
 - [x] push
 - [x] put
 - [ ] random
