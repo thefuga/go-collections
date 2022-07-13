@@ -237,6 +237,70 @@ func TestPush(t *testing.T) {
 	}
 }
 
+func TestPop(t *testing.T) {
+	firstValue := 1
+	secondValue := "foo"
+	lastValue := true
+	collection := Collect[any](firstValue, secondValue, lastValue)
+
+	if collection.Pop() != lastValue {
+		t.Error("Popped element wasn't the last!")
+	}
+
+	if collection.Last() == lastValue {
+		t.Error("Last element wasn't popped!")
+	}
+
+	if count := collection.Count(); count != 2 {
+		t.Errorf("Expected 2 elements, got %d", count)
+	}
+
+	if actualFirstValue := collection.First(); actualFirstValue != firstValue {
+		t.Errorf("Expected first value to equal %v, got: %v", firstValue, actualFirstValue)
+	}
+
+	if newLastValue := collection.Last(); newLastValue != secondValue {
+		t.Errorf("Expected last value to equal %v, got: %v", secondValue, newLastValue)
+	}
+}
+
+func TestGenericGet(t *testing.T) {
+	collection := Collect[any](1, "foo", Collect[any]("bar"))
+
+	intValue, err := Get[int](collection, 0)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if intValue != 1 {
+		t.Error("Wrong value returned!")
+	}
+
+	stringValue, err := Get[string](collection, 1)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if stringValue != "foo" {
+		t.Error("Wrong value returned!")
+	}
+
+	collectionValue, err := Get[Collection[any]](collection, 2)
+
+	if err != nil {
+		t.Error("Getting a generic existing value must always work!")
+	}
+
+	if collectionValue.Count() != 1 {
+		t.Error("Wrong value returned!")
+	}
+
+	if _, err := Get[int](collection, 1); err.Error() != "interface conversion: interface {} is string, not int" {
+		t.Error("Trying to get a value with the wrong type parameter must return a type error!")
+	}
+}
 
 func TestAssert(t *testing.T) {
 	var concreteType string

@@ -41,6 +41,21 @@ func makeCollection[V any](capacity int) Collection[V] {
 	}
 }
 
+func Get[T, K, V any](c Collection[V], k K) (T, error) {
+	var (
+		genericValue any
+		getErr       error
+	)
+
+	genericValue, getErr = c.Get(k)
+
+	if getErr != nil {
+		return *new(T), getErr
+	}
+
+	return AssertE[T](genericValue)
+}
+
 func Assert[T any](from any) T {
 	return from.(T)
 }
@@ -62,6 +77,25 @@ func (c *Collection[V]) Push(v V) {
 	c.Put(len(c.keys), v)
 }
 
+func (c *Collection[V]) Pop() V {
+	if c.IsEmpty() {
+		return *new(V)
+	}
+
+	v := c.Last()
+
+	lastKey := c.keys[len(c.keys)-1]
+	c.keys = c.keys[:len(c.keys)-1]
+	delete(c.values, lastKey)
+
+	return v
+
+}
+
+func (c Collection[V]) IsEmpty() bool {
+	return len(c.keys) == 0
+}
+
 func (c Collection[V]) Get(k any) (V, error) {
 	if item, found := c.values[k]; found {
 		return item, nil
@@ -80,6 +114,7 @@ func (c Collection[V]) Each(closure func(k any, v V)) {
 	}
 }
 
+// TODO change to value or closure
 func (c Collection[V]) Search(value V) (any, error) {
 	for _, v := range c.keys {
 		if reflect.DeepEqual(c.values[v], value) {
