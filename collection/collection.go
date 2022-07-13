@@ -1,8 +1,10 @@
-package main
+package collection
 
 import (
 	"reflect"
 	"sort"
+
+	"github.com/thefuga/go-collections/errors"
 )
 
 type Collection[V any] struct {
@@ -65,7 +67,7 @@ func AssertE[T any](from any) (T, error) {
 		return to, nil
 	}
 
-	return *new(T), NewTypeError[T](&from)
+	return *new(T), errors.NewTypeError[T](&from)
 }
 
 func (c *Collection[V]) Put(k any, v V) {
@@ -101,7 +103,7 @@ func (c Collection[V]) Get(k any) (V, error) {
 		return item, nil
 	}
 
-	return *new(V), NewKeyNotFoundError(k)
+	return *new(V), errors.NewKeyNotFoundError(k)
 }
 
 func (c Collection[V]) Count() int {
@@ -122,7 +124,7 @@ func (c Collection[V]) Search(value V) (any, error) {
 		}
 	}
 
-	return nil, NewValueNotFoundError()
+	return nil, errors.NewValueNotFoundError()
 }
 
 func (c Collection[V]) Keys() []any {
