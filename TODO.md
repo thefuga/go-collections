@@ -1,0 +1,140 @@
+# TODO
+The list bellow is based on methods available on https://laravel.com/docs/9.x/collections#available-methods
+Not all methods will make sense on Go and won't be implemented.
+- [x] all (ToSlice)
+- [ ] average
+- [ ] avg
+- [ ] chunk
+- [ ] chunkWhile
+- [ ] collapse
+- [x] collect (Collect, CollectMap)
+- [ ] combine
+- [ ] concat
+- [ ] contains
+- [ ] containsStrict
+- [x] count
+- [ ] countBy
+- [ ] crossJoin
+- [ ] dd
+- [ ] diff
+- [ ] diffAssoc
+- [ ] diffKeys
+- [ ] doesntContain
+- [ ] dump
+- [ ] duplicates
+- [ ] duplicatesStrict
+- [x] each
+- [ ] eachSpread
+- [ ] every
+- [ ] except
+- [ ] filter
+- [x] first
+- [ ] firstOrFail
+- [ ] firstWhere
+- [ ] flatMap
+- [ ] flatten
+- [ ] flip
+- [ ] forget
+- [ ] forPage
+- [x] get
+- [ ] groupBy
+- [ ] has
+- [ ] implode
+- [ ] intersect
+- [ ] intersectByKeys
+- [x] isEmpty
+- [ ] isNotEmpty
+- [ ] join
+- [ ] keyBy
+- [ ] keys
+- [x] last
+- [ ] lazy
+- [ ] macro
+- [ ] make
+- [x] map
+- [ ] mapInto
+- [ ] mapSpread
+- [ ] mapToGroups
+- [ ] mapWithKeys
+- [ ] max
+- [ ] median
+- [ ] merge
+- [ ] mergeRecursive
+- [ ] min
+- [ ] mode
+- [ ] nth
+- [ ] only
+- [ ] pad
+- [ ] partition
+- [ ] pipe
+- [ ] pipeInto
+- [ ] pipeThrough
+- [ ] pluck
+- [x] pop
+- [ ] prepend
+- [] pull
+- [x] push
+- [x] put
+- [ ] random
+- [ ] range
+- [ ] reduce
+- [ ] reduceSpread
+- [ ] reject
+- [ ] replace
+- [ ] replaceRecursive
+- [ ] reverse
+- [x] search (by value)
+- [ ] shift
+- [ ] shuffle
+- [ ] skip
+- [ ] skipUntil
+- [ ] skipWhile
+- [ ] slice
+- [ ] sliding
+- [ ] sole
+- [ ] some
+- [x] sort 
+- [ ] sortBy
+- [ ] sortByDesc
+- [ ] sortDesc
+- [ ] sortKeys
+- [ ] sortKeysDesc
+- [ ] sortKeysUsing
+- [ ] splice
+- [ ] split
+- [ ] splitIn
+- [ ] sum
+- [ ] take
+- [ ] takeUntil
+- [ ] takeWhile
+- [ ] tap
+- [ ] times
+- [x] toArray (ToSlice)
+- [ ] toJson
+- [ ] transform
+- [ ] undot
+- [ ] union
+- [ ] unique
+- [ ] uniqueStrict
+- [ ] unless
+- [ ] unlessEmpty
+- [ ] unlessNotEmpty
+- [ ] unwrap
+- [ ] value
+- [x] values (ToSlice)
+- [ ] when
+- [ ] whenEmpty
+- [ ] whenNotEmpty
+- [ ] where
+- [ ] whereStrict
+- [ ] whereBetween
+- [ ] whereIn
+- [ ] whereInStrict
+- [ ] whereInstanceOf
+- [ ] whereNotBetween
+- [ ] whereNotIn
+- [ ] whereNotInStrict
+- [ ] whereNotNull
+- [ ] whereNull
+- [ ] wrap
+- [ ] zip
