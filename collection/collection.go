@@ -215,3 +215,17 @@ func (c Collection[V]) Combine(v Collection[V]) Collection[V] {
 	return combined
 }
 
+func (c Collection[V]) Concat(concatTo Collection[V]) Collection[V] {
+	concatenated := CollectMap(c.values)
+
+	concatTo.Each(func(k any, v V) {
+		if _, ok := concatenated.values[k]; ok {
+			concatenated.Push(v)
+		} else {
+			concatenated.Put(k, v)
+		}
+	})
+
+	return concatenated
+}
+

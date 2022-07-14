@@ -385,6 +385,18 @@ func TestCombine(t *testing.T) {
 	}
 }
 
+func TestConcat(t *testing.T) {
+	collectionA := Collect("foo", "bar")
+	collectionB := Collect("baz")
+	expectedCollection := Collect("foo", "bar", "baz")
+
+	concat := collectionA.Concat(collectionB)
+
+	if !reflect.DeepEqual(expectedCollection.values, concat.values) {
+		t.Error("concatenated collection was different than expected")
+	}
+}
+
 func TestFirstOrFail(t *testing.T) {
 	var (
 		foundKey   any
