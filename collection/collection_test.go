@@ -365,3 +365,30 @@ func TestToSlice(t *testing.T) {
 			sliceCap, sliceLen, valuesLen)
 	}
 }
+func TestFirstOrFail(t *testing.T) {
+	var (
+		foundKey   any
+		foundValue any
+		foundErr   error
+
+		collection = Collect("foo", "bar")
+	)
+
+	foundKey, foundValue, foundErr = collection.FirstOrFail(ValueEquals("bar"))
+	if foundKey != 1 || foundValue != "bar" || foundErr != nil {
+		t.Errorf(
+			"Expected %d, %s, %v, got %d, %s, %v",
+			1, "bar", nil,
+			foundKey, foundValue, foundErr,
+		)
+	}
+
+	foundKey, foundValue, foundErr = collection.FirstOrFail(ValueEquals("baz"))
+	if foundKey != nil || foundValue != "" || foundErr == nil {
+		t.Errorf(
+			"Expected %d, %s, %v, got %d, %s, %v",
+			0, "", errors.NewValueNotFoundError(),
+			foundKey, foundValue, foundErr,
+		)
+	}
+}

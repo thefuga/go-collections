@@ -157,6 +157,30 @@ func (c Collection[V]) First() V {
 	return c.values[c.keys[0]]
 }
 
+func (c Collection[V]) FirstOrFail(match Matcher) (any, V, error) {
+	var (
+		found bool
+		v     V
+		k     any
+	)
+
+	c.Each(func(atK any, atV V) {
+		if !match(atK, atV) {
+			return
+		}
+
+		found = true
+		k = atK
+		v = atV
+	})
+
+	if !found {
+		return nil, *new(V), errors.NewValueNotFoundError()
+	}
+
+	return k, v, nil
+}
+
 func (c Collection[V]) Last() V {
 	if len(c.keys) == 0 {
 		return *new(V)
