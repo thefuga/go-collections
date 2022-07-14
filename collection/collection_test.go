@@ -4,6 +4,8 @@ import (
 	"reflect"
 	"sort"
 	"testing"
+
+	"github.com/thefuga/go-collections/errors"
 )
 
 func TestCollectSliceMethod(t *testing.T) {
@@ -422,6 +424,20 @@ func TestCointainsValue(t *testing.T) {
 
 	if !collection.Contains(ValueEquals("a")) {
 		t.Error("collection should contain 'a' value")
+	}
+}
+
+func TestEvery(t *testing.T) {
+	collection := Collect(2, 2, 2, 2)
+
+	if !collection.Every(ValueEquals(2)) {
+		t.Error("all elements in the collection are equal")
+	}
+
+	collection.Push(1)
+
+	if collection.Every(ValueEquals(2)) {
+		t.Error("the collection contains a different element")
 	}
 }
 

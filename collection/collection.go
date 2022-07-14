@@ -198,6 +198,7 @@ func (c Collection[V]) ToSlice() []V {
 
 	return slice
 }
+
 func (c Collection[V]) Combine(v Collection[V]) Collection[V] {
 	if c.Count() != v.Count() {
 		return c
@@ -242,3 +243,15 @@ func (c Collection[V]) Contains(match Matcher) bool {
 	return contains
 }
 
+func (c Collection[V]) Every(match Matcher) bool {
+	contains := true
+
+	c.Each(func(k any, v V) {
+		if !match(k, v) {
+			contains = false
+			return
+		}
+	})
+
+	return contains
+}
