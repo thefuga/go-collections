@@ -198,3 +198,20 @@ func (c Collection[V]) ToSlice() []V {
 
 	return slice
 }
+func (c Collection[V]) Combine(v Collection[V]) Collection[V] {
+	if c.Count() != v.Count() {
+		return c
+	}
+
+	keys := c.values
+	values := v.values
+
+	combined := Collect[V]()
+
+	for i := 0; i < len(keys); i++ {
+		combined.Put(keys[i], values[i])
+	}
+
+	return combined
+}
+

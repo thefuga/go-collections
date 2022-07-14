@@ -365,6 +365,26 @@ func TestToSlice(t *testing.T) {
 			sliceCap, sliceLen, valuesLen)
 	}
 }
+
+func TestCombine(t *testing.T) {
+	keys := Collect("first_name", "last_name")
+	values := Collect("Jon", "Doe")
+
+	combined := keys.Combine(values)
+
+	if actualFirstName, _ := combined.Get("first_name"); actualFirstName != "Jon" {
+		t.Errorf("Expected first name to be %s, got %s", "Jon", actualFirstName)
+	}
+
+	if actualLastName, _ := combined.Get("last_name"); actualLastName != "Doe" {
+		t.Errorf("Expected first name to be %s, got %s", "Doe", actualLastName)
+	}
+
+	if len(combined.keys) != len(combined.values) {
+		t.Error("combined.keys should have the same lenght as combined.values")
+	}
+}
+
 func TestFirstOrFail(t *testing.T) {
 	var (
 		foundKey   any
