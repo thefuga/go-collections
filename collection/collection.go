@@ -229,3 +229,16 @@ func (c Collection[V]) Concat(concatTo Collection[V]) Collection[V] {
 	return concatenated
 }
 
+func (c Collection[V]) Contains(match Matcher) bool {
+	var contains bool
+
+	c.Each(func(k any, v V) {
+		if match(k, v) {
+			contains = true
+			return
+		}
+	})
+
+	return contains
+}
+

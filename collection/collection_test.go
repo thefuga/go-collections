@@ -397,6 +397,34 @@ func TestConcat(t *testing.T) {
 	}
 }
 
+func TestConcatWithDuplicatedKeys(t *testing.T) {
+	collectionA := CollectMap(map[any]string{"foo": "a", "bar": "b"})
+	collectionB := CollectMap(map[any]string{"foo": "c"})
+	expectedCollection := CollectMap(map[any]string{"foo": "a", "bar": "b", 2: "c"})
+
+	concat := collectionA.Concat(collectionB)
+
+	if !reflect.DeepEqual(expectedCollection.values, concat.values) {
+		t.Error("concatenated collection was different than expected")
+	}
+}
+
+func TestCointainsKey(t *testing.T) {
+	collection := CollectMap(map[any]string{"foo": "a", "bar": "b"})
+
+	if !collection.Contains(KeyEquals("foo")) {
+		t.Error("collection should contain 'foo' key")
+	}
+}
+
+func TestCointainsValue(t *testing.T) {
+	collection := CollectMap(map[any]string{"foo": "a", "bar": "b"})
+
+	if !collection.Contains(ValueEquals("a")) {
+		t.Error("collection should contain 'a' value")
+	}
+}
+
 func TestFirstOrFail(t *testing.T) {
 	var (
 		foundKey   any
