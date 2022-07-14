@@ -2,15 +2,15 @@
 The list bellow is based on methods available on https://laravel.com/docs/9.x/collections#available-methods
 Not all methods will make sense on Go and won't be implemented.
 - [x] all (ToSlice)
-- [ ] average
-- [ ] avg
+- [x] average
+- [x] avg (Average)
 - [ ] chunk
 - [ ] chunkWhile
 - [ ] collapse
 - [x] collect (Collect, CollectMap)
-- [ ] combine
-- [ ] concat
-- [ ] contains
+- [x] combine
+- [x] concat
+- [x] contains
 - [ ] containsStrict
 - [x] count
 - [ ] countBy
@@ -25,11 +25,11 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] duplicatesStrict
 - [x] each
 - [ ] eachSpread
-- [ ] every
+- [x] every
 - [ ] except
 - [ ] filter
 - [x] first
-- [ ] firstOrFail
+- [x] firstOrFail
 - [ ] firstWhere
 - [ ] flatMap
 - [ ] flatten
