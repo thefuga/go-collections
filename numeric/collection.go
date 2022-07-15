@@ -35,11 +35,15 @@ func Collect[T number](n ...T) Collection[T] {
 }
 
 func (c Collection[T]) Average() T {
-	var avg T
+	return c.Sum() / T(c.Count())
+}
+
+func (c Collection[T]) Sum() T {
+	var sum T
 
 	for _, v := range c.ToSlice() {
-		avg += v
+		sum += v
 	}
 
-	return avg / T(c.Count())
+	return sum
 }

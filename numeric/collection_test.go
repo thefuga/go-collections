@@ -19,3 +19,12 @@ func TestAverageFloats(t *testing.T) {
 		t.Errorf("Expected average to be %f. Got %f", expectedAvg, actualAvg)
 	}
 }
+
+func TestSum(t *testing.T) {
+	collection := Collect(1, 2, 3, 4, 5)
+	expectedSum := 15
+
+	if actualSum := collection.Sum(); actualSum != expectedSum {
+		t.Errorf("expected sum to be %d. Got %d", expectedSum, actualSum)
+	}
+}
