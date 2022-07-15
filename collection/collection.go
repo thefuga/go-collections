@@ -255,3 +255,23 @@ func (c Collection[V]) Every(match Matcher) bool {
 
 	return contains
 }
+
+func (c Collection[V]) Flip() Collection[V] {
+	flippedKeys := make([]any, 0, c.Count())
+	flippedValues := make(map[any]V, c.Count())
+
+	c.Each(func(k any, v V) {
+		if cast, ok := k.(V); ok {
+			flippedKeys = append(flippedKeys, v)
+			flippedValues[v] = cast
+		} else {
+			flippedKeys = append(flippedKeys, k)
+			flippedValues[k] = v
+		}
+	})
+
+	c.keys = flippedKeys
+	c.values = flippedValues
+
+	return c
+}

@@ -1,6 +1,7 @@
 package collection
 
 import (
+	"fmt"
 	"reflect"
 	"sort"
 	"testing"
@@ -134,9 +135,7 @@ func TestKeys(t *testing.T) {
 func TestSort(t *testing.T) {
 	collection := Collect(3, 2, 1)
 
-	collection.Sort(func(current, next int) bool {
-		return current < next
-	})
+	collection.Sort(Asc[int]())
 
 	expectedCurrent := 1
 
@@ -466,5 +465,27 @@ func TestFirstOrFail(t *testing.T) {
 			0, "", errors.NewValueNotFoundError(),
 			foundKey, foundValue, foundErr,
 		)
+	}
+}
+
+func TestFlip(t *testing.T) {
+	collection := CollectMap(map[any]string{
+		"A": "1", "B": "2", "C": "3", 4: "D",
+	}).Sort(Asc[string]())
+
+	expectedFlippedCollection := CollectMap(map[any]string{
+		"1": "A", "2": "B", "3": "C", 4: "D",
+	}).Sort(Asc[string]())
+
+	flippedCollection := collection.Flip().Sort(Asc[string]())
+
+	if !reflect.DeepEqual(flippedCollection.keys, expectedFlippedCollection.keys) {
+		t.Log(fmt.Sprintf("%v||%v", flippedCollection.keys, expectedFlippedCollection.keys))
+		t.Error("collection keys didn't flip")
+	}
+
+	if !reflect.DeepEqual(flippedCollection.values, expectedFlippedCollection.values) {
+		t.Log(fmt.Sprintf("%v||%v", flippedCollection.values, expectedFlippedCollection.values))
+		t.Error("collection values didn't flip")
 	}
 }
