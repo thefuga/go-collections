@@ -7,17 +7,17 @@ import (
 	"github.com/thefuga/go-collections/errors"
 )
 
-type Collection[V any] struct {
-	keys   []any
-	values map[any]V
+type Collection[K comparable, V any] struct {
+	keys   []K
+	values map[K]V
 }
 
-func Collect[T any](items ...T) Collection[T] {
+func Collect[T any](items ...T) Collection[int, T] {
 	return CollectSlice(items)
 }
 
-func CollectSlice[T any](items []T) Collection[T] {
-	collection := makeCollection[T](len(items))
+func CollectSlice[T any](items []T) Collection[int, T] {
+	collection := makeCollection[int, T](len(items))
 
 	for key, item := range items {
 		collection.Put(key, item)
@@ -26,8 +26,8 @@ func CollectSlice[T any](items []T) Collection[T] {
 	return collection
 }
 
-func CollectMap[V any](items map[any]V) Collection[V] {
-	collection := makeCollection[V](len(items))
+func CollectMap[K comparable, V any](items map[K]V) Collection[K, V] {
+	collection := makeCollection[K, V](len(items))
 
 	for key, item := range items {
 		collection.Put(key, item)
@@ -36,14 +36,14 @@ func CollectMap[V any](items map[any]V) Collection[V] {
 	return collection
 }
 
-func makeCollection[V any](capacity int) Collection[V] {
-	return Collection[V]{
-		keys:   make([]any, 0, capacity),
-		values: make(map[any]V, capacity),
+func makeCollection[K comparable, V any](capacity int) Collection[K, V] {
+	return Collection[K, V]{
+		keys:   make([]K, 0, capacity),
+		values: make(map[K]V, capacity),
 	}
 }
 
-func Get[T, K, V any](c Collection[V], k K) (T, error) {
+func Get[K comparable, T, V any](c Collection[K, V], k K) (T, error) {
 	var (
 		genericValue any
 		getErr       error
@@ -58,8 +58,9 @@ func Get[T, K, V any](c Collection[V], k K) (T, error) {
 	return AssertE[T](genericValue)
 }
 
-func Assert[T any](from any) T {
-	return from.(T)
+func Assert[T any](from any) (T, bool) {
+	toAny, ok := from.(T)
+	return toAny, ok
 }
 
 func AssertE[T any](from any) (T, error) {
@@ -70,16 +71,22 @@ func AssertE[T any](from any) (T, error) {
 	return *new(T), errors.NewTypeError[T](&from)
 }
 
-func (c *Collection[V]) Put(k any, v V) {
+func (c *Collection[K, V]) Put(k K, v V) Collection[K, V] {
 	c.keys = append(c.keys, k)
 	c.values[k] = v
+
+	return *c
 }
 
-func (c *Collection[V]) Push(v V) {
-	c.Put(len(c.keys), v)
+func (c *Collection[K, V]) Push(v V) Collection[K, V] {
+	if castK, ok := Assert[K](c.Count()); ok {
+		c.Put(castK, v)
+	}
+
+	return *c
 }
 
-func (c *Collection[V]) Pop() V {
+func (c *Collection[K, V]) Pop() V {
 	if c.IsEmpty() {
 		return *new(V)
 	}
@@ -94,44 +101,47 @@ func (c *Collection[V]) Pop() V {
 
 }
 
-func (c Collection[V]) IsEmpty() bool {
+func (c Collection[K, V]) IsEmpty() bool {
 	return len(c.keys) == 0
 }
 
-func (c Collection[V]) Get(k any) (V, error) {
-	if item, found := c.values[k]; found {
-		return item, nil
+func (c *Collection[K, V]) Get(k K) (V, error) {
+	item, found := c.values[k]
+
+	if !found {
+		return *new(V), errors.NewKeyNotFoundError(k)
 	}
 
-	return *new(V), errors.NewKeyNotFoundError(k)
+	return item, nil
 }
 
-func (c Collection[V]) Count() int {
+func (c Collection[K, V]) Count() int {
 	return len(c.keys)
 }
 
-func (c Collection[V]) Each(closure func(k any, v V)) {
+func (c Collection[K, V]) Each(closure func(k K, v V)) Collection[K, V] {
 	for _, key := range c.keys {
 		closure(key, c.values[key])
 	}
+
+	return c
 }
 
-// TODO change to value or closure
-func (c Collection[V]) Search(value V) (any, error) {
+func (c Collection[K, V]) Search(value V) (K, error) {
 	for _, v := range c.keys {
 		if reflect.DeepEqual(c.values[v], value) {
 			return v, nil
 		}
 	}
 
-	return nil, errors.NewValueNotFoundError()
+	return *new(K), errors.NewValueNotFoundError()
 }
 
-func (c Collection[V]) Keys() []any {
+func (c Collection[K, V]) Keys() []K {
 	return c.keys
 }
 
-func (c Collection[V]) Sort(closure func(current, next V) bool) Collection[V] {
+func (c Collection[K, V]) Sort(closure func(current, next V) bool) Collection[K, V] {
 	sort.Slice(c.keys, func(i, j int) bool {
 		return closure(c.values[c.keys[i]], c.values[c.keys[j]])
 	})
@@ -139,17 +149,17 @@ func (c Collection[V]) Sort(closure func(current, next V) bool) Collection[V] {
 	return c
 }
 
-func (c Collection[V]) Map(closure func(k any, v V) V) Collection[V] {
-	mappedValues := make(map[any]V)
+func (c Collection[K, V]) Map(closure func(k K, v V) V) Collection[K, V] {
+	mappedValues := make(map[K]V)
 
-	c.Each(func(k any, v V) {
+	c.Each(func(k K, v V) {
 		mappedValues[k] = closure(k, v)
 	})
 
 	return CollectMap(mappedValues)
 }
 
-func (c Collection[V]) First() V {
+func (c Collection[K, V]) First() V {
 	if len(c.keys) == 0 {
 		return *new(V)
 	}
@@ -157,14 +167,14 @@ func (c Collection[V]) First() V {
 	return c.values[c.keys[0]]
 }
 
-func (c Collection[V]) FirstOrFail(match Matcher) (any, V, error) {
+func (c Collection[K, V]) FirstOrFail(match Matcher) (any, V, error) {
 	var (
 		found bool
 		v     V
 		k     any
 	)
 
-	c.Each(func(atK any, atV V) {
+	c.Each(func(atK K, atV V) {
 		if !match(atK, atV) {
 			return
 		}
@@ -181,7 +191,7 @@ func (c Collection[V]) FirstOrFail(match Matcher) (any, V, error) {
 	return k, v, nil
 }
 
-func (c Collection[V]) Last() V {
+func (c Collection[K, V]) Last() V {
 	if len(c.keys) == 0 {
 		return *new(V)
 	}
@@ -189,7 +199,7 @@ func (c Collection[V]) Last() V {
 	return c.values[c.keys[len(c.keys)-1]]
 }
 
-func (c Collection[V]) ToSlice() []V {
+func (c Collection[K, V]) ToSlice() []V {
 	slice := make([]V, len(c.keys))
 
 	for i, key := range c.keys {
@@ -199,27 +209,24 @@ func (c Collection[V]) ToSlice() []V {
 	return slice
 }
 
-func (c Collection[V]) Combine(v Collection[V]) Collection[V] {
-	if c.Count() != v.Count() {
-		return c
-	}
+// Combine doesn't preserve order and keys and values must be of the same type
+func (c Collection[K, V]) Combine(v Collection[K, K]) Collection[K, V] {
+	combined := makeCollection[K, V](c.Count())
 
-	keys := c.values
-	values := v.values
+	for i := 0; i < c.Count(); i++ {
+		k, _ := Assert[K](c.values[c.keys[i]])
+		v, _ := Assert[V](v.values[v.keys[i]])
 
-	combined := Collect[V]()
-
-	for i := 0; i < len(keys); i++ {
-		combined.Put(keys[i], values[i])
+		combined.Put(k, v)
 	}
 
 	return combined
 }
 
-func (c Collection[V]) Concat(concatTo Collection[V]) Collection[V] {
+func (c Collection[K, V]) Concat(concatTo Collection[K, V]) Collection[K, V] {
 	concatenated := CollectMap(c.values)
 
-	concatTo.Each(func(k any, v V) {
+	concatTo.Each(func(k K, v V) {
 		if _, ok := concatenated.values[k]; ok {
 			concatenated.Push(v)
 		} else {
@@ -230,10 +237,10 @@ func (c Collection[V]) Concat(concatTo Collection[V]) Collection[V] {
 	return concatenated
 }
 
-func (c Collection[V]) Contains(match Matcher) bool {
+func (c Collection[K, V]) Contains(match Matcher) bool {
 	var contains bool
 
-	c.Each(func(k any, v V) {
+	c.Each(func(k K, v V) {
 		if match(k, v) {
 			contains = true
 			return
@@ -243,10 +250,10 @@ func (c Collection[V]) Contains(match Matcher) bool {
 	return contains
 }
 
-func (c Collection[V]) Every(match Matcher) bool {
+func (c Collection[K, V]) Every(match Matcher) bool {
 	contains := true
 
-	c.Each(func(k any, v V) {
+	c.Each(func(k K, v V) {
 		if !match(k, v) {
 			contains = false
 			return
@@ -256,14 +263,17 @@ func (c Collection[V]) Every(match Matcher) bool {
 	return contains
 }
 
-func (c Collection[V]) Flip() Collection[V] {
-	flippedKeys := make([]any, 0, c.Count())
-	flippedValues := make(map[any]V, c.Count())
+func (c Collection[K, V]) Flip() Collection[K, V] {
+	flippedKeys := make([]K, 0, c.Count())
+	flippedValues := make(map[K]V, c.Count())
 
-	c.Each(func(k any, v V) {
-		if cast, ok := k.(V); ok {
-			flippedKeys = append(flippedKeys, v)
-			flippedValues[v] = cast
+	c.Each(func(k K, v V) {
+		castKey, keyOk := Assert[K](v)
+		castValue, valueOk := Assert[V](k)
+
+		if keyOk && valueOk {
+			flippedKeys = append(flippedKeys, castKey)
+			flippedValues[castKey] = castValue
 		} else {
 			flippedKeys = append(flippedKeys, k)
 			flippedValues[k] = v

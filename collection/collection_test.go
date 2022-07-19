@@ -21,7 +21,7 @@ func TestCollectSliceMethod(t *testing.T) {
 }
 
 func TestCollectMapMethod(t *testing.T) {
-	mapString := map[any]any{"foo": "bar", "1": 1}
+	mapString := map[string]any{"f": "foo", "b": "bar"}
 
 	collection := CollectMap(mapString)
 
@@ -61,7 +61,7 @@ func TestEachMethod(t *testing.T) {
 		count       int
 	)
 
-	collection.Each(func(k any, v any) {
+	collection.Each(func(k int, v any) {
 		switch v {
 		case "foo":
 			foundString = true
@@ -98,7 +98,7 @@ func TestEachMethod(t *testing.T) {
 }
 
 func TestSearchMethod(t *testing.T) {
-	items := map[any]any{"foo": "foo", "int": 1, "float": 1.0}
+	items := map[string]any{"foo": "foo", "int": 1, "float": 1.0}
 	collection := CollectMap(items)
 
 	for k, v := range items {
@@ -116,19 +116,19 @@ func TestSearchMethod(t *testing.T) {
 	if _, err := collection.Search('a'); err.Error() != "Value wasn't found in the collection!" {
 		t.Error("searching an unexisting item must return an error")
 	}
-
 }
 
 func TestKeys(t *testing.T) {
-	collection := CollectMap(map[any]string{"foo": "foo", "bar": "bar", "baz": "baz"})
+	collection := CollectMap(map[string]string{"foo": "foo", "bar": "bar", "baz": "baz"})
+	expectedKeys := []string{"bar", "baz", "foo"}
 
 	keys := collection.Keys()
 	sort.Slice(keys, func(i, j int) bool {
-		return keys[i].(string) < keys[j].(string)
+		return keys[i] < keys[j]
 	})
 
-	if !reflect.DeepEqual(keys, []any{"bar", "baz", "foo"}) {
-		t.Error("the returned keys didn't match the collection keys")
+	if !reflect.DeepEqual(keys, expectedKeys) {
+		t.Errorf("expected %v. Got %v", expectedKeys, keys)
 	}
 }
 
@@ -139,7 +139,7 @@ func TestSort(t *testing.T) {
 
 	expectedCurrent := 1
 
-	collection.Each(func(_ any, value int) {
+	collection.Each(func(_ int, value int) {
 		if value != expectedCurrent {
 			t.Error("Collection wasn't sorted!")
 		}
@@ -151,7 +151,7 @@ func TestSort(t *testing.T) {
 func TestMap(t *testing.T) {
 	collection := Collect(1, 2, 3, 4)
 
-	allEven := collection.Map(func(_ any, v int) int {
+	allEven := collection.Map(func(_ int, v int) int {
 		if v%2 == 0 {
 			return v
 		}
@@ -159,7 +159,7 @@ func TestMap(t *testing.T) {
 		return v + 1
 	})
 
-	allEven.Each(func(_ any, v int) {
+	allEven.Each(func(_ int, v int) {
 		if v%2 != 0 {
 			t.Error("Expected all values to be even!")
 		}
@@ -201,27 +201,8 @@ func TestLastEmpty(t *testing.T) {
 func TestPut(t *testing.T) {
 	collection := Collect[any](1, "foo", true)
 
-	collection.Put("float", 1.0)
-
-	key, err := collection.Search(1.0)
-
-	if err != nil {
-		t.Error("Element wasn't inserted")
-	}
-
-	if key != "float" {
-		t.Error("The given key wasn't preserved")
-	}
-
-	if item, _ := collection.Get(key); item != 1.0 {
-		t.Error("The keys were messed up :/")
-	}
-}
-
-func TestPush(t *testing.T) {
-	collection := Collect[any](1, "foo", true)
-
-	collection.Push(1.0)
+	// collection.Put("float", 1.0)
+	collection.Put(3, 1.0)
 
 	key, err := collection.Search(1.0)
 
@@ -230,11 +211,50 @@ func TestPush(t *testing.T) {
 	}
 
 	if key != 3 {
-		t.Error("The inserted key should be the former length of the collection")
+		t.Error("The given key wasn't preserved")
 	}
 
 	if item, _ := collection.Get(key); item != 1.0 {
 		t.Error("The keys were messed up :/")
+	}
+}
+
+func TestPushWithIncrementableKeys(t *testing.T) {
+	var (
+		collection        = Collect[any](1, "foo", true)
+		expectedPushedKey = collection.Count()
+		pushedValue       = 1.0
+	)
+
+	collection.Push(pushedValue)
+
+	key, err := collection.Search(pushedValue)
+
+	if err != nil {
+		t.Error("Element wasn't inserted")
+	}
+
+	if key != expectedPushedKey {
+		t.Errorf("Expected last element's key to be %d. Got %d", 3, key)
+	}
+
+	if item, _ := collection.Get(key); item != pushedValue {
+		t.Error("The keys were messed up :/")
+	}
+}
+
+func TestPushWithNonIncrementableKeys(t *testing.T) {
+	var (
+		collection  = CollectMap(map[string]any{"a": 1, "b": " foo", "c": true})
+		pushedValue = 1.0
+	)
+
+	collection.Push(pushedValue)
+
+	_, err := collection.Search(pushedValue)
+
+	if err == nil {
+		t.Error("Element shouldn't have been inserted")
 	}
 }
 
@@ -268,7 +288,7 @@ func TestPop(t *testing.T) {
 func TestGenericGet(t *testing.T) {
 	collection := Collect[any](1, "foo", Collect[any]("bar"))
 
-	intValue, err := Get[int](collection, 0)
+	intValue, err := Get[int, int](collection, 0)
 
 	if err != nil {
 		t.Error(err)
@@ -278,7 +298,7 @@ func TestGenericGet(t *testing.T) {
 		t.Error("Wrong value returned!")
 	}
 
-	stringValue, err := Get[string](collection, 1)
+	stringValue, err := Get[int, string](collection, 1)
 
 	if err != nil {
 		t.Error(err)
@@ -288,7 +308,7 @@ func TestGenericGet(t *testing.T) {
 		t.Error("Wrong value returned!")
 	}
 
-	collectionValue, err := Get[Collection[any]](collection, 2)
+	collectionValue, err := Get[int, Collection[int, any]](collection, 2)
 
 	if err != nil {
 		t.Error("Getting a generic existing value must always work!")
@@ -298,7 +318,7 @@ func TestGenericGet(t *testing.T) {
 		t.Error("Wrong value returned!")
 	}
 
-	if _, err := Get[int](collection, 1); err.Error() != "interface conversion: interface {} is string, not int" {
+	if _, err := Get[int, int](collection, 1); err.Error() != "interface conversion: interface {} is string, not int" {
 		t.Error("Trying to get a value with the wrong type parameter must return a type error!")
 	}
 }
@@ -314,7 +334,7 @@ func TestAssert(t *testing.T) {
 	underlyingValue := "generic value"
 	var genericType any = underlyingValue
 
-	concreteType = Assert[string](genericType)
+	concreteType, _ = Assert[string](genericType)
 
 	if concreteType != underlyingValue {
 		t.Error("Expected concreteType to have the value of underlyingValue")
@@ -368,8 +388,13 @@ func TestToSlice(t *testing.T) {
 }
 
 func TestCombine(t *testing.T) {
-	keys := Collect("first_name", "last_name")
-	values := Collect("Jon", "Doe")
+	keys := makeCollection[string, string](2)
+	keys.Put("0", "first_name")
+	keys.Put("1", "last_name")
+
+	values := makeCollection[string, string](2)
+	values.Put("0", "Jon")
+	values.Put("1", "Doe")
 
 	combined := keys.Combine(values)
 
@@ -386,32 +411,101 @@ func TestCombine(t *testing.T) {
 	}
 }
 
-func TestConcat(t *testing.T) {
-	collectionA := Collect("foo", "bar")
-	collectionB := Collect("baz")
-	expectedCollection := Collect("foo", "bar", "baz")
+func TestCombineDiffKeyLenghts(t *testing.T) {
+	keys := makeCollection[string, string](2)
+	keys.Put("0", "first_name")
 
-	concat := collectionA.Concat(collectionB)
+	values := makeCollection[string, string](2)
+	values.Put("0", "Jon")
+	values.Put("1", "Doe")
+
+	combined := keys.Combine(values)
+
+	if actualFirstName, _ := combined.Get("first_name"); actualFirstName != "Jon" {
+		t.Errorf("Expected first name to be %s, got %s", "Jon", actualFirstName)
+	}
+
+	if _, err := combined.Get("last_name"); err == nil {
+		t.Error("last_name key shouldn't have been combined")
+	}
+}
+
+func TestConcat(t *testing.T) {
+	collectionA := CollectMap(map[string]string{"foo": "a", "bar": "b"})
+	collectionB := CollectMap(map[string]string{"baz": "c"})
+	expectedCollection := CollectMap(map[string]string{"foo": "a", "bar": "b", "baz": "c"}).
+		Sort(Asc[string]())
+
+	concat := collectionA.Concat(collectionB).Sort(Asc[string]())
 
 	if !reflect.DeepEqual(expectedCollection.values, concat.values) {
-		t.Error("concatenated collection was different than expected")
+		t.Errorf(
+			"expected concatenated collection values to be %v. Got %v",
+			expectedCollection.values,
+			concat.values,
+		)
+	}
+
+	if !reflect.DeepEqual(expectedCollection.keys, concat.keys) {
+		t.Errorf(
+			"expected concatenated keys collection to be %v. Got %v",
+			expectedCollection.keys,
+			concat.keys,
+		)
 	}
 }
 
 func TestConcatWithDuplicatedKeys(t *testing.T) {
-	collectionA := CollectMap(map[any]string{"foo": "a", "bar": "b"})
-	collectionB := CollectMap(map[any]string{"foo": "c"})
-	expectedCollection := CollectMap(map[any]string{"foo": "a", "bar": "b", 2: "c"})
+	collectionA := CollectMap(map[string]string{"foo": "a", "bar": "b"})
+	collectionB := CollectMap(map[string]string{"foo": "c"})
+	expectedCollection := CollectMap(map[string]string{"foo": "a", "bar": "b"}).
+		Sort(Asc[string]())
 
-	concat := collectionA.Concat(collectionB)
+	concat := collectionA.Concat(collectionB).Sort(Asc[string]())
 
 	if !reflect.DeepEqual(expectedCollection.values, concat.values) {
-		t.Error("concatenated collection was different than expected")
+		t.Errorf(
+			"expected concatenated collection values to be %v. Got %v",
+			expectedCollection.values,
+			concat.values,
+		)
+	}
+
+	if !reflect.DeepEqual(expectedCollection.keys, concat.keys) {
+		t.Errorf(
+			"expected concatenated keys collection to be %v. Got %v",
+			expectedCollection.keys,
+			concat.keys,
+		)
+	}
+}
+
+func TestConcatWithIntKeys(t *testing.T) {
+	collectionA := Collect("foo", "bar")
+	collectionB := Collect("baz")
+	expectedCollection := Collect("foo", "bar", "baz").Sort(Asc[string]())
+
+	concat := collectionA.Concat(collectionB).Sort(Asc[string]())
+
+	if !reflect.DeepEqual(expectedCollection.values, concat.values) {
+		t.Errorf(
+			"expected concatenated collection values to be %v. Got %v",
+			expectedCollection.values,
+			concat.values,
+		)
+	}
+
+	if !reflect.DeepEqual(expectedCollection.keys, concat.keys) {
+		t.Errorf(
+			"expected concatenated keys collection to be %v. Got %v",
+			expectedCollection.keys,
+			concat.keys,
+		)
 	}
 }
 
 func TestCointainsKey(t *testing.T) {
-	collection := CollectMap(map[any]string{"foo": "a", "bar": "b"})
+	collection := CollectMap(map[string]string{"foo": "a", "bar": "b"})
 
 	if !collection.Contains(KeyEquals("foo")) {
 		t.Error("collection should contain 'foo' key")
@@ -419,7 +513,7 @@ func TestCointainsKey(t *testing.T) {
 }
 
 func TestCointainsValue(t *testing.T) {
-	collection := CollectMap(map[any]string{"foo": "a", "bar": "b"})
+	collection := CollectMap(map[string]string{"foo": "a", "bar": "b"})
 
 	if !collection.Contains(ValueEquals("a")) {
 		t.Error("collection should contain 'a' value")
@@ -433,7 +527,7 @@ func TestEvery(t *testing.T) {
 		t.Error("all elements in the collection are equal")
 	}
 
-	collection.Push(1)
+	collection.Put(4, 1)
 
 	if collection.Every(ValueEquals(2)) {
 		t.Error("the collection contains a different element")
@@ -469,12 +563,12 @@ func TestFirstOrFail(t *testing.T) {
 }
 
 func TestFlip(t *testing.T) {
-	collection := CollectMap(map[any]string{
-		"A": "1", "B": "2", "C": "3", 4: "D",
+	collection := CollectMap(map[string]string{
+		"A": "1", "B": "2", "C": "3",
 	}).Sort(Asc[string]())
 
-	expectedFlippedCollection := CollectMap(map[any]string{
-		"1": "A", "2": "B", "3": "C", 4: "D",
+	expectedFlippedCollection := CollectMap(map[string]string{
+		"1": "A", "2": "B", "3": "C",
 	}).Sort(Asc[string]())
 
 	flippedCollection := collection.Flip().Sort(Asc[string]())

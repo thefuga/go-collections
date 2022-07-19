@@ -25,21 +25,21 @@ type (
 		integer | float
 	}
 
-	Collection[T number] struct {
-		collection.Collection[T]
+	Collection[K comparable, V number] struct {
+		collection.Collection[K, V]
 	}
 )
 
-func Collect[T number](n ...T) Collection[T] {
-	return Collection[T]{collection.Collect(n...)}
+func Collect[K number](n ...K) Collection[int, K] {
+	return Collection[int, K]{collection.Collect(n...)}
 }
 
-func (c Collection[T]) Average() T {
-	return c.Sum() / T(c.Count())
+func (c Collection[K, V]) Average() V {
+	return c.Sum() / V(c.Count())
 }
 
-func (c Collection[T]) Sum() T {
-	var sum T
+func (c Collection[K, V]) Sum() V {
+	var sum V
 
 	for _, v := range c.ToSlice() {
 		sum += v
