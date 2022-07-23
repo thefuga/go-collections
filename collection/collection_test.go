@@ -147,17 +147,6 @@ func TestKeys(t *testing.T) {
 	}
 }
 
-func TestValues(t *testing.T) {
-	collection := CollectMap(map[string]int{"foo": 123, "bar": 456, "baz": 789})
-	expectedValues := []int{123, 456, 789}
-
-	values := collection.Values()
-
-	if !reflect.DeepEqual(values, expectedValues) {
-		t.Errorf("expected %v. Got %v", expectedValues, values)
-	}
-}
-
 func TestSort(t *testing.T) {
 	collection := Collect(3, 2, 1)
 

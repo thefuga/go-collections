@@ -147,16 +147,6 @@ func (c Collection[K, V]) Keys() []K {
 	return c.keys
 }
 
-func (c Collection[K, V]) Values() []V {
-	var values []V
-
-	c.Each(func(k K, v V) {
-		values = append(values, v)
-	})
-
-	return values
-}
-
 func (c Collection[K, V]) Sort(closure func(current, next V) bool) Collection[K, V] {
 	sort.Slice(c.keys, func(i, j int) bool {
 		return closure(c.values[c.keys[i]], c.values[c.keys[j]])
