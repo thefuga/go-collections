@@ -71,6 +71,16 @@ func AssertE[T any](from any) (T, error) {
 	return *new(T), errors.NewTypeError[T](&from)
 }
 
+func CountBy[T comparable, K comparable, V any](c Collection[K, V], mapper func(v V) T) map[T]int {
+	count := map[T]int{}
+
+	c.Each(func(_ K, v V) {
+		count[mapper(v)]++
+	})
+
+	return count
+}
+
 func (c *Collection[K, V]) Put(k K, v V) Collection[K, V] {
 	c.keys = append(c.keys, k)
 	c.values[k] = v
