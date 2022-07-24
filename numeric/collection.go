@@ -47,3 +47,14 @@ func (c Collection[K, V]) Sum() V {
 
 	return sum
 }
+
+func (c Collection[K, V]) Median() float64 {
+	sorted := c.Sort(collection.Asc[V]()).ToSlice()
+
+	halfway := int(len(sorted) / 2)
+	if len(sorted)%2 == 0 {
+		return float64(sorted[halfway]+sorted[halfway-1]) / 2.0
+	}
+
+	return float64(sorted[halfway])
+}
