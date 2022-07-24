@@ -1,7 +1,6 @@
 package collection
 
 import (
-	"fmt"
 	"reflect"
 	"sort"
 	"testing"
@@ -574,12 +573,12 @@ func TestFlip(t *testing.T) {
 	flippedCollection := collection.Flip().Sort(Asc[string]())
 
 	if !reflect.DeepEqual(flippedCollection.keys, expectedFlippedCollection.keys) {
-		t.Log(fmt.Sprintf("%v||%v", flippedCollection.keys, expectedFlippedCollection.keys))
+		t.Logf("%v||%v", flippedCollection.keys, expectedFlippedCollection.keys)
 		t.Error("collection keys didn't flip")
 	}
 
 	if !reflect.DeepEqual(flippedCollection.values, expectedFlippedCollection.values) {
-		t.Log(fmt.Sprintf("%v||%v", flippedCollection.values, expectedFlippedCollection.values))
+		t.Logf("%v||%v", flippedCollection.values, expectedFlippedCollection.values)
 		t.Error("collection values didn't flip")
 	}
 }
