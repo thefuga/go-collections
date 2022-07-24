@@ -98,16 +98,11 @@ func TestEachMethod(t *testing.T) {
 }
 
 func TestTap(t *testing.T) {
-	collectionSize := 3
 	collection := CollectMap(map[string]string{"foo": "foo", "bar": "bar", "baz": "baz"})
 
 	collection.Tap(func(c Collection[string, string]) {
-		if c.IsEmpty() {
-			t.Error("The method not receive the correct collection!")
-		}
-
-		if c.Count() != collectionSize {
-			t.Error("The method not receive the correct collection!")
+		if !reflect.DeepEqual(collection, c) {
+			t.Error("The collections are not equal")
 		}
 	})
 }
