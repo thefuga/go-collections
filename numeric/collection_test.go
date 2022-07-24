@@ -30,7 +30,7 @@ func TestSum(t *testing.T) {
 }
 
 func TestMax(t *testing.T) {
-	collection := Collect(3, 2, 1, 0, -1, -2, -3)
+	collection := Collect(-3, -2, -1, 0, 1, 2, 3)
 	expectedMax := 3
 
 	if actualMax := collection.Max(); actualMax != expectedMax {
@@ -39,7 +39,7 @@ func TestMax(t *testing.T) {
 }
 
 func TestMaxFloat(t *testing.T) {
-	collection := Collect(3.3, 2.2, 1.1, 0.0, -1.1, -2.2, -3.3)
+	collection := Collect(-3.3, -2.2, -1.1, 0.0, 1.1, 2.2, 3.3)
 	expectedMax := 3.3
 
 	if actualMax := collection.Max(); actualMax != expectedMax {
