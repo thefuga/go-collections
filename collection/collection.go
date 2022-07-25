@@ -127,6 +127,12 @@ func (c Collection[K, V]) Each(closure func(k K, v V)) Collection[K, V] {
 	return c
 }
 
+func (c Collection[K, V]) Tap(closure func(Collection[K, V])) Collection[K, V] {
+	closure(c)
+
+	return c
+}
+
 func (c Collection[K, V]) Search(value V) (K, error) {
 	for _, v := range c.keys {
 		if reflect.DeepEqual(c.values[v], value) {
@@ -157,6 +163,19 @@ func (c Collection[K, V]) Map(closure func(k K, v V) V) Collection[K, V] {
 	})
 
 	return CollectMap(mappedValues)
+}
+
+func (c Collection[K, V]) Only(keys []K) Collection[K, V] {
+	onlyValues := make(map[K]V)
+
+	for _, key := range keys {
+		value, err := c.Get(key)
+		if err == nil {
+			onlyValues[key] = value
+		}
+	}
+
+	return CollectMap(onlyValues)
 }
 
 func (c Collection[K, V]) First() V {

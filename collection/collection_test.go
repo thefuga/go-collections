@@ -96,6 +96,16 @@ func TestEachMethod(t *testing.T) {
 	}
 }
 
+func TestTap(t *testing.T) {
+	collection := CollectMap(map[string]string{"foo": "foo", "bar": "bar", "baz": "baz"})
+
+	collection.Tap(func(c Collection[string, string]) {
+		if c.Count() != collection.Count() {
+			t.Error("The collections are not equal")
+		}
+	})
+}
+
 func TestSearchMethod(t *testing.T) {
 	items := map[string]any{"foo": "foo", "int": 1, "float": 1.0}
 	collection := CollectMap(items)
@@ -163,6 +173,29 @@ func TestMap(t *testing.T) {
 			t.Error("Expected all values to be even!")
 		}
 	})
+}
+
+func TestOnly(t *testing.T) {
+	collection := CollectMap(map[string]int{"foo": 123, "bar": 456, "baz": 789})
+	expectedNewCollection := CollectMap(map[string]int{"foo": 123, "bar": 456})
+	keys := []string{"foo", "bar"}
+
+	newCollection := collection.Only(keys)
+
+	if !reflect.DeepEqual(newCollection.values, expectedNewCollection.values) {
+		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+	}
+}
+
+func TestOnlyWithInvalidKeys(t *testing.T) {
+	collection := CollectMap(map[string]int{"foo": 123, "bar": 456, "baz": 789})
+	keys := []string{"fo", "ar"}
+
+	newCollection := collection.Only(keys)
+
+	if newCollection.Count() != 0 {
+		t.Error("The collection should be empty")
+	}
 }
 
 func TestFirst(t *testing.T) {
@@ -406,11 +439,11 @@ func TestCombine(t *testing.T) {
 	}
 
 	if len(combined.keys) != len(combined.values) {
-		t.Error("combined.keys should have the same lenght as combined.values")
+		t.Error("combined.keys should have the same length as combined.values")
 	}
 }
 
-func TestCombineDiffKeyLenghts(t *testing.T) {
+func TestCombineDiffKeyLengths(t *testing.T) {
 	keys := makeCollection[string, string](2)
 	keys.Put("0", "first_name")
 
@@ -503,7 +536,7 @@ func TestConcatWithIntKeys(t *testing.T) {
 	}
 }
 
-func TestCointainsKey(t *testing.T) {
+func TestContainsKey(t *testing.T) {
 	collection := CollectMap(map[string]string{"foo": "a", "bar": "b"})
 
 	if !collection.Contains(KeyEquals("foo")) {
@@ -511,7 +544,7 @@ func TestCointainsKey(t *testing.T) {
 	}
 }
 
-func TestCointainsValue(t *testing.T) {
+func TestContainsValue(t *testing.T) {
 	collection := CollectMap(map[string]string{"foo": "a", "bar": "b"})
 
 	if !collection.Contains(ValueEquals("a")) {

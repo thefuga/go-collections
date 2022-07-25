@@ -38,7 +38,6 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] forPage
 - [x] get
 - [ ] groupBy
-- [ ] has
 - [ ] implode
 - [ ] intersect
 - [ ] intersectByKeys
@@ -63,7 +62,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] min
 - [ ] mode
 - [ ] nth
-- [ ] only
+- [x] only
 - [ ] pad
 - [ ] partition
 - [ ] pipe
@@ -107,7 +106,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] take
 - [ ] takeUntil
 - [ ] takeWhile
-- [ ] tap
+- [x] tap
 - [ ] times
 - [x] toArray (ToSlice)
 - [ ] toJson
