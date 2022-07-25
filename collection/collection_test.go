@@ -183,7 +183,7 @@ func TestOnly(t *testing.T) {
 
 	newCollection := collection.Only(keys)
 
-	if !reflect.DeepEqual(newCollection, expectedNewCollection) {
+	if !reflect.DeepEqual(newCollection.values, expectedNewCollection.values) {
 		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
 	}
 }
