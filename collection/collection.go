@@ -285,3 +285,11 @@ func (c Collection[K, V]) Flip() Collection[K, V] {
 
 	return c
 }
+
+func (c Collection[K, V]) Merge(other Collection[K, V]) (Collection[K, V], error) {
+	other.Each(func(k K, v V) {
+		c.Put(k, v)
+	})
+
+	return c, nil
+}

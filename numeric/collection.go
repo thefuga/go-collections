@@ -48,6 +48,18 @@ func (c Collection[K, V]) Sum() V {
 	return sum
 }
 
+func (c Collection[K, V]) Min() V {
+	min := c.First()
+
+	for _, v := range c.ToSlice() {
+		if v < min {
+			min = v
+		}
+	}
+
+	return min
+}
+
 func (c Collection[K, V]) Max() V {
 	max := c.First()
 
