@@ -583,6 +583,41 @@ func TestFlip(t *testing.T) {
 	}
 }
 
+func TestMerge(t *testing.T) {
+	newCollection := CollectMap(map[string]string{
+		"A": "foo",
+		"B": "bar",
+	})
+
+	collectionToMerge := CollectMap(map[string]string{
+		"B": "foobar",
+		"C": "baz",
+	})
+
+	mergedCollection, err := newCollection.Merge(collectionToMerge)
+
+	if err != nil {
+		t.Error("The collection should not have returned an error")
+	}
+
+	for _, v := range []string{"A", "B", "C"} {
+		_, err := mergedCollection.Get(v)
+
+		if err != nil {
+			t.Errorf("Expected %v key to be in the collection %v but it was not", v, mergedCollection)
+		}
+	}
+
+	for _, v := range []string{"foo", "foobar", "baz"} {
+		_, err := mergedCollection.Search(v)
+
+		if err != nil {
+			t.Errorf("Expected %v to be in the collection values %v but it was not", v, mergedCollection)
+		}
+	}
+
+}
+
 func TestCountBy(t *testing.T) {
 	type testCase[T comparable] struct {
 		name          string

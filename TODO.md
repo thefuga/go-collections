@@ -56,11 +56,11 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] mapSpread
 - [ ] mapToGroups
 - [ ] mapWithKeys
-- [ ] max
+- [x] max
 - [ ] median
-- [ ] merge
+- [x] merge
 - [ ] mergeRecursive
-- [ ] min
+- [x] min
 - [ ] mode
 - [ ] nth
 - [ ] only
