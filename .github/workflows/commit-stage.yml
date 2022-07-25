@@ -91,3 +91,27 @@ jobs:
         with:
           fail_ci_if_error: true
           verbose: true
+
+  benchmark:
+    name: benchmark
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+         go-version: "^1.18"
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/app/vendor
+            ./vendor
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - run: go test ./collection/ -bench=. -benchmem > benchmark_result.txt
+      - uses: actions/upload-artifact@v3
+        with:
+          name: benchmark_result
+          path: ./benchmark_result.txt
+          if-no-files-found: error
