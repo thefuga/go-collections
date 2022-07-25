@@ -59,3 +59,15 @@ func (c Collection[K, V]) Min() V {
 
 	return min
 }
+
+func (c Collection[K, V]) Max() V {
+	max := c.First()
+
+	for _, v := range c.ToSlice() {
+		if v > max {
+			max = v
+		}
+	}
+
+	return max
+}

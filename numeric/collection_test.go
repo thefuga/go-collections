@@ -46,3 +46,21 @@ func TestMinFloat(t *testing.T) {
 		t.Errorf("expected min to be %f. Got %f", expectedMin, actualMin)
 	}
 }
+
+func TestMax(t *testing.T) {
+	collection := Collect(-3, -2, -1, 0, 1, 2, 3)
+	expectedMax := 3
+
+	if actualMax := collection.Max(); actualMax != expectedMax {
+		t.Errorf("expected min to be %d. Got %d", expectedMax, actualMax)
+	}
+}
+
+func TestMaxFloat(t *testing.T) {
+	collection := Collect(-3.3, -2.2, -1.1, 0.0, 1.1, 2.2, 3.3)
+	expectedMax := 3.3
+
+	if actualMax := collection.Max(); actualMax != expectedMax {
+		t.Errorf("expected min to be %f. Got %f", expectedMax, actualMax)
+	}
+}
