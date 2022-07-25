@@ -322,3 +322,21 @@ func (c Collection[K, V]) Merge(other Collection[K, V]) (Collection[K, V], error
 
 	return c, nil
 }
+
+func (c Collection[K, V]) Filter(closure func(k K, v V) bool) Collection[K, V] {
+	values := make(map[K]V)
+
+	c.Each(func(k K, v V) {
+		if closure(k, c.values[k]) {
+			values[k] = c.values[k]
+		}
+	})
+
+	return CollectMap(values)
+}
+
+func (c Collection[K, V]) Reject(closure func(k K, v V) bool) Collection[K, V] {
+	return c.Filter(func(k K, v V) bool {
+		return !closure(k, v)
+	})
+}

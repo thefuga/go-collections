@@ -690,3 +690,42 @@ func TestCountBy(t *testing.T) {
 	}
 
 }
+
+func TestFilter(t *testing.T) {
+	collection := Collect(1, 2, 3, 4)
+	expectedNewCollection := CollectMap(map[int]int{2: 3, 3: 4})
+
+	newCollection := collection.Filter(func(k int, v int) bool {
+		return v > 2
+	})
+
+	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
+		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+	}
+}
+
+func TestFilterWithMap(t *testing.T) {
+	collection := CollectMap(map[string]string{"foo": "foo", "bar": "bar"})
+	expectedNewCollection := CollectMap(map[string]string{"foo": "foo"})
+
+	newCollection := collection.Filter(func(k string, v string) bool {
+		return v == "foo"
+	})
+
+	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
+		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+	}
+}
+
+func TestReject(t *testing.T) {
+	collection := Collect(0, 1, 2, 3, 4)
+	expectedNewCollection := CollectMap(map[int]int{2: 2, 3: 3, 4: 4})
+
+	newCollection := collection.Reject(func(k int, v int) bool {
+		return v < 2
+	})
+
+	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
+		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+	}
+}

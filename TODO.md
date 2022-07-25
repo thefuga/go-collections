@@ -27,7 +27,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] eachSpread
 - [x] every
 - [ ] except
-- [ ] filter
+- [x] filter
 - [x] first
 - [x] firstOrFail
 - [ ] firstWhere
@@ -78,7 +78,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] range
 - [ ] reduce
 - [ ] reduceSpread
-- [ ] reject
+- [x] reject
 - [ ] replace
 - [ ] replaceRecursive
 - [ ] reverse
