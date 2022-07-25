@@ -13,7 +13,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] contains
 - [ ] containsStrict
 - [x] count
-- [ ] countBy
+- [x] countBy
 - [ ] crossJoin
 - [ ] dd
 - [ ] diff

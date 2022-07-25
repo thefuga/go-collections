@@ -650,3 +650,43 @@ func TestMerge(t *testing.T) {
 	}
 
 }
+
+func TestCountBy(t *testing.T) {
+	type testCase[T comparable] struct {
+		name          string
+		collection    Collection[int, int]
+		mapper        func(n int) T
+		expectedCount map[T]int
+	}
+
+	testCases := []testCase[bool]{
+		{
+			name:          "count evens",
+			collection:    Collect(1, 2, 3, 4, 5),
+			mapper:        func(n int) bool { return n%2 == 0 },
+			expectedCount: map[bool]int{true: 2, false: 3},
+		},
+		{
+			name:          "count odds",
+			collection:    Collect(1, 2, 3, 4, 5),
+			mapper:        func(n int) bool { return n%2 == 1 },
+			expectedCount: map[bool]int{true: 3, false: 2},
+		},
+		{
+			name:          "count ones",
+			collection:    Collect(1, 2, 1, 3, 1),
+			mapper:        func(n int) bool { return n == 1 },
+			expectedCount: map[bool]int{true: 3, false: 2},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			actualCount := CountBy(tc.collection, tc.mapper)
+			if !reflect.DeepEqual(actualCount, tc.expectedCount) {
+				t.Errorf("expected CountBy to equal %v. Got %v", tc.expectedCount, actualCount)
+			}
+		})
+	}
+
+}
