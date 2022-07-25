@@ -28,3 +28,21 @@ func TestSum(t *testing.T) {
 		t.Errorf("expected sum to be %d. Got %d", expectedSum, actualSum)
 	}
 }
+
+func TestMin(t *testing.T) {
+	collection := Collect(3, 2, 1, 0, -1, -2, -3)
+	expectedMin := -3
+
+	if actualMin := collection.Min(); actualMin != expectedMin {
+		t.Errorf("expected min to be %d. Got %d", expectedMin, actualMin)
+	}
+}
+
+func TestMinFloat(t *testing.T) {
+	collection := Collect(3.3, 2.2, 1.1, 0.0, -1.1, -2.2, -3.3)
+	expectedMin := -3.3
+
+	if actualMin := collection.Min(); actualMin != expectedMin {
+		t.Errorf("expected min to be %f. Got %f", expectedMin, actualMin)
+	}
+}

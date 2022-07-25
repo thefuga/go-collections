@@ -60,7 +60,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] median
 - [x] merge
 - [ ] mergeRecursive
-- [ ] min
+- [x] min
 - [ ] mode
 - [ ] nth
 - [ ] only
