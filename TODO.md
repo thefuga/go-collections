@@ -58,7 +58,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] mapWithKeys
 - [ ] max
 - [ ] median
-- [ ] merge
+- [x] merge
 - [ ] mergeRecursive
 - [ ] min
 - [ ] mode
