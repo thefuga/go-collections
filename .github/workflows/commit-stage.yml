@@ -109,7 +109,7 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-      - run: go test ./collection/ -bench=. -benchmem > benchmark_result.txt
+      - run: go test ./tests/benchmark/... -bench=. -benchmem > benchmark_result.txt
       - uses: actions/upload-artifact@v3
         with:
           name: benchmark_result
