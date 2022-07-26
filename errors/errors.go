@@ -2,39 +2,29 @@ package errors
 
 import "fmt"
 
-type KeyNotFoundError string
+type KeyNotFoundError error
 
-func NewKeyNotFoundError(k any) KeyNotFoundError {
-	return KeyNotFoundError(
-		fmt.Sprintf("Key '%v' wasn't found in the collection!", k),
-	)
+func NewKeyNotFoundError(k any, cause ...error) KeyNotFoundError {
+	return wrap("key '%v' not found", []any{k}, cause)
 }
 
-func (err KeyNotFoundError) Error() string {
-	return string(err)
+type ValueNotFoundError error
+
+func NewValueNotFoundError(cause ...error) ValueNotFoundError {
+	return wrap("value not found", nil, cause)
 }
 
-type ValueNotFoundError string
+type TypeError error
 
-func NewValueNotFoundError() ValueNotFoundError {
-	return ValueNotFoundError("Value wasn't found in the collection!")
-}
-
-func (err ValueNotFoundError) Error() string {
-	return string(err)
-}
-
-type TypeError string
-
-func NewTypeError[T any](from *any) TypeError {
+func NewTypeError[T any](from *any, cause ...error) TypeError {
 	actual := getTypeString(from)
 	expected := fmt.Sprintf("%T", *new(T))
 
-	return TypeError(fmt.Sprintf(
+	return wrap(
 		"interface conversion: interface {} is %s, not %s",
-		actual,
-		expected,
-	))
+		[]any{actual, expected},
+		cause,
+	)
 }
 
 func getTypeString(from *any) string {
@@ -44,6 +34,18 @@ func getTypeString(from *any) string {
 	}
 }
 
-func (err TypeError) Error() string {
-	return string(err)
+type EmptyCollectionError error
+
+func NewEmptyCollectionError(cause ...error) error {
+	return wrap("empty collection", nil, cause)
+}
+
+func wrap(format string, args []any, cause []error) error {
+	msg := fmt.Sprintf(format, args...)
+
+	if len(cause) > 0 {
+		return fmt.Errorf("%w: %s", cause[0], msg)
+	}
+
+	return fmt.Errorf(msg)
 }
