@@ -33,7 +33,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] firstWhere
 - [ ] flatMap
 - [ ] flatten
-- [ ] flip
+- [x] flip
 - [ ] forget
 - [ ] forPage
 - [x] get
@@ -115,15 +115,15 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] union
 - [ ] unique
 - [ ] uniqueStrict
-- [ ] unless
-- [ ] unlessEmpty
-- [ ] unlessNotEmpty
+- [x] unless
+- [x] unlessEmpty
+- [x] unlessNotEmpty
 - [ ] unwrap
 - [ ] value
 - [x] values (ToSlice)
-- [ ] when
-- [ ] whenEmpty
-- [ ] whenNotEmpty
+- [x] when
+- [x] whenEmpty
+- [x] whenNotEmpty
 - [ ] where
 - [ ] whereStrict
 - [ ] whereBetween

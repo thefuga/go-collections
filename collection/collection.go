@@ -340,3 +340,31 @@ func (c Collection[K, V]) Reject(closure func(k K, v V) bool) Collection[K, V] {
 		return !closure(k, v)
 	})
 }
+
+func (c Collection[K, V]) When(execute bool, closure func(collection Collection[K, V]) Collection[K, V]) Collection[K, V] {
+	if !execute {
+		return c
+	}
+
+	return closure(c)
+}
+
+func (c Collection[K, V]) WhenEmpty(closure func(collection Collection[K, V]) Collection[K, V]) Collection[K, V] {
+	return c.When(c.IsEmpty(), closure)
+}
+
+func (c Collection[K, V]) WhenNotEmpty(closure func(collection Collection[K, V]) Collection[K, V]) Collection[K, V] {
+	return c.When(!c.IsEmpty(), closure)
+}
+
+func (c Collection[K, V]) Unless(execute bool, closure func(collection Collection[K, V]) Collection[K, V]) Collection[K, V] {
+	return c.When(!execute, closure)
+}
+
+func (c Collection[K, V]) UnlessEmpty(closure func(collection Collection[K, V]) Collection[K, V]) Collection[K, V] {
+	return c.WhenNotEmpty(closure)
+}
+
+func (c Collection[K, V]) UnlessNotEmpty(closure func(collection Collection[K, V]) Collection[K, V]) Collection[K, V] {
+	return c.WhenEmpty(closure)
+}
