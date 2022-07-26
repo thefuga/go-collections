@@ -729,3 +729,117 @@ func TestReject(t *testing.T) {
 		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
 	}
 }
+
+func TestWhen(t *testing.T) {
+	collection := CollectMap(map[string]string{"foo": "foo"})
+	expectedNewCollection := CollectMap(map[string]string{"foo": "foo", "bar": "bar"})
+
+	newCollection := collection.When(true, func(c Collection[string, string]) Collection[string, string] {
+		return c.Put("bar", "bar")
+	})
+
+	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
+		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+	}
+}
+
+func TestWhenFalse(t *testing.T) {
+	collection := CollectMap(map[string]string{"foo": "foo"})
+
+	newCollection := collection.When(false, func(c Collection[string, string]) Collection[string, string] {
+		return c.Put("bar", "bar")
+	})
+
+	if !reflect.DeepEqual(collection.values, newCollection.values) {
+		t.Errorf("expected %v. Got %v", collection, newCollection)
+	}
+}
+
+func TestWhenEmpty(t *testing.T) {
+	collection := CollectMap(map[string]string{})
+	expectedNewCollection := CollectMap(map[string]string{"bar": "bar"})
+
+	newCollection := collection.WhenEmpty(func(c Collection[string, string]) Collection[string, string] {
+		return c.Put("bar", "bar")
+	})
+
+	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
+		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+	}
+}
+
+func TestWhenEmptyWithNotEmptyCollection(t *testing.T) {
+	collection := CollectMap(map[string]string{"foo": "foo"})
+
+	newCollection := collection.WhenEmpty(func(c Collection[string, string]) Collection[string, string] {
+		return c.Put("bar", "bar")
+	})
+
+	if !reflect.DeepEqual(collection.values, newCollection.values) {
+		t.Errorf("expected %v. Got %v", collection, newCollection)
+	}
+}
+
+func TestWhenNotEmpty(t *testing.T) {
+	collection := CollectMap(map[string]string{"foo": "foo"})
+	expectedNewCollection := CollectMap(map[string]string{"foo": "foo", "bar": "bar"})
+
+	newCollection := collection.WhenNotEmpty(func(c Collection[string, string]) Collection[string, string] {
+		return c.Put("bar", "bar")
+	})
+
+	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
+		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+	}
+}
+
+func TestWhenNotEmptyWithEmptyCollection(t *testing.T) {
+	collection := CollectMap(map[string]string{})
+
+	newCollection := collection.WhenNotEmpty(func(c Collection[string, string]) Collection[string, string] {
+		return c.Put("bar", "bar")
+	})
+
+	if !reflect.DeepEqual(collection.values, newCollection.values) {
+		t.Errorf("expected %v. Got %v", collection, newCollection)
+	}
+}
+
+func TestUnless(t *testing.T) {
+	collection := CollectMap(map[string]string{"foo": "foo"})
+	expectedNewCollection := CollectMap(map[string]string{"foo": "foo", "bar": "bar"})
+
+	newCollection := collection.Unless(false, func(c Collection[string, string]) Collection[string, string] {
+		return c.Put("bar", "bar")
+	})
+
+	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
+		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+	}
+}
+
+func TestUnlessEmpty(t *testing.T) {
+	collection := CollectMap(map[string]string{})
+	expectedNewCollection := CollectMap(map[string]string{})
+
+	newCollection := collection.UnlessEmpty(func(c Collection[string, string]) Collection[string, string] {
+		return c.Put("bar", "bar")
+	})
+
+	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
+		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+	}
+}
+
+func TestUnlessNotEmpty(t *testing.T) {
+	collection := CollectMap(map[string]string{})
+	expectedNewCollection := CollectMap(map[string]string{"bar": "bar"})
+
+	newCollection := collection.UnlessNotEmpty(func(c Collection[string, string]) Collection[string, string] {
+		return c.Put("bar", "bar")
+	})
+
+	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
+		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+	}
+}
