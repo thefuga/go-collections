@@ -33,7 +33,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] firstWhere
 - [ ] flatMap
 - [ ] flatten
-- [ ] flip
+- [x] flip
 - [ ] forget
 - [ ] forPage
 - [x] get
