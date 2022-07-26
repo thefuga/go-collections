@@ -350,19 +350,11 @@ func (c Collection[K, V]) When(execute bool, closure func(collection Collection[
 }
 
 func (c Collection[K, V]) WhenEmpty(closure func(collection Collection[K, V]) Collection[K, V]) Collection[K, V] {
-	if !c.IsEmpty() {
-		return c
-	}
-
-	return closure(c)
+	return c.When(c.IsEmpty(), closure)
 }
 
 func (c Collection[K, V]) WhenNotEmpty(closure func(collection Collection[K, V]) Collection[K, V]) Collection[K, V] {
-	if c.IsEmpty() {
-		return c
-	}
-
-	return closure(c)
+	return c.When(!c.IsEmpty(), closure)
 }
 
 func (c Collection[K, V]) Unless(execute bool, closure func(collection Collection[K, V]) Collection[K, V]) Collection[K, V] {
