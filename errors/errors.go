@@ -40,6 +40,12 @@ func NewEmptyCollectionError(cause ...error) error {
 	return wrap("empty collection", nil, cause)
 }
 
+type IntexOutOfBoundsError error
+
+func NewIndexOutOfBoundsError(cause ...error) error {
+	return wrap("index out of bounds", nil, cause)
+}
+
 func wrap(format string, args []any, cause []error) error {
 	msg := fmt.Sprintf(format, args...)
 
