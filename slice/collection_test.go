@@ -236,7 +236,7 @@ func TestSearch(t *testing.T) {
 			i, err := tc.sut.Search(tc.input)
 
 			if i != tc.i {
-				fmt.Errorf("expected resulting index to be %d. got %d", tc.i, i)
+				t.Errorf("expected resulting index to be %d. got %d", tc.i, i)
 			}
 
 			if err != nil {
@@ -320,7 +320,7 @@ func TestFirst(t *testing.T) {
 			v, err := tc.sut.First()
 
 			if v != tc.v {
-				fmt.Errorf("expected returned value to be '%s', got '%s'", tc.v, v)
+				t.Errorf("expected returned value to be '%s', got '%s'", tc.v, v)
 			}
 
 			if err != nil && tc.err != nil {
@@ -358,7 +358,7 @@ func TestLast(t *testing.T) {
 			v, err := tc.sut.Last()
 
 			if v != tc.v {
-				fmt.Errorf("expected returned value to be '%s', got '%s'", tc.v, v)
+				t.Errorf("expected returned value to be '%s', got '%s'", tc.v, v)
 			}
 
 			if err != nil && tc.err != nil {
