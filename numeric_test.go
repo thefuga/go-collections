@@ -1,8 +1,6 @@
 package collections
 
 import (
-	"fmt"
-	"reflect"
 	"testing"
 )
 
@@ -62,44 +60,6 @@ func TestAverage(t *testing.T) {
 	}
 }
 
-func TestFirst(t *testing.T) {
-	testCases := []struct {
-		description string
-		sut         []int
-		v           int
-		err         error
-	}{
-		{
-			"calling first with empty slice",
-			[]int{},
-			0,
-			fmt.Errorf("empty collection"),
-		},
-		{
-			"calling first with slice with values",
-			[]int{1, 2, 3, 4},
-			1,
-			nil,
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.description, func(t *testing.T) {
-			v, err := First(tc.sut)
-
-			if v != tc.v {
-				t.Errorf("expected first value to be %d. got %d", tc.v, v)
-			}
-
-			if err != nil {
-				if err.Error() != tc.err.Error() {
-					t.Errorf("expected error '%s'. got %s", tc.err.Error(), err.Error())
-				}
-			}
-		})
-	}
-}
-
 func TestMin(t *testing.T) {
 	testCases := []struct {
 		description string
@@ -151,17 +111,6 @@ func TestMax(t *testing.T) {
 				t.Errorf("expected max value to be %d. got %d", tc.max, max)
 			}
 		})
-	}
-}
-
-func TestSort(t *testing.T) {
-	sut := []int{3, 2, 4, 1}
-	sorted := []int{1, 2, 3, 4}
-
-	Sort(sut, Asc[int]())
-
-	if !reflect.DeepEqual(sut, sorted) {
-		t.Errorf("expected sorted slice to be %v. got %v", sorted, sut)
 	}
 }
 
