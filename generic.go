@@ -28,7 +28,12 @@ func GetE[T any](i int, slice []T) (T, error) {
 	return slice[i], nil
 }
 
-func First[T any](slice []T) (T, error) {
+func First[T any](slice []T) T {
+	v, _ := FirstE(slice)
+	return v
+}
+
+func FirstE[T any](slice []T) (T, error) {
 	return GetE(0, slice)
 }
 
@@ -85,7 +90,12 @@ func Each[T any](f func(i int, v T), slice []T) {
 	}
 }
 
-func Search[T any](v T, slice []T) (int, error) {
+func Search[T any](v T, slice []T) int {
+	i, _ := SearchE(v, slice)
+	return i
+}
+
+func SearchE[T any](v T, slice []T) (int, error) {
 	for i := range slice {
 		if reflect.DeepEqual(slice[i], v) {
 			return i, nil

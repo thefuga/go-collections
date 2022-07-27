@@ -276,7 +276,7 @@ func TestSearch(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			i, err := Search(tc.input, tc.sut)
+			i, err := SearchE(tc.input, tc.sut)
 
 			if i != tc.i {
 				t.Errorf("expected resulting index to be %d. got %d", tc.i, i)
@@ -358,7 +358,7 @@ func TestFirst(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			v, err := First(tc.sut)
+			v, err := FirstE(tc.sut)
 
 			if v != tc.v {
 				t.Errorf("expected returned value to be '%s', got '%s'", tc.v, v)
