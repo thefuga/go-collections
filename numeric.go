@@ -1,20 +1,8 @@
 package collections
 
 import (
-	"sort"
-
 	"github.com/thefuga/go-collections/errors"
 )
-
-func Sum[T Number](slice []T) T {
-	var sum T
-
-	for _, v := range slice {
-		sum += v
-	}
-
-	return sum
-}
 
 func AverageE[T Number](slice []T) (T, error) {
 	if len(slice) == 0 {
@@ -27,14 +15,6 @@ func AverageE[T Number](slice []T) (T, error) {
 func Average[T Number](slice []T) T {
 	avg, _ := AverageE(slice)
 	return avg
-}
-
-func First[T Number](slice []T) (T, error) {
-	if len(slice) == 0 {
-		return *new(T), errors.NewEmptyCollectionError()
-	}
-
-	return slice[0], nil
 }
 
 func MinE[T Number](slice []T) (T, error) {
@@ -88,10 +68,4 @@ func Median[T Number](slice []T) float64 {
 	}
 
 	return float64(slice[halfway])
-}
-
-func Sort[T Number](slice []T, f func(current, next T) bool) {
-	sort.Slice(slice, func(i, j int) bool {
-		return f(slice[i], slice[j])
-	})
 }
