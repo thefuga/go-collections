@@ -18,7 +18,7 @@ func Average[T Number](slice []T) T {
 }
 
 func MinE[T Number](slice []T) (T, error) {
-	min, err := First(slice)
+	min, err := FirstE(slice)
 
 	if err != nil {
 		return min, err
@@ -39,7 +39,7 @@ func Min[T Number](slice []T) T {
 }
 
 func MaxE[T Number](slice []T) (T, error) {
-	max, err := First(slice)
+	max, err := FirstE(slice)
 
 	if err != nil {
 		return max, err

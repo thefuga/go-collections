@@ -19,7 +19,7 @@ func TestGet(t *testing.T) {
 			Collection[string]{},
 			0,
 			"",
-			fmt.Errorf("value not found"),
+			fmt.Errorf("value not found: empty collection"),
 		},
 		{
 			"calling Get with out of bounds index",
@@ -39,13 +39,17 @@ func TestGet(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			if v, err := tc.sut.Get(1); !reflect.DeepEqual(v, tc.v) {
-				t.Errorf("expected get value to be '%s'. got '%s'", v, tc.v)
+			getV := tc.sut.Get(1)
+			getVE, err := tc.sut.GetE(1)
 
-				if tc.err != nil {
-					if err == nil || err.Error() != tc.err.Error() {
-						t.Errorf("expect error to be '%s'. got '%s'", tc.err.Error(), err.Error())
-					}
+			if !reflect.DeepEqual(getV, getVE) && !reflect.DeepEqual(getV, tc.v) {
+				t.Errorf("expected get value to be '%s'. got '%s'", getV, tc.v)
+
+			}
+
+			if tc.err != nil {
+				if err == nil || err.Error() != tc.err.Error() {
+					t.Errorf("expect error to be '%s'. got '%s'", tc.err.Error(), err.Error())
 				}
 			}
 		})
@@ -144,8 +148,50 @@ func TestPut(t *testing.T) {
 		})
 	}
 }
-
 func TestPop(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         Collection[string]
+		v           string
+		count       int
+		capacity    int
+	}{
+		{
+			"popping an empty collection",
+			Collection[string]{},
+			"",
+			0,
+			0,
+		},
+		{
+			"popping a collection with items",
+			Collection[string]{"foo", "bar"},
+			"bar",
+			1,
+			2,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			actualV := tc.sut.Pop()
+
+			if actualV != tc.v {
+				t.Errorf("expected %s. got %s", tc.v, actualV)
+			}
+
+			if tc.sut.Count() != tc.count {
+				t.Errorf("expected count after poping to be %d. got %d", tc.count, tc.sut.Count())
+			}
+
+			if tc.sut.Capacity() != tc.capacity {
+				t.Errorf("expected capacity after poping to be %d. got %d", tc.capacity, tc.sut.Capacity())
+			}
+		})
+	}
+}
+
+func TestPopE(t *testing.T) {
 	testCases := []struct {
 		description string
 		sut         Collection[string]
@@ -174,7 +220,7 @@ func TestPop(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			actualV, actualErr := tc.sut.Pop()
+			actualV, actualErr := tc.sut.PopE()
 
 			if actualV != tc.v {
 				t.Errorf("expected %s. got %s", tc.v, actualV)
@@ -230,6 +276,44 @@ func TestSearch(t *testing.T) {
 		sut         Collection[any]
 		input       any
 		i           int
+	}{
+		{
+			"searching on an empty collection",
+			Collection[any]{},
+			"foo",
+			-1,
+		},
+		{
+			"searching an unexisting element",
+			Collection[any]{1, "foo", 1.0},
+			"bar",
+			-1,
+		},
+		{
+			"searching an existing element",
+			Collection[any]{1, "foo", 1.0},
+			"foo",
+			1,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			i := tc.sut.Search(tc.input)
+
+			if i != tc.i {
+				t.Errorf("expected resulting index to be %d. got %d", tc.i, i)
+			}
+		})
+	}
+}
+
+func TestSearchE(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         Collection[any]
+		input       any
+		i           int
 		err         error
 	}{
 		{
@@ -257,7 +341,7 @@ func TestSearch(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			i, err := tc.sut.Search(tc.input)
+			i, err := tc.sut.SearchE(tc.input)
 
 			if i != tc.i {
 				t.Errorf("expected resulting index to be %d. got %d", tc.i, i)
@@ -323,6 +407,35 @@ func TestFirst(t *testing.T) {
 		description string
 		sut         Collection[string]
 		v           string
+	}{
+		{
+			"calling First on an empty collection",
+			Collection[string]{},
+			"",
+		},
+		{
+			"calling first on a collection with values",
+			Collect("foo", "bar", "baz"),
+			"foo",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			v := tc.sut.First()
+
+			if v != tc.v {
+				t.Errorf("expected returned value to be '%s', got '%s'", tc.v, v)
+			}
+		})
+	}
+}
+
+func TestFirstE(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         Collection[string]
+		v           string
 		err         error
 	}{
 		{
@@ -341,7 +454,7 @@ func TestFirst(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			v, err := tc.sut.First()
+			v, err := tc.sut.FirstE()
 
 			if v != tc.v {
 				t.Errorf("expected returned value to be '%s', got '%s'", tc.v, v)
