@@ -140,6 +140,49 @@ func TestPop(t *testing.T) {
 		description string
 		sut         []string
 		v           string
+		count       int
+		capacity    int
+	}{
+		{
+			"popping an empty slice",
+			[]string{},
+			"",
+			0,
+			0,
+		},
+		{
+			"popping a slice with items",
+			[]string{"foo", "bar"},
+			"bar",
+			1,
+			2,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			actualV := Pop(&tc.sut)
+
+			if actualV != tc.v {
+				t.Errorf("expected %s. got %s", tc.v, actualV)
+			}
+
+			if len(tc.sut) != tc.count {
+				t.Errorf("expected count after poping to be %d. got %d", tc.count, len(tc.sut))
+			}
+
+			if cap(tc.sut) != tc.capacity {
+				t.Errorf("expected capacity after poping to be %d. got %d", tc.capacity, cap(tc.sut))
+			}
+		})
+	}
+}
+
+func TestPopE(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         []string
+		v           string
 		err         error
 		count       int
 		capacity    int
@@ -331,6 +374,35 @@ func TestFirst(t *testing.T) {
 }
 
 func TestLast(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         []string
+		v           string
+	}{
+		{
+			"calling Last with an empty slice",
+			[]string{},
+			"",
+		},
+		{
+			"calling last with a slice with values",
+			[]string{"foo", "bar", "baz"},
+			"baz",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			v := Last(tc.sut)
+
+			if v != tc.v {
+				t.Errorf("expected returned value to be '%s', got '%s'", tc.v, v)
+			}
+		})
+	}
+}
+
+func TestLastE(t *testing.T) {
 	testCases := []struct {
 		description string
 		sut         []string
