@@ -14,7 +14,7 @@ func TestCollectSliceMethod(t *testing.T) {
 	collection := CollectSlice(intSlice)
 
 	for k, v := range intSlice {
-		if item, _ := collection.Get(k); item != v {
+		if item := collection.Get(k); item != v {
 			t.Error("The keys weren't preserved!")
 		}
 	}
@@ -26,7 +26,7 @@ func TestCollectMapMethod(t *testing.T) {
 	collection := CollectMap(mapString)
 
 	for k, v := range mapString {
-		if item, _ := collection.Get(k); item != v {
+		if item := collection.Get(k); item != v {
 			t.Error("The keys weren't preserved!")
 		}
 	}
@@ -35,7 +35,7 @@ func TestCollectMapMethod(t *testing.T) {
 func TestGetMethod(t *testing.T) {
 	collection := Collect(1, 2)
 
-	value, err := collection.Get(0)
+	value, err := collection.GetE(0)
 
 	if err != nil {
 		t.Error(err)
@@ -45,7 +45,7 @@ func TestGetMethod(t *testing.T) {
 		t.Error("Wrong value returned!")
 	}
 
-	if _, err = collection.Get(3); err.Error() != "key '3' not found" {
+	if _, err = collection.GetE(3); err.Error() != "key '3' not found" {
 		t.Error(err)
 		t.Error("Getting an unexisting key must return an error!")
 	}
@@ -107,12 +107,12 @@ func TestTap(t *testing.T) {
 	})
 }
 
-func TestSearchMethod(t *testing.T) {
+func TestSearchEMethod(t *testing.T) {
 	items := map[string]any{"foo": "foo", "int": 1, "float": 1.0}
 	collection := CollectMap(items)
 
 	for k, v := range items {
-		foundKey, err := collection.Search(v)
+		foundKey, err := collection.SearchE(v)
 
 		if foundKey != k {
 			t.Error("found key is different than the key corresponding to v")
@@ -123,7 +123,7 @@ func TestSearchMethod(t *testing.T) {
 		}
 	}
 
-	if _, err := collection.Search('a'); err.Error() != "value not found" {
+	if _, err := collection.SearchE('a'); err.Error() != "value not found" {
 		t.Error("searching an unexisting item must return an error")
 	}
 }
@@ -237,7 +237,7 @@ func TestPut(t *testing.T) {
 	// collection.Put("float", 1.0)
 	collection.Put(3, 1.0)
 
-	key, err := collection.Search(1.0)
+	key, err := collection.SearchE(1.0)
 
 	if err != nil {
 		t.Error("Element wasn't inserted")
@@ -247,7 +247,7 @@ func TestPut(t *testing.T) {
 		t.Error("The given key wasn't preserved")
 	}
 
-	if item, _ := collection.Get(key); item != 1.0 {
+	if item := collection.Get(key); item != 1.0 {
 		t.Error("The keys were messed up :/")
 	}
 }
@@ -261,7 +261,7 @@ func TestPushWithIncrementableKeys(t *testing.T) {
 
 	collection.Push(pushedValue)
 
-	key, err := collection.Search(pushedValue)
+	key, err := collection.SearchE(pushedValue)
 
 	if err != nil {
 		t.Error("Element wasn't inserted")
@@ -271,7 +271,7 @@ func TestPushWithIncrementableKeys(t *testing.T) {
 		t.Errorf("Expected last element's key to be %d. Got %d", 3, key)
 	}
 
-	if item, _ := collection.Get(key); item != pushedValue {
+	if item := collection.Get(key); item != pushedValue {
 		t.Error("The keys were messed up :/")
 	}
 }
@@ -284,7 +284,7 @@ func TestPushWithNonIncrementableKeys(t *testing.T) {
 
 	collection.Push(pushedValue)
 
-	_, err := collection.Search(pushedValue)
+	_, err := collection.SearchE(pushedValue)
 
 	if err == nil {
 		t.Error("Element shouldn't have been inserted")
@@ -431,11 +431,11 @@ func TestCombine(t *testing.T) {
 
 	combined := keys.Combine(values)
 
-	if actualFirstName, _ := combined.Get("first_name"); actualFirstName != "Jon" {
+	if actualFirstName := combined.Get("first_name"); actualFirstName != "Jon" {
 		t.Errorf("Expected first name to be %s, got %s", "Jon", actualFirstName)
 	}
 
-	if actualLastName, _ := combined.Get("last_name"); actualLastName != "Doe" {
+	if actualLastName := combined.Get("last_name"); actualLastName != "Doe" {
 		t.Errorf("Expected first name to be %s, got %s", "Doe", actualLastName)
 	}
 
@@ -454,11 +454,11 @@ func TestCombineDiffKeyLengths(t *testing.T) {
 
 	combined := keys.Combine(values)
 
-	if actualFirstName, _ := combined.Get("first_name"); actualFirstName != "Jon" {
+	if actualFirstName := combined.Get("first_name"); actualFirstName != "Jon" {
 		t.Errorf("Expected first name to be %s, got %s", "Jon", actualFirstName)
 	}
 
-	if _, err := combined.Get("last_name"); err == nil {
+	if _, err := combined.GetE("last_name"); err == nil {
 		t.Error("last_name key shouldn't have been combined")
 	}
 }
@@ -628,14 +628,10 @@ func TestMerge(t *testing.T) {
 		"C": "baz",
 	})
 
-	mergedCollection, err := newCollection.Merge(collectionToMerge)
-
-	if err != nil {
-		t.Error("The collection should not have returned an error")
-	}
+	mergedCollection := newCollection.Merge(collectionToMerge)
 
 	for _, v := range []string{"A", "B", "C"} {
-		_, err := mergedCollection.Get(v)
+		_, err := mergedCollection.GetE(v)
 
 		if err != nil {
 			t.Errorf("Expected %v key to be in the collection %v but it was not", v, mergedCollection)
@@ -643,7 +639,7 @@ func TestMerge(t *testing.T) {
 	}
 
 	for _, v := range []string{"foo", "foobar", "baz"} {
-		_, err := mergedCollection.Search(v)
+		_, err := mergedCollection.SearchE(v)
 
 		if err != nil {
 			t.Errorf("Expected %v to be in the collection values %v but it was not", v, mergedCollection)

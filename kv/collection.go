@@ -50,7 +50,7 @@ func Get[K comparable, T, V any](c Collection[K, V], k K) (T, error) {
 		getErr       error
 	)
 
-	genericValue, getErr = c.Get(k)
+	genericValue, getErr = c.GetE(k)
 
 	if getErr != nil {
 		return *new(T), getErr
@@ -72,11 +72,11 @@ func AssertE[T any](from any) (T, error) {
 	return *new(T), errors.NewTypeError[T](&from)
 }
 
-func CountBy[T comparable, K comparable, V any](c Collection[K, V], mapper func(v V) T) map[T]int {
+func CountBy[T comparable, K comparable, V any](c Collection[K, V], f func(v V) T) map[T]int {
 	count := map[T]int{}
 
 	c.Each(func(_ K, v V) {
-		count[mapper(v)]++
+		count[f(v)]++
 	})
 
 	return count
@@ -97,10 +97,14 @@ func (c *Collection[K, V]) Push(v V) Collection[K, V] {
 	return *c
 }
 
-// TODO return error?
 func (c *Collection[K, V]) Pop() V {
+	v, _ := c.PopE()
+	return v
+}
+
+func (c *Collection[K, V]) PopE() (V, error) {
 	if c.IsEmpty() {
-		return *new(V)
+		return *new(V), errors.NewEmptyCollectionError()
 	}
 
 	v := c.Last()
@@ -109,15 +113,19 @@ func (c *Collection[K, V]) Pop() V {
 	c.keys = c.keys[:len(c.keys)-1]
 	delete(c.values, lastKey)
 
-	return v
-
+	return v, nil
 }
 
 func (c Collection[K, V]) IsEmpty() bool {
 	return len(c.keys) == 0
 }
 
-func (c *Collection[K, V]) Get(k K) (V, error) {
+func (c *Collection[K, V]) Get(k K) V {
+	v, _ := c.GetE(k)
+	return v
+}
+
+func (c *Collection[K, V]) GetE(k K) (V, error) {
 	item, found := c.values[k]
 
 	if !found {
@@ -131,47 +139,49 @@ func (c Collection[K, V]) Count() int {
 	return len(c.keys)
 }
 
-func (c Collection[K, V]) Each(closure func(k K, v V)) Collection[K, V] {
+func (c Collection[K, V]) Each(f func(k K, v V)) Collection[K, V] {
 	for _, key := range c.keys {
-		closure(key, c.values[key])
+		f(key, c.values[key])
 	}
 
 	return c
 }
 
-func (c Collection[K, V]) Tap(closure func(Collection[K, V])) Collection[K, V] {
-	closure(c)
-
+func (c Collection[K, V]) Tap(f func(Collection[K, V])) Collection[K, V] {
+	f(c)
 	return c
 }
 
-func (c Collection[K, V]) Search(value V) (K, error) {
-	for _, v := range c.keys {
-		if reflect.DeepEqual(c.values[v], value) {
-			return v, nil
+func (c Collection[K, V]) Search(v V) K {
+	k, _ := c.SearchE(v)
+	return k
+}
+
+func (c Collection[K, V]) SearchE(v V) (K, error) {
+	for _, k := range c.keys {
+		if reflect.DeepEqual(c.values[k], v) {
+			return k, nil
 		}
 	}
 
 	return *new(K), errors.NewValueNotFoundError()
 }
 
-func (c Collection[K, V]) Keys() []K {
-	return c.keys
-}
+func (c Collection[K, V]) Keys() []K { return c.keys }
 
-func (c Collection[K, V]) Sort(closure func(current, next V) bool) Collection[K, V] {
+func (c Collection[K, V]) Sort(f func(current, next V) bool) Collection[K, V] {
 	sort.Slice(c.keys, func(i, j int) bool {
-		return closure(c.values[c.keys[i]], c.values[c.keys[j]])
+		return f(c.values[c.keys[i]], c.values[c.keys[j]])
 	})
 
 	return c
 }
 
-func (c Collection[K, V]) Map(closure func(k K, v V) V) Collection[K, V] {
+func (c Collection[K, V]) Map(f func(k K, v V) V) Collection[K, V] {
 	mappedValues := make(map[K]V)
 
 	c.Each(func(k K, v V) {
-		mappedValues[k] = closure(k, v)
+		mappedValues[k] = f(k, v)
 	})
 
 	return CollectMap(mappedValues)
@@ -181,7 +191,7 @@ func (c Collection[K, V]) Only(keys []K) Collection[K, V] {
 	onlyValues := make(map[K]V)
 
 	for _, key := range keys {
-		value, err := c.Get(key)
+		value, err := c.GetE(key)
 		if err == nil {
 			onlyValues[key] = value
 		}
@@ -190,16 +200,22 @@ func (c Collection[K, V]) Only(keys []K) Collection[K, V] {
 	return CollectMap(onlyValues)
 }
 
-// TODO return V, error?
 func (c Collection[K, V]) First() V {
-	if len(c.keys) == 0 {
-		return *new(V)
-	}
-
-	return c.values[c.keys[0]]
+	first, _ := c.FirstE()
+	return first
 }
 
-func (c Collection[K, V]) FirstOrFail(match collections.Matcher) (any, V, error) {
+func (c Collection[K, V]) FirstE() (V, error) {
+	first, err := collections.FirstE(c.keys)
+
+	if err != nil {
+		return *new(V), err
+	}
+
+	return c.values[first], nil
+}
+
+func (c Collection[K, V]) FirstOrFail(f collections.Matcher) (any, V, error) {
 	var (
 		found bool
 		v     V
@@ -207,7 +223,7 @@ func (c Collection[K, V]) FirstOrFail(match collections.Matcher) (any, V, error)
 	)
 
 	c.Each(func(atK K, atV V) {
-		if !match(atK, atV) {
+		if !f(atK, atV) {
 			return
 		}
 
@@ -223,13 +239,16 @@ func (c Collection[K, V]) FirstOrFail(match collections.Matcher) (any, V, error)
 	return k, v, nil
 }
 
-// TODO return V, err when empty?
-func (c Collection[K, V]) Last() V {
-	if len(c.keys) == 0 {
-		return *new(V)
+func (c Collection[K, V]) Last() V { v, _ := c.LastE(); return v }
+
+func (c Collection[K, V]) LastE() (V, error) {
+	last, err := collections.LastE(c.keys)
+
+	if err != nil {
+		return *new(V), err
 	}
 
-	return c.values[c.keys[len(c.keys)-1]]
+	return c.values[last], nil
 }
 
 func (c Collection[K, V]) ToSlice() []V {
@@ -270,11 +289,11 @@ func (c Collection[K, V]) Concat(concatTo Collection[K, V]) Collection[K, V] {
 	return concatenated
 }
 
-func (c Collection[K, V]) Contains(match collections.Matcher) bool {
+func (c Collection[K, V]) Contains(f collections.Matcher) bool {
 	var contains bool
 
 	c.Each(func(k K, v V) {
-		if match(k, v) {
+		if f(k, v) {
 			contains = true
 			return
 		}
@@ -283,11 +302,11 @@ func (c Collection[K, V]) Contains(match collections.Matcher) bool {
 	return contains
 }
 
-func (c Collection[K, V]) Every(match collections.Matcher) bool {
+func (c Collection[K, V]) Every(f collections.Matcher) bool {
 	contains := true
 
 	c.Each(func(k K, v V) {
-		if !match(k, v) {
+		if !f(k, v) {
 			contains = false
 			return
 		}
@@ -319,20 +338,19 @@ func (c Collection[K, V]) Flip() Collection[K, V] {
 	return c
 }
 
-// TODO remove error return
-func (c Collection[K, V]) Merge(other Collection[K, V]) (Collection[K, V], error) {
+func (c Collection[K, V]) Merge(other Collection[K, V]) Collection[K, V] {
 	other.Each(func(k K, v V) {
 		c.Put(k, v)
 	})
 
-	return c, nil
+	return c
 }
 
-func (c Collection[K, V]) Filter(closure func(k K, v V) bool) Collection[K, V] {
+func (c Collection[K, V]) Filter(f func(k K, v V) bool) Collection[K, V] {
 	values := make(map[K]V)
 
 	c.Each(func(k K, v V) {
-		if closure(k, c.values[k]) {
+		if f(k, c.values[k]) {
 			values[k] = c.values[k]
 		}
 	})
@@ -340,36 +358,48 @@ func (c Collection[K, V]) Filter(closure func(k K, v V) bool) Collection[K, V] {
 	return CollectMap(values)
 }
 
-func (c Collection[K, V]) Reject(closure func(k K, v V) bool) Collection[K, V] {
+func (c Collection[K, V]) Reject(f func(k K, v V) bool) Collection[K, V] {
 	return c.Filter(func(k K, v V) bool {
-		return !closure(k, v)
+		return !f(k, v)
 	})
 }
 
-func (c Collection[K, V]) When(execute bool, closure func(collection Collection[K, V]) Collection[K, V]) Collection[K, V] {
+func (c Collection[K, V]) When(
+	execute bool, f func(collection Collection[K, V]) Collection[K, V],
+) Collection[K, V] {
 	if !execute {
 		return c
 	}
 
-	return closure(c)
+	return f(c)
 }
 
-func (c Collection[K, V]) WhenEmpty(closure func(collection Collection[K, V]) Collection[K, V]) Collection[K, V] {
-	return c.When(c.IsEmpty(), closure)
+func (c Collection[K, V]) WhenEmpty(
+	f func(collection Collection[K, V]) Collection[K, V],
+) Collection[K, V] {
+	return c.When(c.IsEmpty(), f)
 }
 
-func (c Collection[K, V]) WhenNotEmpty(closure func(collection Collection[K, V]) Collection[K, V]) Collection[K, V] {
-	return c.When(!c.IsEmpty(), closure)
+func (c Collection[K, V]) WhenNotEmpty(
+	f func(collection Collection[K, V]) Collection[K, V],
+) Collection[K, V] {
+	return c.When(!c.IsEmpty(), f)
 }
 
-func (c Collection[K, V]) Unless(execute bool, closure func(collection Collection[K, V]) Collection[K, V]) Collection[K, V] {
-	return c.When(!execute, closure)
+func (c Collection[K, V]) Unless(
+	execute bool, f func(collection Collection[K, V]) Collection[K, V],
+) Collection[K, V] {
+	return c.When(!execute, f)
 }
 
-func (c Collection[K, V]) UnlessEmpty(closure func(collection Collection[K, V]) Collection[K, V]) Collection[K, V] {
-	return c.WhenNotEmpty(closure)
+func (c Collection[K, V]) UnlessEmpty(
+	f func(collection Collection[K, V]) Collection[K, V],
+) Collection[K, V] {
+	return c.WhenNotEmpty(f)
 }
 
-func (c Collection[K, V]) UnlessNotEmpty(closure func(collection Collection[K, V]) Collection[K, V]) Collection[K, V] {
-	return c.WhenEmpty(closure)
+func (c Collection[K, V]) UnlessNotEmpty(
+	f func(collection Collection[K, V]) Collection[K, V],
+) Collection[K, V] {
+	return c.WhenEmpty(f)
 }
