@@ -9,20 +9,44 @@ import (
 func TestGet(t *testing.T) {
 	testCases := []struct {
 		description string
-		input       Collection[string]
-		expectation error
+		sut         Collection[string]
+		i           int
+		v           string
+		err         error
 	}{
 		{
 			"empty collection",
 			Collection[string]{},
+			0,
+			"",
 			fmt.Errorf("value not found"),
+		},
+		{
+			"calling Get with out of bounds index",
+			Collect("foo"),
+			2,
+			"",
+			fmt.Errorf("value not found: index out of bounds"),
+		},
+		{
+			"calling Get on a collection with values",
+			Collect("foo", "bar", "baz"),
+			1,
+			"bar",
+			nil,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			if _, err := tc.input.Get(1); !reflect.DeepEqual(err, tc.expectation) {
-				t.Error("")
+			if v, err := tc.sut.Get(1); !reflect.DeepEqual(v, tc.v) {
+				t.Errorf("expected get value to be '%s'. got '%s'", v, tc.v)
+
+				if tc.err != nil {
+					if err == nil || err.Error() != tc.err.Error() {
+						t.Errorf("expect error to be '%s'. got '%s'", tc.err.Error(), err.Error())
+					}
+				}
 			}
 		})
 	}
@@ -365,6 +389,33 @@ func TestLast(t *testing.T) {
 				if err.Error() != tc.err.Error() {
 					t.Errorf("expected error '%s'. got '%s'", tc.err.Error(), err.Error())
 				}
+			}
+		})
+	}
+}
+
+func TestIsEmpty(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         Collection[string]
+		isEmpty     bool
+	}{
+		{
+			"calling IsEmpty on an empty collection",
+			Collection[string]{},
+			true,
+		},
+		{
+			"calling IsEmpty on a collection with values",
+			Collection[string]{"foo"},
+			false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			if isEmpty := tc.sut.IsEmpty(); isEmpty != tc.isEmpty {
+				t.Errorf("expect %v. got %v", tc.isEmpty, isEmpty)
 			}
 		})
 	}
