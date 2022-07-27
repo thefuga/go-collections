@@ -1,10 +1,11 @@
-package collection
+package kv
 
 import (
 	"reflect"
 	"sort"
 	"testing"
 
+	"github.com/thefuga/go-collections"
 	"github.com/thefuga/go-collections/errors"
 )
 
@@ -44,7 +45,7 @@ func TestGetMethod(t *testing.T) {
 		t.Error("Wrong value returned!")
 	}
 
-	if _, err = collection.Get(3); err.Error() != "Key '3' wasn't found in the collection!" {
+	if _, err = collection.Get(3); err.Error() != "key '3' not found" {
 		t.Error(err)
 		t.Error("Getting an unexisting key must return an error!")
 	}
@@ -122,7 +123,7 @@ func TestSearchMethod(t *testing.T) {
 		}
 	}
 
-	if _, err := collection.Search('a'); err.Error() != "Value wasn't found in the collection!" {
+	if _, err := collection.Search('a'); err.Error() != "value not found" {
 		t.Error("searching an unexisting item must return an error")
 	}
 }
@@ -144,7 +145,7 @@ func TestKeys(t *testing.T) {
 func TestSort(t *testing.T) {
 	collection := Collect(3, 2, 1)
 
-	collection.Sort(Asc[int]())
+	collection.Sort(collections.Asc[int]())
 
 	expectedCurrent := 1
 
@@ -466,9 +467,9 @@ func TestConcat(t *testing.T) {
 	collectionA := CollectMap(map[string]string{"foo": "a", "bar": "b"})
 	collectionB := CollectMap(map[string]string{"baz": "c"})
 	expectedCollection := CollectMap(map[string]string{"foo": "a", "bar": "b", "baz": "c"}).
-		Sort(Asc[string]())
+		Sort(collections.Asc[string]())
 
-	concat := collectionA.Concat(collectionB).Sort(Asc[string]())
+	concat := collectionA.Concat(collectionB).Sort(collections.Asc[string]())
 
 	if !reflect.DeepEqual(expectedCollection.values, concat.values) {
 		t.Errorf(
@@ -491,9 +492,9 @@ func TestConcatWithDuplicatedKeys(t *testing.T) {
 	collectionA := CollectMap(map[string]string{"foo": "a", "bar": "b"})
 	collectionB := CollectMap(map[string]string{"foo": "c"})
 	expectedCollection := CollectMap(map[string]string{"foo": "a", "bar": "b"}).
-		Sort(Asc[string]())
+		Sort(collections.Asc[string]())
 
-	concat := collectionA.Concat(collectionB).Sort(Asc[string]())
+	concat := collectionA.Concat(collectionB).Sort(collections.Asc[string]())
 
 	if !reflect.DeepEqual(expectedCollection.values, concat.values) {
 		t.Errorf(
@@ -515,9 +516,9 @@ func TestConcatWithDuplicatedKeys(t *testing.T) {
 func TestConcatWithIntKeys(t *testing.T) {
 	collectionA := Collect("foo", "bar")
 	collectionB := Collect("baz")
-	expectedCollection := Collect("foo", "bar", "baz").Sort(Asc[string]())
+	expectedCollection := Collect("foo", "bar", "baz").Sort(collections.Asc[string]())
 
-	concat := collectionA.Concat(collectionB).Sort(Asc[string]())
+	concat := collectionA.Concat(collectionB).Sort(collections.Asc[string]())
 
 	if !reflect.DeepEqual(expectedCollection.values, concat.values) {
 		t.Errorf(
@@ -539,7 +540,7 @@ func TestConcatWithIntKeys(t *testing.T) {
 func TestContainsKey(t *testing.T) {
 	collection := CollectMap(map[string]string{"foo": "a", "bar": "b"})
 
-	if !collection.Contains(KeyEquals("foo")) {
+	if !collection.Contains(collections.KeyEquals("foo")) {
 		t.Error("collection should contain 'foo' key")
 	}
 }
@@ -547,7 +548,7 @@ func TestContainsKey(t *testing.T) {
 func TestContainsValue(t *testing.T) {
 	collection := CollectMap(map[string]string{"foo": "a", "bar": "b"})
 
-	if !collection.Contains(ValueEquals("a")) {
+	if !collection.Contains(collections.ValueEquals("a")) {
 		t.Error("collection should contain 'a' value")
 	}
 }
@@ -555,13 +556,13 @@ func TestContainsValue(t *testing.T) {
 func TestEvery(t *testing.T) {
 	collection := Collect(2, 2, 2, 2)
 
-	if !collection.Every(ValueEquals(2)) {
+	if !collection.Every(collections.ValueEquals(2)) {
 		t.Error("all elements in the collection are equal")
 	}
 
 	collection.Put(4, 1)
 
-	if collection.Every(ValueEquals(2)) {
+	if collection.Every(collections.ValueEquals(2)) {
 		t.Error("the collection contains a different element")
 	}
 }
@@ -575,7 +576,7 @@ func TestFirstOrFail(t *testing.T) {
 		collection = Collect("foo", "bar")
 	)
 
-	foundKey, foundValue, foundErr = collection.FirstOrFail(ValueEquals("bar"))
+	foundKey, foundValue, foundErr = collection.FirstOrFail(collections.ValueEquals("bar"))
 	if foundKey != 1 || foundValue != "bar" || foundErr != nil {
 		t.Errorf(
 			"Expected %d, %s, %v, got %d, %s, %v",
@@ -584,7 +585,7 @@ func TestFirstOrFail(t *testing.T) {
 		)
 	}
 
-	foundKey, foundValue, foundErr = collection.FirstOrFail(ValueEquals("baz"))
+	foundKey, foundValue, foundErr = collection.FirstOrFail(collections.ValueEquals("baz"))
 	if foundKey != nil || foundValue != "" || foundErr == nil {
 		t.Errorf(
 			"Expected %d, %s, %v, got %d, %s, %v",
@@ -597,13 +598,13 @@ func TestFirstOrFail(t *testing.T) {
 func TestFlip(t *testing.T) {
 	collection := CollectMap(map[string]string{
 		"A": "1", "B": "2", "C": "3",
-	}).Sort(Asc[string]())
+	}).Sort(collections.Asc[string]())
 
 	expectedFlippedCollection := CollectMap(map[string]string{
 		"1": "A", "2": "B", "3": "C",
-	}).Sort(Asc[string]())
+	}).Sort(collections.Asc[string]())
 
-	flippedCollection := collection.Flip().Sort(Asc[string]())
+	flippedCollection := collection.Flip().Sort(collections.Asc[string]())
 
 	if !reflect.DeepEqual(flippedCollection.keys, expectedFlippedCollection.keys) {
 		t.Logf("%v||%v", flippedCollection.keys, expectedFlippedCollection.keys)

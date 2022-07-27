@@ -1,9 +1,10 @@
-package collection
+package kv
 
 import (
 	"reflect"
 	"sort"
 
+	"github.com/thefuga/go-collections"
 	"github.com/thefuga/go-collections/errors"
 )
 
@@ -96,6 +97,7 @@ func (c *Collection[K, V]) Push(v V) Collection[K, V] {
 	return *c
 }
 
+// TODO return error?
 func (c *Collection[K, V]) Pop() V {
 	if c.IsEmpty() {
 		return *new(V)
@@ -188,6 +190,7 @@ func (c Collection[K, V]) Only(keys []K) Collection[K, V] {
 	return CollectMap(onlyValues)
 }
 
+// TODO return V, error?
 func (c Collection[K, V]) First() V {
 	if len(c.keys) == 0 {
 		return *new(V)
@@ -196,7 +199,7 @@ func (c Collection[K, V]) First() V {
 	return c.values[c.keys[0]]
 }
 
-func (c Collection[K, V]) FirstOrFail(match Matcher) (any, V, error) {
+func (c Collection[K, V]) FirstOrFail(match collections.Matcher) (any, V, error) {
 	var (
 		found bool
 		v     V
@@ -220,6 +223,7 @@ func (c Collection[K, V]) FirstOrFail(match Matcher) (any, V, error) {
 	return k, v, nil
 }
 
+// TODO return V, err when empty?
 func (c Collection[K, V]) Last() V {
 	if len(c.keys) == 0 {
 		return *new(V)
@@ -266,7 +270,7 @@ func (c Collection[K, V]) Concat(concatTo Collection[K, V]) Collection[K, V] {
 	return concatenated
 }
 
-func (c Collection[K, V]) Contains(match Matcher) bool {
+func (c Collection[K, V]) Contains(match collections.Matcher) bool {
 	var contains bool
 
 	c.Each(func(k K, v V) {
@@ -279,7 +283,7 @@ func (c Collection[K, V]) Contains(match Matcher) bool {
 	return contains
 }
 
-func (c Collection[K, V]) Every(match Matcher) bool {
+func (c Collection[K, V]) Every(match collections.Matcher) bool {
 	contains := true
 
 	c.Each(func(k K, v V) {
@@ -315,6 +319,7 @@ func (c Collection[K, V]) Flip() Collection[K, V] {
 	return c
 }
 
+// TODO remove error return
 func (c Collection[K, V]) Merge(other Collection[K, V]) (Collection[K, V], error) {
 	other.Each(func(k K, v V) {
 		c.Put(k, v)
