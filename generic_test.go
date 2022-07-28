@@ -536,3 +536,48 @@ func TestCutE(t *testing.T) {
 		})
 	}
 }
+
+func TestDelete(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         []string
+		expected    []string
+		i           int
+		err         error
+	}{
+		{
+			"deleting an unexisting key",
+			[]string{"foo", "bar", "baz"},
+			[]string{"foo", "bar", "baz"},
+			3,
+			fmt.Errorf("index out of bounds"),
+		},
+		{
+			"deleting a valid key",
+			[]string{"foo", "bar", "baz"},
+			[]string{"foo", "baz"},
+			1,
+			nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			err := Delete(&tc.sut, tc.i)
+			if !reflect.DeepEqual(tc.sut, tc.expected) {
+				t.Errorf(
+					"expected slice after deletting the key to be %v. got %v",
+					tc.expected,
+					tc.sut,
+				)
+			}
+
+			if tc.err != nil || err != nil {
+				if tc.err.Error() != err.Error() {
+					t.Errorf("expected error '%s'. got '%s'", tc.err.Error(), err.Error())
+				}
+			}
+		})
+	}
+
+}

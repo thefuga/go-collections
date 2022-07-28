@@ -72,6 +72,7 @@ func PopE[T any](slice *[]T) (T, error) {
 	return v, nil
 }
 
+
 func Last[T any](slice []T) T {
 	v, _ := GetE(len(slice)-1, slice)
 	return v
@@ -146,4 +147,30 @@ func CutE[V any](slice *[]V, i int, optionalJ ...int) ([]V, error) {
 	*slice = (*slice)[:sliceLen-j+i]
 
 	return cutted, nil
+}
+
+func Delete[V any](slice *[]V, i int, optionalJ ...int) error {
+	sliceLen := len(*slice)
+	i, j := bounds(i, optionalJ...)
+	if i >= sliceLen || j >= sliceLen {
+		return errors.NewIndexOutOfBoundsError()
+	}
+
+	copy((*slice)[i:], (*slice)[i+1:])
+	(*slice)[sliceLen-1] = *new(V)
+	(*slice) = (*slice)[:sliceLen-1]
+
+	return nil
+}
+
+func bounds(i int, optionalJ ...int) (int, int) {
+	var j int
+
+	if len(optionalJ) > 0 {
+		j = optionalJ[0]
+	} else {
+		j = i
+	}
+
+	return i, j
 }
