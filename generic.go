@@ -121,7 +121,26 @@ func Sort[T any](slice []T, f func(current, next T) bool) {
 	})
 }
 
+func Cut[V any](slice *[]V, i int, optionalJ ...int) []V {
+	cutted, _ := CutE(slice, i, optionalJ...)
+	return cutted
+}
 
+func CutE[V any](slice *[]V, i int, optionalJ ...int) ([]V, error) {
+	sliceLen := len(*slice)
+	i, j := bounds(i, optionalJ...)
+	if i > sliceLen || j > sliceLen {
+		return nil, errors.NewIndexOutOfBoundsError()
 	}
 
+	cutted := make([]V, j-i)
+	copy(cutted, (*slice)[i:])
+
+	copy((*slice)[i:], (*slice)[j:])
+	for k, n := sliceLen-j+i, sliceLen; k < n; k++ {
+		(*slice)[k] = *new(V)
+	}
+	*slice = (*slice)[:sliceLen-j+i]
+
+	return cutted, nil
 }
