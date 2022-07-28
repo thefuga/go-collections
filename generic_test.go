@@ -127,10 +127,6 @@ func TestPut(t *testing.T) {
 			if len(actual) != len(tc.expectation) {
 				t.Errorf("expected %d. got %d", len(tc.expectation), len(actual))
 			}
-
-			if cap(actual) != cap(tc.expectation) {
-				t.Errorf("expected %d. got %d", cap(tc.expectation), cap(actual))
-			}
 		})
 	}
 }

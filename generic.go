@@ -48,13 +48,10 @@ func Put[T any](i int, v T, slice []T) []T {
 		return slice
 	}
 
-	if cap(slice) < len(slice)+1 {
-		newSlice := make([]T, 0, len(slice)+1)
-		slice = append(newSlice, slice...)
-	}
-
-	slice = append(slice[:i+1], slice[i:]...)
+	slice = append(slice, *new(T))
+	copy(slice[i+1:], slice[i:])
 	slice[i] = v
+
 	return slice
 }
 
