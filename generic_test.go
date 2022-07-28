@@ -435,6 +435,15 @@ func TestLastE(t *testing.T) {
 		})
 	}
 }
+
+func TestCopy(t *testing.T) {
+	from := []string{"foo", "bar", "baz"}
+
+	if to := Copy(from); !reflect.DeepEqual(from, to) {
+		t.Errorf("expected copied slice to be %v. got %v", from, to)
+	}
+}
+
 func TestCut(t *testing.T) {
 	testCases := []struct {
 		description string

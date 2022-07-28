@@ -118,6 +118,12 @@ func Sort[T any](slice []T, f func(current, next T) bool) {
 	})
 }
 
+func Copy[V any](slice []V) []V {
+	copied := make([]V, len(slice))
+	copy(slice, copied)
+	return copied
+}
+
 func Cut[V any](slice *[]V, i int, optionalJ ...int) []V {
 	cutted, _ := CutE(slice, i, optionalJ...)
 	return cutted
