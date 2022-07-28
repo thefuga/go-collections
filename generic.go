@@ -121,12 +121,7 @@ func Sort[T any](slice []T, f func(current, next T) bool) {
 	})
 }
 
-func Sum[T Number](slice []T) T {
-	var sum T
 
-	for _, v := range slice {
-		sum += v
 	}
 
-	return sum
 }

@@ -4,6 +4,16 @@ import (
 	"github.com/thefuga/go-collections/errors"
 )
 
+func Sum[T Number](slice []T) T {
+	var sum T
+
+	for _, v := range slice {
+		sum += v
+	}
+
+	return sum
+}
+
 func AverageE[T Number](slice []T) (T, error) {
 	if len(slice) == 0 {
 		return *new(T), errors.NewEmptyCollectionError()
