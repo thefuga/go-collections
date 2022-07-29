@@ -48,13 +48,10 @@ func Put[T any](i int, v T, slice []T) []T {
 		return slice
 	}
 
-	if cap(slice) < len(slice)+1 {
-		newSlice := make([]T, 0, len(slice)+1)
-		slice = append(newSlice, slice...)
-	}
-
-	slice = append(slice[:i+1], slice[i:]...)
+	slice = append(slice, *new(T))
+	copy(slice[i+1:], slice[i:])
 	slice[i] = v
+
 	return slice
 }
 
@@ -74,6 +71,7 @@ func PopE[T any](slice *[]T) (T, error) {
 
 	return v, nil
 }
+
 
 func Last[T any](slice []T) T {
 	v, _ := GetE(len(slice)-1, slice)
@@ -121,14 +119,60 @@ func Sort[T any](slice []T, f func(current, next T) bool) {
 	})
 }
 
-func Sum[T Number](slice []T) T {
-	var sum T
+func Copy[V any](slice []V) []V {
+	copied := make([]V, len(slice))
+	copy(slice, copied)
+	return copied
+}
 
-	for _, v := range slice {
-		sum += v
+func Cut[V any](slice *[]V, i int, optionalJ ...int) []V {
+	cutted, _ := CutE(slice, i, optionalJ...)
+	return cutted
+}
+
+func CutE[V any](slice *[]V, i int, optionalJ ...int) ([]V, error) {
+	sliceLen := len(*slice)
+	i, j := bounds(i, optionalJ...)
+	if i > sliceLen || j > sliceLen {
+		return nil, errors.NewIndexOutOfBoundsError()
 	}
 
-	return sum
+	cutted := make([]V, j-i)
+	copy(cutted, (*slice)[i:])
+
+	copy((*slice)[i:], (*slice)[j:])
+	for k, n := sliceLen-j+i, sliceLen; k < n; k++ {
+		(*slice)[k] = *new(V)
+	}
+	*slice = (*slice)[:sliceLen-j+i]
+
+	return cutted, nil
+}
+
+func Delete[V any](slice *[]V, i int, optionalJ ...int) error {
+	sliceLen := len(*slice)
+	i, j := bounds(i, optionalJ...)
+	if i >= sliceLen || j >= sliceLen {
+		return errors.NewIndexOutOfBoundsError()
+	}
+
+	copy((*slice)[i:], (*slice)[i+1:])
+	(*slice)[sliceLen-1] = *new(V)
+	(*slice) = (*slice)[:sliceLen-1]
+
+	return nil
+}
+
+func bounds(i int, optionalJ ...int) (int, int) {
+	var j int
+
+	if len(optionalJ) > 0 {
+		j = optionalJ[0]
+	} else {
+		j = i
+	}
+
+	return i, j
 }
 
 func Range[T Number](i, j T) []T {

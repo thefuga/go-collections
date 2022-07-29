@@ -27,7 +27,7 @@ func BenchmarkCollectionGet(b *testing.B) {
 	collectionLen := collection.Count() - 1
 
 	for n := 0; n < b.N; n++ {
-		r, _ = collection.Get(n % collectionLen)
+		r, _ = collection.GetE(n % collectionLen)
 	}
 
 	collectionResult = r

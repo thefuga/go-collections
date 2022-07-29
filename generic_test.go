@@ -127,10 +127,6 @@ func TestPut(t *testing.T) {
 			if len(actual) != len(tc.expectation) {
 				t.Errorf("expected %d. got %d", len(tc.expectation), len(actual))
 			}
-
-			if cap(actual) != cap(tc.expectation) {
-				t.Errorf("expected %d. got %d", cap(tc.expectation), cap(actual))
-			}
 		})
 	}
 }
@@ -438,6 +434,152 @@ func TestLastE(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestCopy(t *testing.T) {
+	from := []string{"foo", "bar", "baz"}
+
+	if to := Copy(from); !reflect.DeepEqual(from, to) {
+		t.Errorf("expected copied slice to be %v. got %v", from, to)
+	}
+}
+
+func TestCut(t *testing.T) {
+	testCases := []struct {
+		description string
+		from        []string
+		expected    []string
+		remaining   []string
+		begin       int
+		end         int
+	}{
+		{
+			"cutting an invalid interval",
+			[]string{"foo", "bar", "baz"},
+			nil,
+			[]string{"foo", "bar", "baz"},
+			4,
+			5,
+		},
+		{
+			"cutting a valid interval",
+			[]string{"foo", "bar", "baz"},
+			[]string{"bar", "baz"},
+			[]string{"foo"},
+			1,
+			3,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			actual := Cut(&tc.from, tc.begin, tc.end)
+
+			if !reflect.DeepEqual(tc.expected, actual) {
+				t.Errorf("expected cutted slice to be %v. got %v", tc.expected, actual)
+			}
+
+			if !reflect.DeepEqual(tc.remaining, tc.from) {
+				t.Errorf("expected remaining slice to be %v. got %v", tc.remaining, tc.from)
+			}
+		})
+	}
+}
+
+func TestCutE(t *testing.T) {
+	testCases := []struct {
+		description string
+		from        []string
+		expected    []string
+		remaining   []string
+		begin       int
+		end         int
+		err         error
+	}{
+		{
+			"cutting an invalid interval",
+			[]string{"foo", "bar", "baz"},
+			nil,
+			[]string{"foo", "bar", "baz"},
+			4,
+			5,
+			fmt.Errorf("index out of bounds"),
+		},
+		{
+			"cutting a valid interval",
+			[]string{"foo", "bar", "baz"},
+			[]string{"bar", "baz"},
+			[]string{"foo"},
+			1,
+			3,
+			nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			actual, err := CutE(&tc.from, tc.begin, tc.end)
+
+			if !reflect.DeepEqual(tc.expected, actual) {
+				t.Errorf("expected cutted slice to be %v. got %v", tc.expected, actual)
+			}
+
+			if !reflect.DeepEqual(tc.remaining, tc.from) {
+				t.Errorf("expected remaining slice to be %v. got %v", tc.remaining, tc.from)
+			}
+
+			if tc.err != nil {
+				if tc.err.Error() != err.Error() {
+					t.Errorf("expected error '%s'. got '%s'", tc.err.Error(), err.Error())
+				}
+			}
+		})
+	}
+}
+
+func TestDelete(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         []string
+		expected    []string
+		i           int
+		err         error
+	}{
+		{
+			"deleting an unexisting key",
+			[]string{"foo", "bar", "baz"},
+			[]string{"foo", "bar", "baz"},
+			3,
+			fmt.Errorf("index out of bounds"),
+		},
+		{
+			"deleting a valid key",
+			[]string{"foo", "bar", "baz"},
+			[]string{"foo", "baz"},
+			1,
+			nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			err := Delete(&tc.sut, tc.i)
+			if !reflect.DeepEqual(tc.sut, tc.expected) {
+				t.Errorf(
+					"expected slice after deletting the key to be %v. got %v",
+					tc.expected,
+					tc.sut,
+				)
+			}
+
+			if tc.err != nil || err != nil {
+				if tc.err.Error() != err.Error() {
+					t.Errorf("expected error '%s'. got '%s'", tc.err.Error(), err.Error())
+				}
+			}
+		})
+	}
+
 }
 
 func TestRange(t *testing.T) {
