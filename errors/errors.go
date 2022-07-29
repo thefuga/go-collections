@@ -55,3 +55,9 @@ func wrap(format string, args []any, cause []error) error {
 
 	return fmt.Errorf(msg)
 }
+
+type InvalidArgumentError error
+
+func NewInvalidArgumentError(cause ...error) InvalidArgumentError {
+	return wrap("invalid argument", nil, cause)
+}
