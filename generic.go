@@ -185,17 +185,17 @@ func Range[T Integer](i, j T) []T {
 		h = i
 	}
 
-	slice := make([]T, h-l+1)
+	values := make([]T, h-l+1)
 
-	for k := range slice {
+	for k := range values {
 		if i < j {
-			slice[k] = l
+			values[k] = l
 			l++
 		} else {
-			slice[k] = h
+			values[k] = h
 			h--
 		}
 	}
 
-	return slice
+	return values
 }
