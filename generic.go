@@ -122,8 +122,8 @@ func SearchE[T any](v T, slice []T) (int, error) {
 func Map[T any](f func(i int, v T) T, slice []T) []T {
 	mappedValues := make([]T, 0, len(slice))
 
-	Each(func(_ int, v T) {
-		mappedValues = Push(v, mappedValues)
+	Each(func(i int, v T) {
+		mappedValues = Push(f(i, v), mappedValues)
 	}, slice)
 
 	return mappedValues

@@ -324,8 +324,12 @@ func TestMap(t *testing.T) {
 		t.Run(tc.description, func(t *testing.T) {
 			mappedCollection := Map(f, tc.sut)
 
-			if !reflect.DeepEqual(mappedCollection, tc.sut) {
-				t.Errorf("expected mapped collection to be %v. got %v", tc.mappedCollection, mappedCollection)
+			if !reflect.DeepEqual(mappedCollection, tc.mappedCollection) {
+				t.Errorf(
+					"expected mapped collection to be %v. got %v",
+					tc.mappedCollection,
+					mappedCollection,
+				)
 			}
 		})
 	}

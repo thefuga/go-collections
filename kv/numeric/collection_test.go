@@ -1,6 +1,8 @@
 package numeric
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestAverageInts(t *testing.T) {
 	collection := Collect(1, 2, 3, 4, 5)
