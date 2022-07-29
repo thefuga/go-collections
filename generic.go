@@ -72,6 +72,22 @@ func PopE[T any](slice *[]T) (T, error) {
 	return v, nil
 }
 
+func Shift[T any](slice *[]T) T {
+	v, _ := ShiftE(slice)
+	return v
+}
+
+func ShiftE[T any](slice *[]T) (T, error) {
+	v, err := FirstE(*slice)
+
+	if err != nil {
+		return v, err
+	}
+
+	*slice = (*slice)[1:]
+
+	return v, nil
+}
 
 func Last[T any](slice []T) T {
 	v, _ := GetE(len(slice)-1, slice)

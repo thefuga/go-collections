@@ -581,3 +581,90 @@ func TestDelete(t *testing.T) {
 	}
 
 }
+
+func TestShift(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         []string
+		remaining   []string
+		length      int
+		v           string
+	}{
+		{
+			"shifting an empty slice",
+			[]string{},
+			[]string{},
+			0,
+			"",
+		},
+		{
+			"shifting a slice with values",
+			[]string{"foo", "bar", "baz"},
+			[]string{"bar", "baz"},
+			2,
+			"foo",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			v := Shift(&tc.sut)
+
+			if v != tc.v {
+				t.Errorf("expected returned value to be '%s'. got %s", tc.v, v)
+			}
+
+			if length := len(tc.sut); length != tc.length {
+				t.Errorf("expected sut lenght to be %d. got %d", tc.length, length)
+			}
+		})
+	}
+}
+
+func TestShiftE(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         []string
+		remaining   []string
+		length      int
+		v           string
+		err         error
+	}{
+		{
+			"shifting an empty slice",
+			[]string{},
+			[]string{},
+			0,
+			"",
+			fmt.Errorf("value not found: empty collection"),
+		},
+		{
+			"shifting a slice with values",
+			[]string{"foo", "bar", "baz"},
+			[]string{"bar", "baz"},
+			2,
+			"foo",
+			nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			v, err := ShiftE(&tc.sut)
+
+			if v != tc.v {
+				t.Errorf("expected returned value to be '%s'. got %s", tc.v, v)
+			}
+
+			if length := len(tc.sut); length != tc.length {
+				t.Errorf("expected sut lenght to be %d. got %d", tc.length, length)
+			}
+
+			if tc.err != nil || err != nil {
+				if tc.err.Error() != err.Error() {
+					t.Errorf("expected error '%s'. got '%s'", tc.err.Error(), err.Error())
+				}
+			}
+		})
+	}
+}
