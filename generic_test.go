@@ -439,3 +439,52 @@ func TestLastE(t *testing.T) {
 		})
 	}
 }
+
+func TestRange(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         []int
+		v           []int
+	}{
+		{
+			"range between unsigned integers",
+			[]int{1, 5},
+			[]int{1, 2, 3, 4, 5},
+		},
+		{
+			"range inverted between unsigned integers",
+			[]int{5, 1},
+			[]int{5, 4, 3, 2, 1},
+		},
+		{
+			"range between negative signed integers",
+			[]int{-5, -1},
+			[]int{-5, -4, -3, -2, -1},
+		},
+		{
+			"range inverted between negative signed integers",
+			[]int{-1, -5},
+			[]int{-1, -2, -3, -4, -5},
+		},
+		{
+			"range between signed and unsigned integers",
+			[]int{-1, 1},
+			[]int{-1, 0, 1},
+		},
+		{
+			"range inverted between signed and unsigned integers",
+			[]int{1, -1},
+			[]int{1, 0, -1},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			v := Range[int](tc.sut[0], tc.sut[1])
+
+			if !reflect.DeepEqual(v, tc.v) {
+				t.Errorf("expected slice to be %v. got %v", tc.v, v)
+			}
+		})
+	}
+}
