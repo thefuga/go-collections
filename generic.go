@@ -130,3 +130,29 @@ func Sum[T Number](slice []T) T {
 
 	return sum
 }
+
+func Range[T Number](i, j T) []T {
+	var l, h T
+
+	if i < j {
+		l = i
+		h = j
+	} else {
+		l = j
+		h = i
+	}
+
+	slice := make([]T, h-l+1)
+
+	for k := range slice {
+		if i < j {
+			slice[k] = l
+			l++
+		} else {
+			slice[k] = h
+			h--
+		}
+	}
+
+	return slice
+}
