@@ -178,13 +178,13 @@ func (c Collection[K, V]) Sort(f func(current, next V) bool) Collection[K, V] {
 }
 
 func (c Collection[K, V]) Map(f func(k K, v V) V) Collection[K, V] {
-	mappedValues := make(map[K]V)
+	mappedValues := makeCollection[K, V](c.Count())
 
 	c.Each(func(k K, v V) {
-		mappedValues[k] = f(k, v)
+		mappedValues.Put(k, f(k, v))
 	})
 
-	return CollectMap(mappedValues)
+	return mappedValues
 }
 
 func (c Collection[K, V]) Only(keys []K) Collection[K, V] {

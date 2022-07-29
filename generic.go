@@ -72,6 +72,23 @@ func PopE[T any](slice *[]T) (T, error) {
 	return v, nil
 }
 
+func Shift[T any](slice *[]T) T {
+	v, _ := ShiftE(slice)
+	return v
+}
+
+func ShiftE[T any](slice *[]T) (T, error) {
+	v, err := FirstE(*slice)
+
+	if err != nil {
+		return v, err
+	}
+
+	*slice = (*slice)[1:]
+
+	return v, nil
+}
+
 func Last[T any](slice []T) T {
 	v, _ := GetE(len(slice)-1, slice)
 	return v
@@ -105,8 +122,8 @@ func SearchE[T any](v T, slice []T) (int, error) {
 func Map[T any](f func(i int, v T) T, slice []T) []T {
 	mappedValues := make([]T, 0, len(slice))
 
-	Each(func(_ int, v T) {
-		mappedValues = Push(v, mappedValues)
+	Each(func(i int, v T) {
+		mappedValues = Push(f(i, v), mappedValues)
 	}, slice)
 
 	return mappedValues

@@ -391,7 +391,7 @@ func TestMap(t *testing.T) {
 		t.Run(tc.description, func(t *testing.T) {
 			mappedCollection := tc.sut.Map(f)
 
-			if !reflect.DeepEqual(mappedCollection, tc.sut) {
+			if !reflect.DeepEqual(mappedCollection, tc.mappedCollection) {
 				t.Errorf("expected mapped collection to be %v. got %v", tc.mappedCollection, mappedCollection)
 			}
 		})
