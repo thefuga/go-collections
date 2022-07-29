@@ -1,8 +1,11 @@
 package kv
 
 import (
+	"fmt"
+	"math/rand"
 	"reflect"
 	"sort"
+	"time"
 
 	"github.com/thefuga/go-collections"
 	"github.com/thefuga/go-collections/errors"
@@ -402,4 +405,34 @@ func (c Collection[K, V]) UnlessNotEmpty(
 	f func(collection Collection[K, V]) Collection[K, V],
 ) Collection[K, V] {
 	return c.WhenEmpty(f)
+}
+
+func (c Collection[K, V]) Random(v ...int) Collection[int, V] {
+	n := 1
+	if len(v) > 0 {
+		n = v[0]
+	}
+
+	values, _ := c.RandomE(n)
+
+	return CollectSlice(values)
+}
+
+func (c Collection[K, V]) RandomE(n int) ([]V, error) {
+	cLen := len(c.values)
+
+	if n > cLen {
+		return nil, errors.NewInvalidArgumentError(
+			fmt.Errorf("you requested %d items, but there are only %d items available", n, cLen),
+		)
+	}
+
+	rand.Seed(time.Now().Unix())
+
+	values := make([]V, n)
+	for i := 0; i < n; i++ {
+		values[i] = c.Get(c.keys[rand.Intn(cLen)])
+	}
+
+	return values, nil
 }
