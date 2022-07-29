@@ -74,7 +74,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] pull
 - [x] push
 - [x] put
-- [ ] random
+- [x] random
 - [ ] range
 - [ ] reduce
 - [ ] reduceSpread
