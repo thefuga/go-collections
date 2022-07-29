@@ -840,3 +840,22 @@ func TestUnlessNotEmpty(t *testing.T) {
 		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
 	}
 }
+
+func TestRandom(t *testing.T) {
+	comparableValues := []string{"a", "b", "c", "d", "e"}
+	expectedLength := 2
+	collection := CollectMap[int, string](map[int]string{1: "a", 2: "b", 3: "c", 4: "d", 5: "e"})
+	newCollection := collection.Random(expectedLength)
+
+	if len(newCollection.values) != expectedLength {
+		t.Errorf("expected len %v. Got %v", expectedLength, len(newCollection.values))
+	}
+
+	for _, cv := range newCollection.values {
+		_, err := collections.SearchE(cv, comparableValues)
+
+		if err != nil {
+			t.Errorf("expected only the values that are in %v. Got %v", comparableValues, newCollection.values)
+		}
+	}
+}
