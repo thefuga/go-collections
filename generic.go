@@ -72,7 +72,6 @@ func PopE[T any](slice *[]T) (T, error) {
 	return v, nil
 }
 
-
 func Last[T any](slice []T) T {
 	v, _ := GetE(len(slice)-1, slice)
 	return v
@@ -175,7 +174,7 @@ func bounds(i int, optionalJ ...int) (int, int) {
 	return i, j
 }
 
-func Range[T Number](i, j T) []T {
+func Range[T Integer](i, j T) []T {
 	var l, h T
 
 	if i < j {
