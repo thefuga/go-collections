@@ -34,7 +34,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] flatMap
 - [ ] flatten
 - [x] flip
-- [ ] forget
+- [x] forget
 - [ ] forPage
 - [x] get
 - [ ] groupBy
