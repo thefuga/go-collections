@@ -88,7 +88,6 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] skip
 - [ ] skipUntil
 - [ ] skipWhile
-- [ ] slice
 - [ ] sliding
 - [ ] sole
 - [x] sort 
@@ -98,6 +97,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] sortKeys
 - [ ] sortKeysDesc
 - [ ] sortKeysUsing
+- [ ] splice
 - [ ] split
 - [ ] splitIn
 - [ ] sum
