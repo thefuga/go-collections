@@ -44,3 +44,10 @@ func BenchmarkCollectionPush(b *testing.B) {
 		collection.Push(n)
 	}
 }
+
+func BenchmarkCollectionForget(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		collection.Forget(n)
+	}
+
+}
