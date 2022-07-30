@@ -91,7 +91,6 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] slice
 - [ ] sliding
 - [ ] sole
-- [ ] some
 - [x] sort 
 - [ ] sortBy
 - [ ] sortByDesc
@@ -99,7 +98,6 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] sortKeys
 - [ ] sortKeysDesc
 - [ ] sortKeysUsing
-- [ ] splice
 - [ ] split
 - [ ] splitIn
 - [ ] sum
