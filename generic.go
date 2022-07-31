@@ -187,6 +187,23 @@ func Tally[T comparable](slice []T) map[T]int {
 	return m
 }
 
+// Mode returns the values that appear most often in the slice. Order is not guaranteed.
+func Mode[T comparable](slice []T) []T {
+	maxCount := 0
+	mode := []T{}
+
+	for v, count := range Tally(slice) {
+		if count > maxCount {
+			maxCount = count
+			mode = []T{v}
+		} else if count == maxCount {
+			mode = append(mode, v)
+		}
+	}
+
+	return mode
+}
+
 func bounds(i int, optionalJ ...int) (int, int) {
 	var j int
 

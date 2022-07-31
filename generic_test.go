@@ -693,3 +693,24 @@ func TestTally(t *testing.T) {
 		})
 	}
 }
+
+func TestMode(t *testing.T) {
+	testCases := []struct {
+		name     string
+		slice    []int
+		expected []int
+	}{
+		{"empty", []int{}, []int{}},
+		{"1,2,3", []int{1, 2, 3}, []int{1, 2, 3}},
+		{"1,2,1", []int{1, 2, 1}, []int{1}},
+		{"1,3,3,1", []int{1, 3, 3, 1}, []int{1, 3}},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if actual := Mode(tc.slice); !reflect.DeepEqual(Tally(actual), Tally(tc.expected)) {
+				t.Errorf("expected '%v'. Got '%v'", tc.expected, actual)
+			}
+		})
+	}
+}
