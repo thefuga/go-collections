@@ -672,3 +672,24 @@ func TestShiftE(t *testing.T) {
 		})
 	}
 }
+
+func TestTally(t *testing.T) {
+	testCases := []struct {
+		name     string
+		slice    []int
+		expected map[int]int
+	}{
+		{"empty", []int{}, map[int]int{}},
+		{"1,2,3", []int{1, 2, 3}, map[int]int{1: 1, 2: 1, 3: 1}},
+		{"1,2,1", []int{1, 2, 1}, map[int]int{1: 2, 2: 1}},
+		{"1,3,3,7", []int{1, 3, 3, 7}, map[int]int{1: 1, 3: 2, 7: 1}},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if actual := Tally(tc.slice); !reflect.DeepEqual(actual, tc.expected) {
+				t.Errorf("expected '%v'. Got '%v'", tc.expected, actual)
+			}
+		})
+	}
+}

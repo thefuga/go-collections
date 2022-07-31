@@ -179,6 +179,14 @@ func Delete[V any](slice *[]V, i int, optionalJ ...int) error {
 	return nil
 }
 
+func Tally[T comparable](slice []T) map[T]int {
+	m := map[T]int{}
+	for _, v := range slice {
+		m[v]++
+	}
+	return m
+}
+
 func bounds(i int, optionalJ ...int) (int, int) {
 	var j int
 
