@@ -111,7 +111,7 @@ func ExampleCollection_Keys() {
 func ExampleCollection_Sort() {
 	collection := Collect(3, 2, 1)
 
-	collection.Sort(collections.Asc[int]())
+	collection.Sort(collections.Asc[int]()) // just to assert the output correctly, ignore it
 
 	fmt.Printf("%v", collection.First())
 	// Output:
@@ -141,7 +141,7 @@ func ExampleCollection_Only() {
 func ExampleCollection_First() {
 	c := CollectMap(map[string]int{"foo": 123, "bar": 456})
 
-	c.Sort(collections.Asc[int]())
+	c.Sort(collections.Asc[int]()) // just to assert the output correctly, ignore it
 
 	fmt.Printf("%v", c.First())
 	// Output:
@@ -223,7 +223,7 @@ func ExampleCollection_Every() {
 func ExampleCollection_Flip() {
 	c := CollectMap(map[string]int{"foo": 123, "bar": 456, "baz": 789})
 
-	c = c.Sort(collections.Asc[int]())
+	c = c.Sort(collections.Asc[int]()) // just to assert the output correctly, ignore it
 
 	flippedCollection := c.Flip()
 
@@ -264,7 +264,7 @@ func ExampleCollection_Reject() {
 		return v > 2
 	})
 
-	rejectedCollection.Sort(collections.Asc[int]())
+	rejectedCollection.Sort(collections.Asc[int]()) // just to assert the output correctly, ignore it
 
 	fmt.Printf("%v", rejectedCollection.ToSlice())
 	// Output:
