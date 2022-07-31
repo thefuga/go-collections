@@ -179,9 +179,9 @@ func Delete[V any](slice *[]V, i int, optionalJ ...int) error {
 	return nil
 }
 
-func Tally[T comparable](slice *[]T) map[T]int {
+func Tally[T comparable](slice []T) map[T]int {
 	m := map[T]int{}
-	for _, v := range *slice {
+	for _, v := range slice {
 		m[v]++
 	}
 	return m
