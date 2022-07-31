@@ -22,7 +22,7 @@ func buildIntSlice(n int) []int {
 	return slice
 }
 
-func BenchmarkSliceColletionPush(b *testing.B) {
+func BenchmarkSliceCollectionPush(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		sliceCollection = sliceCollection.Push(n)
 	}

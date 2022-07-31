@@ -34,7 +34,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] flatMap
 - [ ] flatten
 - [x] flip
-- [ ] forget
+- [x] forget
 - [ ] forPage
 - [x] get
 - [ ] groupBy
@@ -88,10 +88,8 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] skip
 - [ ] skipUntil
 - [ ] skipWhile
-- [ ] slice
 - [ ] sliding
 - [ ] sole
-- [ ] some
 - [x] sort 
 - [ ] sortBy
 - [ ] sortByDesc

@@ -687,7 +687,7 @@ func TestTally(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if actual := Tally(&tc.slice); !reflect.DeepEqual(actual, tc.expected) {
+			if actual := Tally(tc.slice); !reflect.DeepEqual(actual, tc.expected) {
 				t.Errorf("expected '%v'. Got '%v'", tc.expected, actual)
 			}
 		})
@@ -708,7 +708,7 @@ func TestMode(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if actual := Mode(&tc.slice); !reflect.DeepEqual(Tally(&actual), Tally(&tc.expected)) {
+			if actual := Mode(&tc.slice); !reflect.DeepEqual(Tally(actual), Tally(tc.expected)) {
 				t.Errorf("expected '%v'. Got '%v'", tc.expected, actual)
 			}
 		})

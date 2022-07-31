@@ -179,9 +179,9 @@ func Delete[V any](slice *[]V, i int, optionalJ ...int) error {
 	return nil
 }
 
-func Tally[T comparable](slice *[]T) map[T]int {
+func Tally[T comparable](slice []T) map[T]int {
 	m := map[T]int{}
-	for _, v := range *slice {
+	for _, v := range slice {
 		m[v]++
 	}
 	return m
@@ -192,7 +192,7 @@ func Mode[T comparable](slice *[]T) []T {
 	maxCount := 0
 	mode := []T{}
 
-	for v, count := range Tally(slice) {
+	for v, count := range Tally(*slice) {
 		if count > maxCount {
 			maxCount = count
 			mode = []T{v}
