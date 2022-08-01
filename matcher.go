@@ -64,6 +64,55 @@ func FieldMatch[V any](field string, matcher Matcher) Matcher {
 		return false
 	}
 }
+
+func And[V any](matchers ...Matcher) Matcher {
+	return func(i any, collectionValue any) bool {
+		match := true
+
+		for _, matcher := range matchers {
+			match = match && matcher(i, collectionValue)
+		}
+
+		return match
+	}
+}
+
+func AndValue[V any](v V, matchers ...func(V) Matcher) Matcher {
+	return func(i any, collectionValue any) bool {
+		match := true
+
+		for _, matcher := range matchers {
+			match = match && matcher(v)(i, collectionValue)
+		}
+
+		return match
+	}
+}
+
+func Or[V any](matchers ...Matcher) Matcher {
+	return func(i any, collectionValue any) bool {
+		match := true
+
+		for _, matcher := range matchers {
+			match = match || matcher(i, collectionValue)
+		}
+
+		return match
+	}
+}
+
+func OrValue[V any](v V, matchers ...func(V) Matcher) Matcher {
+	return func(i any, collectionValue any) bool {
+		match := true
+
+		for _, matcher := range matchers {
+			match = match || matcher(v)(i, collectionValue)
+		}
+
+		return match
+	}
+}
+
 func Asc[T Relational]() func(T, T) bool {
 	return func(current, next T) bool {
 		return current < next
