@@ -727,6 +727,23 @@ func TestReject(t *testing.T) {
 	}
 }
 
+func TestForget(t *testing.T) {
+	collection := CollectMap(map[string]int{"foo": 1, "bar": 2})
+
+	key := "foo"
+
+	newCollection, err := collection.Forget(key)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if _, err = newCollection.GetE(key); err == nil {
+		t.Errorf("The key %v must does not exist on collection %v", key, newCollection)
+
+	}
+}
+
 func TestWhen(t *testing.T) {
 	collection := CollectMap(map[string]string{"foo": "foo"})
 	expectedNewCollection := CollectMap(map[string]string{"foo": "foo", "bar": "bar"})

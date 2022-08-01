@@ -403,3 +403,17 @@ func (c Collection[K, V]) UnlessNotEmpty(
 ) Collection[K, V] {
 	return c.WhenEmpty(f)
 }
+
+func (c Collection[K, V]) Forget(k K) (Collection[K, V], error) {
+	for i, v := range c.keys {
+		if v == k {
+			c.keys[i] = c.keys[len(c.keys)-1]
+			c.keys = c.keys[:len(c.keys)-1]
+			break
+		}
+	}
+
+	delete(c.values, k)
+
+	return c, nil
+}
