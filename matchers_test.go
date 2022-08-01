@@ -51,3 +51,19 @@ func TestDesc(t *testing.T) {
 		t.Error("1 is lesser than 2")
 	}
 }
+
+func TestFieldEquals(t *testing.T) {
+	u := user{Name: "Jon", Email: "jon@collections.go", Age: 33}
+
+	if !FieldEquals[user]("Name", u.Name)(0, u) {
+		t.Error("user should've matched")
+	}
+}
+
+func TestFieldMatch(t *testing.T) {
+	u := user{Name: "Jon", Email: "jon@collections.go", Age: 33}
+
+	if !FieldMatch[user]("Age", ValueGT(30))(0, u) {
+		t.Error("user should've matched")
+	}
+}
