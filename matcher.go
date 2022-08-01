@@ -22,6 +22,24 @@ func ValueDiffers(value any) Matcher {
 	}
 }
 
+func ValueGT[T Number](value T) Matcher {
+	return func(_ any, collectionValue any) bool {
+		if cast, ok := collectionValue.(T); ok {
+			return value < cast
+		}
+		return false
+	}
+}
+
+func ValueLT[T Number](value T) Matcher {
+	return func(_ any, collectionValue any) bool {
+		if cast, ok := collectionValue.(T); ok {
+			return value > cast
+		}
+		return false
+	}
+}
+
 func Asc[T Relational]() func(T, T) bool {
 	return func(current, next T) bool {
 		return current < next
