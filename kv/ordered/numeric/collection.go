@@ -2,15 +2,15 @@ package numeric
 
 import (
 	"github.com/thefuga/go-collections"
-	"github.com/thefuga/go-collections/kv"
+	"github.com/thefuga/go-collections/kv/ordered"
 )
 
 type Collection[K comparable, V collections.Number] struct {
-	kv.Collection[K, V]
+	ordered.Collection[K, V]
 }
 
 func Collect[K collections.Number](n ...K) Collection[int, K] {
-	return Collection[int, K]{kv.Collect(n...)}
+	return Collection[int, K]{ordered.Collect(n...)}
 }
 
 func (c Collection[K, V]) Average() V {
