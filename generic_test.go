@@ -567,7 +567,7 @@ func TestDelete(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			err := Delete(&tc.sut, tc.i)
+			err := DeleteE(&tc.sut, tc.i)
 			if !reflect.DeepEqual(tc.sut, tc.expected) {
 				t.Errorf(
 					"expected slice after deletting the key to be %v. got %v",

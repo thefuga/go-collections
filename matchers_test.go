@@ -51,3 +51,46 @@ func TestDesc(t *testing.T) {
 		t.Error("1 is lesser than 2")
 	}
 }
+
+func TestAssert(t *testing.T) {
+	var concreteType string
+	defer func() {
+		if assertionErr := recover(); assertionErr != nil {
+			t.Error("Unexpected error casting value.")
+		}
+	}()
+
+	underlyingValue := "generic value"
+	var genericType any = underlyingValue
+
+	concreteType, _ = Assert[string](genericType)
+
+	if concreteType != underlyingValue {
+		t.Error("Expected concreteType to have the value of underlyingValue")
+	}
+}
+
+func TestAssertE(t *testing.T) {
+	underlyingValue := "generic value"
+	var genericType any = underlyingValue
+
+	concreteType, assertionErr := AssertE[string](genericType)
+
+	if assertionErr != nil {
+		t.Error("Unexpected error casting value.")
+	}
+
+	if concreteType != underlyingValue {
+		t.Error("Expected concreteType to have the value of underlyingValue")
+	}
+
+	zeroValue, assertionErr := AssertE[int](genericType)
+
+	if zeroValue != 0 {
+		t.Error("Cast value should be zeroed when an invalid type is given")
+	}
+
+	if assertionErr.Error() != "interface conversion: interface {} is string, not int" {
+		t.Error("Trying to get a value with the wrong type parameter must return a type error!")
+	}
+}
