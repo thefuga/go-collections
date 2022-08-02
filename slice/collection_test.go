@@ -488,7 +488,7 @@ func TestLast(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			v, err := tc.sut.Last()
+			v, err := tc.sut.LastE()
 
 			if v != tc.v {
 				t.Errorf("expected returned value to be '%s', got '%s'", tc.v, v)

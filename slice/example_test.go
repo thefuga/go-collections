@@ -55,7 +55,7 @@ func ExampleCollection_First() {
 
 func ExampleCollection_Last() {
 	c := Collection[int]{1, 2, 3, 4}
-	last, _ := c.Last()
+	last := c.Last()
 	fmt.Printf("%v", last)
 	// Output:
 	// 4

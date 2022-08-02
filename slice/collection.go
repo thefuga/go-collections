@@ -38,7 +38,9 @@ func (c Collection[V]) First() V { return collections.First(c) }
 
 func (c Collection[V]) FirstE() (V, error) { return collections.FirstE(c) }
 
-func (c Collection[V]) Last() (V, error) { return collections.LastE(c) }
+func (c Collection[V]) Last() V { return collections.Last(c) }
+
+func (c Collection[V]) LastE() (V, error) { return collections.LastE(c) }
 
 func (c Collection[V]) Each(f func(i int, v V)) Collection[V] {
 	collections.Each(f, c)
@@ -53,4 +55,8 @@ func (c Collection[V]) Sort(f func(current, next V) bool) Collection[V] {
 func (c Collection[V]) Tap(f func(Collection[V])) Collection[V] {
 	f(c)
 	return c
+}
+
+func (c *Collection[V]) ForgetE(i int) error {
+	return collections.ForgetE((*[]V)(c), i)
 }
