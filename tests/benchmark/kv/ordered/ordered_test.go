@@ -1,23 +1,23 @@
-package kv
+package ordered
 
 import (
 	"testing"
 
-	"github.com/thefuga/go-collections/kv"
+	"github.com/thefuga/go-collections/kv/ordered"
 	"github.com/thefuga/go-collections/tests/benchmark"
 )
 
 var (
-	collection       = kv.CollectSlice(benchmark.BuildIntSlice())
-	collectResult    kv.Collection[int, int]
+	collection       = ordered.CollectSlice(benchmark.BuildIntSlice())
+	collectResult    ordered.Collection[int, int]
 	collectionResult int
 )
 
 func BenchmarkCollect(b *testing.B) {
-	var r kv.Collection[int, int]
+	var r ordered.Collection[int, int]
 
 	for n := 0; n < b.N; n++ {
-		r = kv.CollectSlice(benchmark.BuildIntSlice())
+		r = ordered.CollectSlice(benchmark.BuildIntSlice())
 	}
 	collectResult = r
 }
@@ -47,7 +47,7 @@ func BenchmarkCollectionPush(b *testing.B) {
 
 func BenchmarkCollectionForget(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		collection.Forget(n)
+		collection.ForgetE(n)
 	}
 
 }
