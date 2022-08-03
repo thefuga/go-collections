@@ -1,7 +1,6 @@
 package kv
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/thefuga/go-collections"
@@ -32,26 +31,15 @@ func CollectMap[K comparable, V any](items map[K]V) Collection[K, V] {
 func Combine[K comparable, V any](
 	keys slice.Collection[K], values slice.Collection[V],
 ) Collection[K, V] {
-	if keys.Count() != values.Count() {
-		return nil
-	}
-
-	count := keys.Count()
-
-	collection := make(Collection[K, V], keys.Count())
-
-	for i := 0; i < count; i++ {
-		collection.Put(keys.Get(i), values.Get(i))
-	}
-
-	return collection
+	c, _ := CombineE(keys, values)
+	return c
 }
 
 func CombineE[K comparable, V any](
 	keys slice.Collection[K], values slice.Collection[V],
 ) (Collection[K, V], error) {
 	if keys.Count() != values.Count() {
-		return nil, fmt.Errorf("") // TODO new  error
+		return nil, errors.NewKeysValuesLengthMismatch()
 	}
 
 	count := keys.Count()
@@ -139,20 +127,22 @@ func (c Collection[K, V]) Keys() slice.Collection[K] {
 	keys := make(slice.Collection[K], 0, c.Count())
 
 	c.Each(func(k K, _ V) {
-		keys.Push(k)
+		keys = keys.Push(k)
 	})
 
 	return keys
 }
 
-func (c Collection[K, V]) Values() slice.Collection[V] {
+func (c Collection[K, V]) KeysValues() (slice.Collection[K], slice.Collection[V]) {
+	keys := make(slice.Collection[K], 0, c.Count())
 	values := make(slice.Collection[V], 0, c.Count())
 
-	c.Each(func(_ K, v V) {
-		values.Push(v)
+	c.Each(func(k K, v V) {
+		keys = keys.Push(k)
+		values = values.Push(v)
 	})
 
-	return values
+	return keys, values
 }
 
 func (c Collection[K, V]) Only(keys []K) Collection[K, V] {
@@ -173,50 +163,58 @@ func (c Collection[K, V]) Tap(f func(Collection[K, V])) Collection[K, V] {
 	return c
 }
 
-func (c Collection[K, V]) ToSlice() []V {
-	slice := make([]V, c.Count())
+func (c Collection[K, V]) Values() slice.Collection[V] {
+	values := make(slice.Collection[V], 0, c.Count())
 
-	for _, value := range c {
-		slice = append(slice, value)
-	}
+	c.Each(func(_ K, v V) {
+		values = values.Push(v)
+	})
 
-	return slice
+	return values
 }
 
-func (c Collection[K, V]) ToSliceCollection() slice.Collection[V] {
-	return c.ToSlice()
+func (c Collection[K, V]) ToSlice() []V { return c.Values() }
+
+func (c Collection[K, V]) Copy() Collection[K, V] {
+	return Combine(c.KeysValues())
 }
 
 func (c Collection[K, V]) Concat(concatTo Collection[K, V]) Collection[K, V] {
-	concatenated := make(Collection[K, V], c.Count())
-
 	concatTo.Each(func(k K, v V) {
-		concatenated.Put(k, v)
+		if _, ok := c[k]; ok {
+			return
+		}
+		c.Put(k, v)
 	})
 
-	return concatenated
+	return c
 }
 
-// TODO
 func (c Collection[K, V]) Contains(f collections.Matcher) bool {
-	return true
+	return c.Values().Contains(f)
 }
 
 func (c Collection[K, V]) Every(f collections.Matcher) bool {
-	contains := true
-
-	// TODO change this to return early. Add more test scenarios.
-	c.Each(func(k K, v V) {
+	for k, v := range c {
 		if !f(k, v) {
-			contains = false
-			return
+			return false
 		}
-	})
+	}
 
-	return contains
+	return true
 }
 
 func (c Collection[K, V]) Flip() Collection[K, V] {
+	v, _ := c.FlipE()
+	return v
+}
+
+func (c Collection[K, V]) FlipE() (Collection[K, V], error) {
+	if _, err := collections.AssertE[V](*new(K)); err != nil {
+		return c, err
+
+	}
+
 	flippedValues := make(map[K]V, c.Count())
 
 	c.Each(func(k K, v V) {
@@ -230,10 +228,9 @@ func (c Collection[K, V]) Flip() Collection[K, V] {
 		}
 	})
 
-	return flippedValues
+	return flippedValues, nil
 }
 
-//TODO check if makes sense to have Merge and Concat
 func (c Collection[K, V]) Merge(other Collection[K, V]) Collection[K, V] {
 	other.Each(func(k K, v V) {
 		c.Put(k, v)
@@ -263,6 +260,15 @@ func (c Collection[K, V]) Reject(f func(k K, v V) bool) Collection[K, V] {
 func (c Collection[K, V]) Forget(k K) Collection[K, V] {
 	delete(c, k)
 	return c
+}
+
+func (c Collection[K, V]) ForgetE(k K) (Collection[K, V], error) {
+	if _, ok := c[k]; !ok {
+		return c, errors.NewKeyNotFoundError(k)
+	}
+
+	delete(c, k)
+	return c, nil
 }
 
 func (c Collection[K, V]) When(

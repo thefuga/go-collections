@@ -402,6 +402,30 @@ func TestCombine(t *testing.T) {
 	}
 }
 
+func TestCombineE(t *testing.T) {
+	keys := makeCollection[string, string](2)
+	keys.Put("0", "first_name")
+	keys.Put("1", "last_name")
+
+	values := makeCollection[string, string](2)
+	values.Put("0", "Jon")
+	values.Put("1", "Doe")
+
+	combined, _ := keys.CombineE(values)
+
+	if actualFirstName := combined.Get("first_name"); actualFirstName != "Jon" {
+		t.Errorf("Expected first name to be %s, got %s", "Jon", actualFirstName)
+	}
+
+	if actualLastName := combined.Get("last_name"); actualLastName != "Doe" {
+		t.Errorf("Expected first name to be %s, got %s", "Doe", actualLastName)
+	}
+
+	if len(combined.keys) != len(combined.values) {
+		t.Error("combined.keys should have the same length as combined.values")
+	}
+}
+
 func TestCombineDiffKeyLengths(t *testing.T) {
 	keys := makeCollection[string, string](2)
 	keys.Put("0", "first_name")

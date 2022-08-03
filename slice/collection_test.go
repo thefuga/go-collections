@@ -570,3 +570,47 @@ func TestToSlice(t *testing.T) {
 		t.Errorf("collection converted to slice should equal %v", slice)
 	}
 }
+
+func TestForgetE(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         Collection[string]
+		expected    Collection[string]
+		i           int
+		err         error
+	}{
+		{
+			"deleting an unexisting key",
+			Collect("foo", "bar", "baz"),
+			Collect("foo", "bar", "baz"),
+			3,
+			fmt.Errorf("index out of bounds"),
+		},
+		{
+			"deleting a valid key",
+			Collect("foo", "bar", "baz"),
+			Collect("foo", "baz"),
+			1,
+			nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			err := tc.sut.ForgetE(tc.i)
+			if !reflect.DeepEqual(tc.sut, tc.expected) {
+				t.Errorf(
+					"expected slice after deletting the key to be %v. got %v",
+					tc.expected,
+					tc.sut,
+				)
+			}
+
+			if tc.err != nil || err != nil {
+				if tc.err.Error() != err.Error() {
+					t.Errorf("expected error '%s'. got '%s'", tc.err.Error(), err.Error())
+				}
+			}
+		})
+	}
+}

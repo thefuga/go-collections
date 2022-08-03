@@ -239,15 +239,7 @@ func (c Collection[K, V]) ToSliceCollection() slice.Collection[V] {
 
 // Combine doesn't preserve order and keys and values must be of the same type
 func (c Collection[K, V]) Combine(v Collection[K, K]) Collection[K, V] {
-	combined := makeCollection[K, V](c.Count())
-
-	for i := 0; i < c.Count(); i++ {
-		k, _ := collections.Assert[K](c.values[c.keys[i]])
-		v, _ := collections.Assert[V](v.values[v.keys[i]])
-
-		combined.Put(k, v)
-	}
-
+	combined, _ := c.CombineE(v)
 	return combined
 }
 

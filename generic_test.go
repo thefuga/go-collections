@@ -245,6 +245,44 @@ func TestSearch(t *testing.T) {
 		sut         []any
 		input       any
 		i           int
+	}{
+		{
+			"searching with an empty slice",
+			[]any{},
+			"foo",
+			-1,
+		},
+		{
+			"searching an unexisting element",
+			[]any{1, "foo", 1.0},
+			"bar",
+			-1,
+		},
+		{
+			"searching an existing element",
+			[]any{1, "foo", 1.0},
+			"foo",
+			1,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			i := Search(tc.input, tc.sut)
+
+			if i != tc.i {
+				t.Errorf("expected resulting index to be %d. got %d", tc.i, i)
+			}
+		})
+	}
+}
+
+func TestSearchE(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         []any
+		input       any
+		i           int
 		err         error
 	}{
 		{
@@ -336,6 +374,35 @@ func TestMap(t *testing.T) {
 }
 
 func TestFirst(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         []string
+		v           string
+	}{
+		{
+			"calling First with an empty slice",
+			[]string{},
+			"",
+		},
+		{
+			"calling first with a slice with values",
+			[]string{"foo", "bar", "baz"},
+			"foo",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			v := First(tc.sut)
+
+			if v != tc.v {
+				t.Errorf("expected returned value to be '%s', got '%s'", tc.v, v)
+			}
+		})
+	}
+}
+
+func TestFirstE(t *testing.T) {
 	testCases := []struct {
 		description string
 		sut         []string
@@ -541,7 +608,51 @@ func TestCutE(t *testing.T) {
 	}
 }
 
-func TestDelete(t *testing.T) {
+func TestForgetE(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         []string
+		expected    []string
+		i           int
+		err         error
+	}{
+		{
+			"deleting an unexisting key",
+			[]string{"foo", "bar", "baz"},
+			[]string{"foo", "bar", "baz"},
+			3,
+			fmt.Errorf("index out of bounds"),
+		},
+		{
+			"deleting a valid key",
+			[]string{"foo", "bar", "baz"},
+			[]string{"foo", "baz"},
+			1,
+			nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			err := ForgetE(&tc.sut, tc.i)
+			if !reflect.DeepEqual(tc.sut, tc.expected) {
+				t.Errorf(
+					"expected slice after deletting the key to be %v. got %v",
+					tc.expected,
+					tc.sut,
+				)
+			}
+
+			if tc.err != nil || err != nil {
+				if tc.err.Error() != err.Error() {
+					t.Errorf("expected error '%s'. got '%s'", tc.err.Error(), err.Error())
+				}
+			}
+		})
+	}
+}
+
+func TestDeleteE(t *testing.T) {
 	testCases := []struct {
 		description string
 		sut         []string
