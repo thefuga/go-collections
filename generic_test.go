@@ -714,3 +714,33 @@ func TestMode(t *testing.T) {
 		})
 	}
 }
+
+func TestContains(t *testing.T) {
+	testCases := []struct {
+		description string
+		slice       []int
+		matcher     Matcher
+		contains    bool
+	}{
+		{
+			"collection contains at least one matching value",
+			[]int{1, 2, 3, 4},
+			ValueEquals(3),
+			true,
+		},
+		{
+			"collection does not contain matching values",
+			[]int{1, 2, 3, 4},
+			ValueEquals(5),
+			false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			if contains := Contains(tc.slice, tc.matcher); contains != tc.contains {
+				t.Errorf("Contains result should be  %v. got %v", tc.contains, contains)
+			}
+		})
+	}
+}

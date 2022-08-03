@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+
+	"github.com/thefuga/go-collections"
 )
 
 func TestGet(t *testing.T) {
@@ -529,3 +531,34 @@ func TestIsEmpty(t *testing.T) {
 		})
 	}
 }
+
+func TestContains(t *testing.T) {
+	testCases := []struct {
+		description string
+		collection  Collection[int]
+		matcher     collections.Matcher
+		contains    bool
+	}{
+		{
+			"collection contains at least one matching value",
+			Collect(1, 2, 3, 4),
+			collections.ValueEquals(3),
+			true,
+		},
+		{
+			"collection does not contain matching values",
+			Collect(1, 2, 3, 4),
+			collections.ValueEquals(5),
+			false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			if contains := tc.collection.Contains(tc.matcher); contains != tc.contains {
+				t.Errorf("Contains result should be  %v. got %v", tc.contains, contains)
+			}
+		})
+	}
+}
+

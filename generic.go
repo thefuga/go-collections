@@ -219,3 +219,13 @@ func bounds(i int, optionalJ ...int) (int, int) {
 
 	return i, j
 }
+
+func Contains[V any](slice []V, matcher Matcher) bool {
+	for i, v := range slice {
+		if matcher(i, v) {
+			return true
+		}
+	}
+
+	return false
+}

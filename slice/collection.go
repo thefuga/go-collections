@@ -10,6 +10,10 @@ func Collect[V any](values ...V) Collection[V] {
 	return append(make(Collection[V], 0, len(values)), values...)
 }
 
+func (c Collection[V]) Contains(matcher collections.Matcher) bool {
+	return collections.Contains(c, matcher)
+}
+
 func (c Collection[V]) Get(i int) V { return collections.Get(i, c) }
 
 func (c Collection[V]) GetE(i int) (V, error) { return collections.GetE(i, c) }
