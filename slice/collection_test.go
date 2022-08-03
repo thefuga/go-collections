@@ -562,3 +562,11 @@ func TestContains(t *testing.T) {
 	}
 }
 
+func TestToSlice(t *testing.T) {
+	slice := []int{1, 2, 3, 4}
+	collection := Collect(slice...)
+
+	if !reflect.DeepEqual(collection.ToSlice(), slice) {
+		t.Errorf("collection converted to slice should equal %v", slice)
+	}
+}

@@ -64,3 +64,5 @@ func (c Collection[V]) Tap(f func(Collection[V])) Collection[V] {
 func (c *Collection[V]) ForgetE(i int) error {
 	return collections.ForgetE((*[]V)(c), i)
 }
+
+func (c Collection[V]) ToSlice() []V { return c }
