@@ -378,6 +378,27 @@ func TestToSlice(t *testing.T) {
 	}
 }
 
+func TestToSliceCollection(t *testing.T) {
+	values := slice.Collect(1, 2, 3, 4)
+	collection := CollectSlice(values)
+
+	slice := collection.ToSliceCollection()
+
+	if !reflect.DeepEqual(slice, values) {
+		t.Error("ToSlice method didn't return the correct underlying values")
+	}
+
+	valuesLen := len(values)
+	sliceCap := cap(slice)
+	sliceLen := len(slice)
+
+	if sliceCap != valuesLen || sliceLen != valuesLen {
+		t.Errorf("Expected sliceLen and sliceCap to equal valuesLen\n"+
+			"sliceCap: %d\n"+"sliceLen: %d\n"+"valuesLen: %d\n",
+			sliceCap, sliceLen, valuesLen)
+	}
+}
+
 func TestCombine(t *testing.T) {
 	keys := makeCollection[string, string](2)
 	keys.Put("0", "first_name")
@@ -722,8 +743,12 @@ func TestForget(t *testing.T) {
 
 	if _, err = newCollection.GetE(key); err == nil {
 		t.Errorf("The key %v must does not exist on collection %v", key, newCollection)
-
 	}
+
+	if _, err = newCollection.ForgetE("baz"); err == nil {
+		t.Errorf("The key 'baz' doesn't exist")
+	}
+
 }
 
 func TestWhen(t *testing.T) {
