@@ -826,6 +826,230 @@ func TestMode(t *testing.T) {
 	}
 }
 
+
+func TestFirstWhereField(t *testing.T) {
+	users := []user{
+		{Name: "Jon", Email: "jon@collections.go", Age: 33},
+		{Name: "Jane", Email: "jane@collections.go", Age: 27},
+		{Name: "Alice", Email: "alice@collections.go", Age: 40},
+		{Name: "Bob", Email: "bob@collections.go", Age: 22},
+		{Name: "Eve", Email: "eve@collections.go", Age: 30},
+	}
+	testCases := []struct {
+		description string
+		sut         []user
+		field       string
+		matcher     Matcher
+		user        user
+	}{
+		{
+			"slice contains a matching object",
+			users,
+			"Name",
+			ValueEquals("Alice"),
+			user{Name: "Alice", Email: "alice@collections.go", Age: 40},
+		},
+		{
+			"criteria doesn't match slice elements",
+			users,
+			"Age",
+			ValueGT(50),
+			user{},
+		},
+	}
+
+	for _, tc := range testCases {
+		if user := FirstWhereField(tc.sut, tc.field, tc.matcher); user != tc.user {
+			t.Errorf("expected user to be %v. got %v", tc.user, user)
+		}
+	}
+}
+
+func TestFirstWhereFieldE(t *testing.T) {
+	users := []user{
+		{Name: "Jon", Email: "jon@collections.go", Age: 33},
+		{Name: "Jane", Email: "jane@collections.go", Age: 27},
+		{Name: "Alice", Email: "alice@collections.go", Age: 40},
+		{Name: "Bob", Email: "bob@collections.go", Age: 22},
+		{Name: "Eve", Email: "eve@collections.go", Age: 30},
+	}
+	testCases := []struct {
+		description string
+		sut         []user
+		field       string
+		matcher     Matcher
+		user        user
+		err         error
+	}{
+		{
+			"slice contains a matching object",
+			users,
+			"Name",
+			ValueEquals("Alice"),
+			user{Name: "Alice", Email: "alice@collections.go", Age: 40},
+			nil,
+		},
+		{
+			"slice contains an object matching custom matcher",
+			users,
+			"Age",
+			ValueGT(30),
+			user{Name: "Jon", Email: "jon@collections.go", Age: 33},
+			nil,
+		},
+		{
+			"criteria doesn't match slice elements",
+			users,
+			"Age",
+			ValueGT(50),
+			user{},
+			fmt.Errorf("value not found"),
+		},
+	}
+
+	for _, tc := range testCases {
+		user, err := FirstWhereFieldE(tc.sut, tc.field, tc.matcher)
+
+		if user != tc.user {
+			t.Errorf("expected user to be %v. got %v", tc.user, user)
+		}
+
+		if tc.err != nil || err != nil {
+			if tc.err.Error() != err.Error() {
+				t.Errorf("expected error '%s'. got %s", tc.err.Error(), err.Error())
+			}
+		}
+	}
+}
+
+func TestFirstWhereE(t *testing.T) {
+	slice := []int{1, 2, 3, 4, 5}
+
+	testCases := []struct {
+		description string
+		sut         []int
+		matcher     Matcher
+		v           int
+		err         error
+	}{
+		{
+			"slice contains a matching value",
+			slice,
+			ValueGT(3),
+			4,
+			nil,
+		},
+		{
+			"slice does not contain matching values",
+			slice,
+			ValueGT(5),
+			*new(int),
+			fmt.Errorf("value not found"),
+		},
+	}
+
+	for _, tc := range testCases {
+		v, err := FirstWhereE(tc.sut, tc.matcher)
+
+		if v != tc.v {
+			t.Errorf("expected returned value to be %d. got %d", tc.v, v)
+		}
+
+		if tc.err != nil || err != nil {
+			if tc.err.Error() != err.Error() {
+				t.Errorf("expected error '%s'. got %s", tc.err.Error(), err.Error())
+			}
+		}
+	}
+}
+
+func TestFirstWhereWithComposedMatchers(t *testing.T) {
+	users := []user{
+		{Name: "Jon", Email: "jon@collections.go", Age: 33},
+		{Name: "Jane", Email: "jane@collections.go", Age: 27},
+		{Name: "Alice", Email: "alice@collections.go", Age: 40},
+		{Name: "Bob", Email: "bob@collections.go", Age: 22},
+		{Name: "Eve", Email: "eve@collections.go", Age: 30},
+	}
+	testCases := []struct {
+		description string
+		sut         []user
+		field       string
+		matcher     Matcher
+		user        user
+		err         error
+	}{
+		{
+			"slice contains a matching object composed with 'AndValue'",
+			users,
+			"Name",
+			AndValue(user{Name: "Alice", Age: 40}, usernameMatch, ageMatch),
+			user{Name: "Alice", Email: "alice@collections.go", Age: 40},
+			nil,
+		},
+		{
+			"slice contains a matching object composed with 'OrValue'",
+			users,
+			"Name",
+			OrValue(user{Name: "Alice", Age: 33}, usernameMatch, ageMatch),
+			user{Name: "Jon", Email: "jon@collections.go", Age: 33},
+			nil,
+		},
+		{
+			"slice does not contain matching objects",
+			users,
+			"Name",
+			AndValue(user{Name: "Alice", Age: 33}, usernameMatch, ageMatch),
+			user{},
+			fmt.Errorf("value not found"),
+		},
+	}
+
+	for _, tc := range testCases {
+		user, err := FirstWhereE(tc.sut, tc.matcher)
+
+		if user != tc.user {
+			t.Errorf("expected user to be %v. got %v", tc.user, user)
+		}
+
+		if tc.err != nil || err != nil {
+			if tc.err.Error() != err.Error() {
+				t.Errorf("expected error '%s'. got %s", tc.err.Error(), err.Error())
+			}
+		}
+	}
+}
+
+func TestFirstWhere(t *testing.T) {
+	slice := []int{1, 2, 3, 4, 5}
+
+	testCases := []struct {
+		description string
+		sut         []int
+		matcher     Matcher
+		v           int
+	}{
+		{
+			"slice contains a matching value",
+			slice,
+			ValueGT(3),
+			4,
+		},
+		{
+			"slice does not contain matching values",
+			slice,
+			ValueGT(5),
+			*new(int),
+		},
+	}
+
+	for _, tc := range testCases {
+		if v := FirstWhere(tc.sut, tc.matcher); v != tc.v {
+			t.Errorf("expected returned value to be %d. got %d", tc.v, v)
+		}
+	}
+}
+
 func TestContains(t *testing.T) {
 	testCases := []struct {
 		description string
@@ -853,5 +1077,4 @@ func TestContains(t *testing.T) {
 				t.Errorf("Contains result should be  %v. got %v", tc.contains, contains)
 			}
 		})
-	}
-}
+  

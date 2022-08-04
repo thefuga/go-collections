@@ -230,3 +230,33 @@ func Contains[V any](slice []V, matcher Matcher) bool {
 
 	return false
 }
+
+func FirstWhere[V any](slice []V, matcher Matcher) V {
+	v, _ := FirstWhereE(slice, matcher)
+	return v
+}
+
+func FirstWhereE[V any](slice []V, matcher Matcher) (V, error) {
+	for i, v := range slice {
+		if matcher(i, v) {
+			return v, nil
+		}
+	}
+
+	return *new(V), errors.NewValueNotFoundError()
+}
+
+func FirstWhereField[V any](slice []V, field string, matcher Matcher) V {
+	v, _ := FirstWhereFieldE(slice, field, matcher)
+	return v
+}
+
+func FirstWhereFieldE[V any](slice []V, field string, matcher Matcher) (V, error) {
+	for i, v := range slice {
+		if FieldMatch[V](field, matcher)(i, v) {
+			return v, nil
+		}
+	}
+
+	return *new(V), errors.NewValueNotFoundError()
+}
