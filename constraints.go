@@ -28,11 +28,13 @@ type (
 	}
 )
 
+// Assert is a typical Go type assertion.
 func Assert[T any](from any) (T, bool) {
 	toAny, ok := from.(T)
 	return toAny, ok
 }
 
+// AssertE is equivalent to a type assertion, returning error instead bool.
 func AssertE[T any](from any) (T, error) {
 	if to, ok := from.(T); ok {
 		return to, nil
