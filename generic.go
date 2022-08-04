@@ -165,10 +165,11 @@ func CutE[V any](slice *[]V, i int, optionalJ ...int) ([]V, error) {
 	return cutted, nil
 }
 
-func Delete[V any](slice *[]V, i int, optionalJ ...int) error {
+func DeleteE[V any](slice *[]V, i int, optionalJ ...int) error {
 	sliceLen := len(*slice)
+
 	i, j := bounds(i, optionalJ...)
-	if i >= sliceLen || j >= sliceLen {
+	if i < 0 || i >= sliceLen || j >= sliceLen {
 		return errors.NewIndexOutOfBoundsError()
 	}
 
@@ -177,6 +178,10 @@ func Delete[V any](slice *[]V, i int, optionalJ ...int) error {
 	(*slice) = (*slice)[:sliceLen-1]
 
 	return nil
+}
+
+func ForgetE[V any](slice *[]V, i int, optionalJ ...int) error {
+	return DeleteE(slice, i, optionalJ...)
 }
 
 func Tally[T comparable](slice []T) map[T]int {
@@ -214,6 +219,16 @@ func bounds(i int, optionalJ ...int) (int, int) {
 	}
 
 	return i, j
+}
+
+func Contains[V any](slice []V, matcher Matcher) bool {
+	for i, v := range slice {
+		if matcher(i, v) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func FirstWhere[V any](slice []V, matcher Matcher) V {

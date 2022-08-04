@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+
+	"github.com/thefuga/go-collections"
 )
 
 func TestGet(t *testing.T) {
@@ -488,7 +490,7 @@ func TestLast(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			v, err := tc.sut.Last()
+			v, err := tc.sut.LastE()
 
 			if v != tc.v {
 				t.Errorf("expected returned value to be '%s', got '%s'", tc.v, v)
@@ -525,6 +527,89 @@ func TestIsEmpty(t *testing.T) {
 		t.Run(tc.description, func(t *testing.T) {
 			if isEmpty := tc.sut.IsEmpty(); isEmpty != tc.isEmpty {
 				t.Errorf("expect %v. got %v", tc.isEmpty, isEmpty)
+			}
+		})
+	}
+}
+
+func TestContains(t *testing.T) {
+	testCases := []struct {
+		description string
+		collection  Collection[int]
+		matcher     collections.Matcher
+		contains    bool
+	}{
+		{
+			"collection contains at least one matching value",
+			Collect(1, 2, 3, 4),
+			collections.ValueEquals(3),
+			true,
+		},
+		{
+			"collection does not contain matching values",
+			Collect(1, 2, 3, 4),
+			collections.ValueEquals(5),
+			false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			if contains := tc.collection.Contains(tc.matcher); contains != tc.contains {
+				t.Errorf("Contains result should be  %v. got %v", tc.contains, contains)
+			}
+		})
+	}
+}
+
+func TestToSlice(t *testing.T) {
+	slice := []int{1, 2, 3, 4}
+	collection := Collect(slice...)
+
+	if !reflect.DeepEqual(collection.ToSlice(), slice) {
+		t.Errorf("collection converted to slice should equal %v", slice)
+	}
+}
+
+func TestForgetE(t *testing.T) {
+	testCases := []struct {
+		description string
+		sut         Collection[string]
+		expected    Collection[string]
+		i           int
+		err         error
+	}{
+		{
+			"deleting an unexisting key",
+			Collect("foo", "bar", "baz"),
+			Collect("foo", "bar", "baz"),
+			3,
+			fmt.Errorf("index out of bounds"),
+		},
+		{
+			"deleting a valid key",
+			Collect("foo", "bar", "baz"),
+			Collect("foo", "baz"),
+			1,
+			nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			err := tc.sut.ForgetE(tc.i)
+			if !reflect.DeepEqual(tc.sut, tc.expected) {
+				t.Errorf(
+					"expected slice after deletting the key to be %v. got %v",
+					tc.expected,
+					tc.sut,
+				)
+			}
+
+			if tc.err != nil || err != nil {
+				if tc.err.Error() != err.Error() {
+					t.Errorf("expected error '%s'. got '%s'", tc.err.Error(), err.Error())
+				}
 			}
 		})
 	}

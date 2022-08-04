@@ -1,5 +1,7 @@
 package collections
 
+import "github.com/thefuga/go-collections/errors"
+
 type (
 	UnsignedInteger interface {
 		uint8 | uint16 | uint32 | uint64 | uint
@@ -25,3 +27,16 @@ type (
 		Number | string
 	}
 )
+
+func Assert[T any](from any) (T, bool) {
+	toAny, ok := from.(T)
+	return toAny, ok
+}
+
+func AssertE[T any](from any) (T, error) {
+	if to, ok := from.(T); ok {
+		return to, nil
+	}
+
+	return *new(T), errors.NewTypeError[T](&from)
+}

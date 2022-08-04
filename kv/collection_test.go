@@ -1,179 +1,428 @@
 package kv
 
 import (
+	"fmt"
 	"reflect"
-	"sort"
 	"testing"
 
 	"github.com/thefuga/go-collections"
-	"github.com/thefuga/go-collections/errors"
 )
 
-func TestCollectSliceMethod(t *testing.T) {
-	intSlice := []int{1, 2, 3, 4, 5}
-	collection := CollectSlice(intSlice)
+func TestCollect(t *testing.T) {
+	items := []string{"foo", "bar", "baz"}
 
-	for k, v := range intSlice {
-		if item := collection.Get(k); item != v {
-			t.Error("The keys weren't preserved!")
+	collection := Collect(items...)
+
+	for k, v := range items {
+		foundV, ok := collection[k]
+
+		if !ok {
+			t.Errorf("key %d should've been found", k)
+		}
+
+		if v != foundV {
+			t.Errorf("found value should be %s. got %s", v, foundV)
 		}
 	}
 }
 
-func TestCollectMapMethod(t *testing.T) {
-	mapString := map[string]any{"f": "foo", "b": "bar"}
+func TestCollectSlice(t *testing.T) {
+	items := []string{"foo", "bar", "baz"}
 
-	collection := CollectMap(mapString)
+	collection := CollectSlice(items)
 
-	for k, v := range mapString {
-		if item := collection.Get(k); item != v {
-			t.Error("The keys weren't preserved!")
+	for k, v := range items {
+		foundV, ok := collection[k]
+
+		if !ok {
+			t.Errorf("key %d should've been found", k)
+		}
+
+		if v != foundV {
+			t.Errorf("found value should be %s. got %s", v, foundV)
 		}
 	}
 }
 
-func TestGetMethod(t *testing.T) {
-	collection := Collect(1, 2)
+func TestCollectMap(t *testing.T) {
+	items := map[string]string{"a": "foo", "b": "bar", "c": "baz"}
 
-	value, err := collection.GetE(0)
-
-	if err != nil {
-		t.Error(err)
-	}
-
-	if value != 1 {
-		t.Error("Wrong value returned!")
-	}
-
-	if _, err = collection.GetE(3); err.Error() != "key '3' not found" {
-		t.Error(err)
-		t.Error("Getting an unexisting key must return an error!")
-	}
-}
-
-func TestEachMethod(t *testing.T) {
-	collection := Collect[any]("foo", 1, 1.5)
-
-	var (
-		foundString bool
-		foundInt    bool
-		foundFloat  bool
-		count       int
-	)
-
-	collection.Each(func(k int, v any) {
-		switch v {
-		case "foo":
-			foundString = true
-		case 1:
-			foundInt = true
-		case 1.5:
-			foundFloat = true
-		default:
-			t.Error("A value that was not present on the collection was found!")
-		}
-
-		count++
-	})
-
-	if !foundString {
-		t.Error("The string wasn't found!")
-	}
-
-	if !foundInt {
-		t.Error("The int value wasn't found!")
-	}
-
-	if !foundFloat {
-		t.Error("The float value wasn't found!")
-	}
-
-	if count < collection.Count() {
-		t.Error("The method didn't iterate over collected items!")
-	}
-
-	if count > collection.Count() {
-		t.Error("The method iterate more times then the items count!")
-	}
-}
-
-func TestTap(t *testing.T) {
-	collection := CollectMap(map[string]string{"foo": "foo", "bar": "bar", "baz": "baz"})
-
-	collection.Tap(func(c Collection[string, string]) {
-		if c.Count() != collection.Count() {
-			t.Error("The collections are not equal")
-		}
-	})
-}
-
-func TestSearchEMethod(t *testing.T) {
-	items := map[string]any{"foo": "foo", "int": 1, "float": 1.0}
 	collection := CollectMap(items)
 
 	for k, v := range items {
-		foundKey, err := collection.SearchE(v)
+		foundV, ok := collection[k]
 
-		if foundKey != k {
-			t.Error("found key is different than the key corresponding to v")
+		if !ok {
+			t.Errorf("key %s should've been found", k)
 		}
 
-		if err != nil {
-			t.Error(err)
+		if v != foundV {
+			t.Errorf("found value should be %s. got %s", v, foundV)
 		}
 	}
+}
 
-	if _, err := collection.SearchE('a'); err.Error() != "value not found" {
-		t.Error("searching an unexisting item must return an error")
+func TestCombineE(t *testing.T) {
+	testCases := []struct {
+		description string
+		keys        []string
+		values      []string
+		expected    map[string]string
+		err         error
+	}{
+		{
+			"mismatching keys and values lenghts",
+			[]string{"a", "b"},
+			[]string{"foo", "bar", "baz"},
+			map[string]string{},
+			fmt.Errorf("keys and values don't have the same length"),
+		},
+		{
+			"keys and values can be combined",
+			[]string{"a", "b", "c"},
+			[]string{"foo", "bar", "baz"},
+			map[string]string{"a": "foo", "b": "bar", "c": "baz"},
+			nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			combined, err := CombineE(tc.keys, tc.values)
+
+			if tc.err != nil {
+				if err == nil {
+					t.Errorf("expected error '%s'. got nil", tc.err.Error())
+				} else if tc.err.Error() != err.Error() {
+					t.Errorf("expected error '%s'. got '%s'", tc.err.Error(), err.Error())
+				}
+
+				return
+			}
+
+			combinedCount := combined.Count()
+
+			if combinedCount != len(tc.keys) || combinedCount != len(tc.values) {
+				t.Errorf(
+					"combined collection should have the same count as keys and values. got %d",
+					combinedCount,
+				)
+			}
+
+			for i := 0; i < combinedCount; i++ {
+				foundV, ok := combined[tc.keys[i]]
+
+				if !ok {
+					t.Errorf("key %s should've been found", tc.keys[i])
+				}
+
+				if foundV != tc.values[i] {
+					t.Errorf("found value should be %s. got %s", tc.values[i], foundV)
+				}
+			}
+		})
+	}
+}
+
+func TestCountBy(t *testing.T) {
+	type testCase[T comparable] struct {
+		description   string
+		collection    Collection[int, int]
+		mapper        func(n int) T
+		expectedCount map[T]int
+	}
+
+	testCases := []testCase[bool]{
+		{
+			description:   "count evens",
+			collection:    Collect(1, 2, 3, 4, 5),
+			mapper:        func(n int) bool { return n%2 == 0 },
+			expectedCount: map[bool]int{true: 2, false: 3},
+		},
+		{
+			description:   "count odds",
+			collection:    Collect(1, 2, 3, 4, 5),
+			mapper:        func(n int) bool { return n%2 == 1 },
+			expectedCount: map[bool]int{true: 3, false: 2},
+		},
+		{
+			description:   "count ones",
+			collection:    Collect(1, 2, 1, 3, 1),
+			mapper:        func(n int) bool { return n == 1 },
+			expectedCount: map[bool]int{true: 3, false: 2},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			actualCount := CountBy(tc.collection, tc.mapper)
+
+			if !reflect.DeepEqual(actualCount, tc.expectedCount) {
+				t.Errorf("expected CountBy to equal %v. Got %v", tc.expectedCount, actualCount)
+			}
+		})
+	}
+}
+
+func TestEach(t *testing.T) {
+	eachResult := make(Collection[string, string])
+	collection := CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"})
+
+	collection.Each(func(k string, v string) {
+		eachResult.Put(k, v)
+	})
+
+	if !reflect.DeepEqual(eachResult, collection) {
+		t.Errorf("expected visited values to be %v. got %v", collection, eachResult)
+	}
+}
+
+func TestGetE(t *testing.T) {
+	testCases := []struct {
+		description string
+		collection  Collection[string, string]
+		key         string
+		value       string
+		err         error
+	}{
+		{
+			"key not found",
+			CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"}),
+			"d",
+			"",
+			fmt.Errorf("key '%s' not found", "d"),
+		},
+		{
+			"key exists",
+			CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"}),
+			"b",
+			"bar",
+			nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			value, err := tc.collection.GetE(tc.key)
+
+			if tc.err != nil {
+				if err == nil {
+					t.Errorf("expected error '%s'. got nil", tc.err.Error())
+				} else if tc.err.Error() != err.Error() {
+					t.Errorf("expected error '%s'. got '%s'", tc.err.Error(), err.Error())
+				}
+
+				return
+			}
+
+			if value != tc.value {
+				t.Errorf("expected found value to be '%s'. got '%s'", tc.value, value)
+			}
+		})
+	}
+}
+
+func TestGet(t *testing.T) {
+	testCases := []struct {
+		description string
+		collection  Collection[string, string]
+		key         string
+		value       string
+	}{
+		{
+			"key not found",
+			CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"}),
+			"d",
+			"",
+		},
+		{
+			"key exists",
+			CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"}),
+			"b",
+			"bar",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			value := tc.collection.Get(tc.key)
+
+			if value != tc.value {
+				t.Errorf("expected found value to be '%s'. got '%s'", tc.value, value)
+			}
+		})
+	}
+}
+
+func TestSearchE(t *testing.T) {
+	testCases := []struct {
+		description string
+		collection  Collection[string, string]
+		value       string
+		key         string
+		err         error
+	}{
+		{
+			"value not found",
+			CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"}),
+			"qux",
+			"",
+			fmt.Errorf("value not found"),
+		},
+		{
+			"value is found",
+			CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"}),
+			"bar",
+			"b",
+			nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			key, err := tc.collection.SearchE(tc.value)
+
+			if tc.err != nil {
+				if err == nil {
+					t.Errorf("expected error '%s'. got nil", tc.err.Error())
+				} else if tc.err.Error() != err.Error() {
+					t.Errorf("expected error '%s'. got '%s'", tc.err.Error(), err.Error())
+				}
+
+				return
+			}
+
+			if key != tc.key {
+				t.Errorf("expected found value to be '%s'. got '%s'", tc.key, key)
+			}
+		})
+	}
+}
+
+func TestSearch(t *testing.T) {
+	testCases := []struct {
+		description string
+		collection  Collection[string, string]
+		value       string
+		key         string
+	}{
+		{
+			"value not found",
+			CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"}),
+			"qux",
+			"",
+		},
+		{
+			"value is found",
+			CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"}),
+			"bar",
+			"b",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			key := tc.collection.Search(tc.value)
+
+			if key != tc.key {
+				t.Errorf("expected found value to be '%s'. got '%s'", tc.key, key)
+			}
+		})
+	}
+}
+
+func TestMap(t *testing.T) {
+	collection := CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"})
+	expected := CollectMap(map[string]string{"a": "afoo", "b": "bbar", "c": "cbaz"})
+
+	mapped := collection.Map(func(k, v string) string {
+		return k + v
+	})
+
+	if !reflect.DeepEqual(expected, mapped) {
+		t.Errorf("mapped collection should be %v. got %v", expected, mapped)
+	}
+}
+
+func TestCount(t *testing.T) {
+	collection := CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"})
+
+	if count := collection.Count(); count != 3 {
+		t.Errorf("count should be %d. got %d", 3, count)
+	}
+}
+
+func TestPut(t *testing.T) {
+	collection := CollectMap(map[string]string{"a": "foo", "b": "bar"})
+	expected := CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"})
+
+	collection.Put("c", "baz")
+
+	if !reflect.DeepEqual(expected, collection) {
+		t.Errorf("collection after put should be %v. got %v", expected, collection)
+	}
+}
+
+func TestIsEmpty(t *testing.T) {
+	testCases := []struct {
+		description string
+		collection  Collection[int, string]
+		isEmpty     bool
+	}{
+		{
+			"collection is empty",
+			Collect[string](),
+			true,
+		},
+		{
+			"collection is not empty",
+			Collect("foo", "bar", "baz"),
+			false,
+		},
+	}
+
+	for _, tc := range testCases {
+		if isEmpty := tc.collection.IsEmpty(); isEmpty != tc.isEmpty {
+			t.Errorf("IsEmpty result shoud be %v. got %v", tc.isEmpty, isEmpty)
+		}
 	}
 }
 
 func TestKeys(t *testing.T) {
-	collection := CollectMap(map[string]string{"foo": "foo", "bar": "bar", "baz": "baz"})
-	expectedKeys := []string{"bar", "baz", "foo"}
+	keys := []string{"a", "b", "c"}
+	values := []string{"foo", "bar", "baz"}
+	collection := Combine(keys, values)
 
-	keys := collection.Keys()
-	sort.Slice(keys, func(i, j int) bool {
-		return keys[i] < keys[j]
-	})
+	actualKeys := collection.Keys().Sort(collections.Asc[string]()).ToSlice()
 
-	if !reflect.DeepEqual(keys, expectedKeys) {
-		t.Errorf("expected %v. Got %v", expectedKeys, keys)
+	if !reflect.DeepEqual(keys, actualKeys) {
+		t.Errorf("expected collection keys to be %v. got %v", keys, actualKeys)
 	}
 }
 
-func TestSort(t *testing.T) {
-	collection := Collect(3, 2, 1)
+func TestValues(t *testing.T) {
+	keys := []string{"a", "b", "c"}
+	values := []string{"bar", "baz", "foo"}
+	collection := Combine(keys, values)
 
-	collection.Sort(collections.Asc[int]())
+	actualValues := collection.Values().Sort(collections.Asc[string]()).ToSlice()
 
-	expectedCurrent := 1
-
-	collection.Each(func(_ int, value int) {
-		if value != expectedCurrent {
-			t.Error("Collection wasn't sorted!")
-		}
-
-		expectedCurrent++
-	})
+	if !reflect.DeepEqual(values, actualValues) {
+		t.Errorf("expected collection values to be %v. got %v", values, actualValues)
+	}
 }
 
-func TestMap(t *testing.T) {
-	collection := Collect(1, 2, 3, 4)
+func TestToSlice(t *testing.T) {
+	keys := []string{"a", "b", "c"}
+	values := []string{"bar", "baz", "foo"}
+	collection := Combine(keys, values)
 
-	allEven := collection.Map(func(_ int, v int) int {
-		if v%2 == 0 {
-			return v
-		}
+	slice := collection.ToSlice()
+	collections.Sort(slice, collections.Asc[string]())
 
-		return v + 1
-	})
-
-	allEven.Each(func(_ int, v int) {
-		if v%2 != 0 {
-			t.Error("Expected all values to be even!")
-		}
-	})
+	if !reflect.DeepEqual(values, slice) {
+		t.Errorf("expected collection values to be %v. got %v", values, slice)
+	}
 }
 
 func TestOnly(t *testing.T) {
@@ -183,7 +432,7 @@ func TestOnly(t *testing.T) {
 
 	newCollection := collection.Only(keys)
 
-	if !reflect.DeepEqual(newCollection.values, expectedNewCollection.values) {
+	if !reflect.DeepEqual(newCollection, expectedNewCollection) {
 		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
 	}
 }
@@ -199,493 +448,200 @@ func TestOnlyWithInvalidKeys(t *testing.T) {
 	}
 }
 
-func TestFirst(t *testing.T) {
-	collection := Collect(1, 2, 3)
-
-	if collection.First() != 1 {
-		t.Error("The value returned wasn't the first value on the collection!")
-	}
-}
-
-func TestFirstEmpty(t *testing.T) {
-	collection := Collect[any]()
-
-	if collection.First() != nil {
-		t.Error("The collection is empty. No value should've been returned")
-	}
-}
-
-func TestLast(t *testing.T) {
-	collection := Collect(1, 2, 3)
-
-	if collection.Last() != 3 {
-		t.Error("The value returned wasn't the first value on the collection!")
-	}
-}
-
-func TestLastEmpty(t *testing.T) {
-	collection := Collect[any]()
-
-	if collection.Last() != nil {
-		t.Error("The collection is empty. No value should've been returned")
-	}
-}
-
-func TestPut(t *testing.T) {
-	collection := Collect[any](1, "foo", true)
-
-	// collection.Put("float", 1.0)
-	collection.Put(3, 1.0)
-
-	key, err := collection.SearchE(1.0)
-
-	if err != nil {
-		t.Error("Element wasn't inserted")
-	}
-
-	if key != 3 {
-		t.Error("The given key wasn't preserved")
-	}
-
-	if item := collection.Get(key); item != 1.0 {
-		t.Error("The keys were messed up :/")
-	}
-}
-
-func TestPushWithIncrementableKeys(t *testing.T) {
-	var (
-		collection        = Collect[any](1, "foo", true)
-		expectedPushedKey = collection.Count()
-		pushedValue       = 1.0
-	)
-
-	collection.Push(pushedValue)
-
-	key, err := collection.SearchE(pushedValue)
-
-	if err != nil {
-		t.Error("Element wasn't inserted")
-	}
-
-	if key != expectedPushedKey {
-		t.Errorf("Expected last element's key to be %d. Got %d", 3, key)
-	}
-
-	if item := collection.Get(key); item != pushedValue {
-		t.Error("The keys were messed up :/")
-	}
-}
-
-func TestPushWithNonIncrementableKeys(t *testing.T) {
-	var (
-		collection  = CollectMap(map[string]any{"a": 1, "b": " foo", "c": true})
-		pushedValue = 1.0
-	)
-
-	collection.Push(pushedValue)
-
-	_, err := collection.SearchE(pushedValue)
-
-	if err == nil {
-		t.Error("Element shouldn't have been inserted")
-	}
-}
-
-func TestPop(t *testing.T) {
-	firstValue := 1
-	secondValue := "foo"
-	lastValue := true
-	collection := Collect[any](firstValue, secondValue, lastValue)
-
-	if collection.Pop() != lastValue {
-		t.Error("Popped element wasn't the last!")
-	}
-
-	if collection.Last() == lastValue {
-		t.Error("Last element wasn't popped!")
-	}
-
-	if count := collection.Count(); count != 2 {
-		t.Errorf("Expected 2 elements, got %d", count)
-	}
-
-	if actualFirstValue := collection.First(); actualFirstValue != firstValue {
-		t.Errorf("Expected first value to equal %v, got: %v", firstValue, actualFirstValue)
-	}
-
-	if newLastValue := collection.Last(); newLastValue != secondValue {
-		t.Errorf("Expected last value to equal %v, got: %v", secondValue, newLastValue)
-	}
-}
-
-func TestGenericGet(t *testing.T) {
-	collection := Collect[any](1, "foo", Collect[any]("bar"))
-
-	intValue, err := Get[int, int](collection, 0)
-
-	if err != nil {
-		t.Error(err)
-	}
-
-	if intValue != 1 {
-		t.Error("Wrong value returned!")
-	}
-
-	stringValue, err := Get[int, string](collection, 1)
-
-	if err != nil {
-		t.Error(err)
-	}
-
-	if stringValue != "foo" {
-		t.Error("Wrong value returned!")
-	}
-
-	collectionValue, err := Get[int, Collection[int, any]](collection, 2)
-
-	if err != nil {
-		t.Error("Getting a generic existing value must always work!")
-	}
-
-	if collectionValue.Count() != 1 {
-		t.Error("Wrong value returned!")
-	}
-
-	if _, err := Get[int, int](collection, 1); err.Error() != "interface conversion: interface {} is string, not int" {
-		t.Error("Trying to get a value with the wrong type parameter must return a type error!")
-	}
-}
-
-func TestAssert(t *testing.T) {
-	var concreteType string
-	defer func() {
-		if assertionErr := recover(); assertionErr != nil {
-			t.Error("Unexpected error casting value.")
-		}
-	}()
-
-	underlyingValue := "generic value"
-	var genericType any = underlyingValue
-
-	concreteType, _ = Assert[string](genericType)
-
-	if concreteType != underlyingValue {
-		t.Error("Expected concreteType to have the value of underlyingValue")
-	}
-}
-
-func TestAssertE(t *testing.T) {
-	underlyingValue := "generic value"
-	var genericType any = underlyingValue
-
-	concreteType, assertionErr := AssertE[string](genericType)
-
-	if assertionErr != nil {
-		t.Error("Unexpected error casting value.")
-	}
-
-	if concreteType != underlyingValue {
-		t.Error("Expected concreteType to have the value of underlyingValue")
-	}
-
-	zeroValue, assertionErr := AssertE[int](genericType)
-
-	if zeroValue != 0 {
-		t.Error("Cast value should be zeroed when an invalid type is given")
-	}
-
-	if assertionErr.Error() != "interface conversion: interface {} is string, not int" {
-		t.Error("Trying to get a value with the wrong type parameter must return a type error!")
-	}
-}
-
-func TestToSlice(t *testing.T) {
-	values := []int{1, 2, 3, 4}
-	collection := CollectSlice(values)
-
-	slice := collection.ToSlice()
-
-	if !reflect.DeepEqual(slice, values) {
-		t.Error("ToSlice method didn't return the correct underlying values")
-	}
-
-	valuesLen := len(values)
-	sliceCap := cap(slice)
-	sliceLen := len(slice)
-
-	if sliceCap != valuesLen || sliceLen != valuesLen {
-		t.Errorf("Expected sliceLen and sliceCap to equal valuesLen\n"+
-			"sliceCap: %d\n"+"sliceLen: %d\n"+"valuesLen: %d\n",
-			sliceCap, sliceLen, valuesLen)
-	}
-}
-
-func TestCombine(t *testing.T) {
-	keys := makeCollection[string, string](2)
-	keys.Put("0", "first_name")
-	keys.Put("1", "last_name")
-
-	values := makeCollection[string, string](2)
-	values.Put("0", "Jon")
-	values.Put("1", "Doe")
-
-	combined := keys.Combine(values)
-
-	if actualFirstName := combined.Get("first_name"); actualFirstName != "Jon" {
-		t.Errorf("Expected first name to be %s, got %s", "Jon", actualFirstName)
-	}
-
-	if actualLastName := combined.Get("last_name"); actualLastName != "Doe" {
-		t.Errorf("Expected first name to be %s, got %s", "Doe", actualLastName)
-	}
-
-	if len(combined.keys) != len(combined.values) {
-		t.Error("combined.keys should have the same length as combined.values")
-	}
-}
-
-func TestCombineDiffKeyLengths(t *testing.T) {
-	keys := makeCollection[string, string](2)
-	keys.Put("0", "first_name")
-
-	values := makeCollection[string, string](2)
-	values.Put("0", "Jon")
-	values.Put("1", "Doe")
-
-	combined := keys.Combine(values)
-
-	if actualFirstName := combined.Get("first_name"); actualFirstName != "Jon" {
-		t.Errorf("Expected first name to be %s, got %s", "Jon", actualFirstName)
-	}
-
-	if _, err := combined.GetE("last_name"); err == nil {
-		t.Error("last_name key shouldn't have been combined")
+func TestTap(t *testing.T) {
+	var tapped Collection[string, string]
+	collection := CollectMap(map[string]string{"foo": "foo", "bar": "bar", "baz": "baz"})
+
+	collection.Tap(func(c Collection[string, string]) {
+		tapped = c
+	})
+
+	if !reflect.DeepEqual(tapped, collection) {
+		t.Errorf("tapped collection should be %v. got %v", collection, tapped)
 	}
 }
 
 func TestConcat(t *testing.T) {
-	collectionA := CollectMap(map[string]string{"foo": "a", "bar": "b"})
-	collectionB := CollectMap(map[string]string{"baz": "c"})
-	expectedCollection := CollectMap(map[string]string{"foo": "a", "bar": "b", "baz": "c"}).
-		Sort(collections.Asc[string]())
+	a := Combine([]string{"a", "b"}, []string{"foo", "bar"})
+	b := Combine([]string{"a", "c", "d"}, []string{"quux", "baz", "qux"})
+	expected := Combine([]string{"a", "b", "c", "d"}, []string{"foo", "bar", "baz", "qux"})
 
-	concat := collectionA.Concat(collectionB).Sort(collections.Asc[string]())
+	concatenated := a.Concat(b)
 
-	if !reflect.DeepEqual(expectedCollection.values, concat.values) {
-		t.Errorf(
-			"expected concatenated collection values to be %v. Got %v",
-			expectedCollection.values,
-			concat.values,
-		)
-	}
-
-	if !reflect.DeepEqual(expectedCollection.keys, concat.keys) {
-		t.Errorf(
-			"expected concatenated keys collection to be %v. Got %v",
-			expectedCollection.keys,
-			concat.keys,
-		)
+	if !reflect.DeepEqual(expected, concatenated) {
+		t.Errorf("concatenated collection should be %v. got %v", expected, concatenated)
 	}
 }
 
-func TestConcatWithDuplicatedKeys(t *testing.T) {
-	collectionA := CollectMap(map[string]string{"foo": "a", "bar": "b"})
-	collectionB := CollectMap(map[string]string{"foo": "c"})
-	expectedCollection := CollectMap(map[string]string{"foo": "a", "bar": "b"}).
-		Sort(collections.Asc[string]())
+func TestKeysValues(t *testing.T) {
+	keys := []string{"a", "b", "c"}
+	values := []string{"bar", "baz", "foo"}
 
-	concat := collectionA.Concat(collectionB).Sort(collections.Asc[string]())
+	collection := Combine(keys, values)
 
-	if !reflect.DeepEqual(expectedCollection.values, concat.values) {
-		t.Errorf(
-			"expected concatenated collection values to be %v. Got %v",
-			expectedCollection.values,
-			concat.values,
-		)
-	}
+	extractedKeys, extractedValues := collection.KeysValues()
 
-	if !reflect.DeepEqual(expectedCollection.keys, concat.keys) {
-		t.Errorf(
-			"expected concatenated keys collection to be %v. Got %v",
-			expectedCollection.keys,
-			concat.keys,
-		)
-	}
-}
-
-func TestConcatWithIntKeys(t *testing.T) {
-	collectionA := Collect("foo", "bar")
-	collectionB := Collect("baz")
-	expectedCollection := Collect("foo", "bar", "baz").Sort(collections.Asc[string]())
-
-	concat := collectionA.Concat(collectionB).Sort(collections.Asc[string]())
-
-	if !reflect.DeepEqual(expectedCollection.values, concat.values) {
-		t.Errorf(
-			"expected concatenated collection values to be %v. Got %v",
-			expectedCollection.values,
-			concat.values,
-		)
-	}
-
-	if !reflect.DeepEqual(expectedCollection.keys, concat.keys) {
-		t.Errorf(
-			"expected concatenated keys collection to be %v. Got %v",
-			expectedCollection.keys,
-			concat.keys,
-		)
-	}
-}
-
-func TestContainsKey(t *testing.T) {
-	collection := CollectMap(map[string]string{"foo": "a", "bar": "b"})
-
-	if !collection.Contains(collections.KeyEquals("foo")) {
-		t.Error("collection should contain 'foo' key")
-	}
-}
-
-func TestContainsValue(t *testing.T) {
-	collection := CollectMap(map[string]string{"foo": "a", "bar": "b"})
-
-	if !collection.Contains(collections.ValueEquals("a")) {
-		t.Error("collection should contain 'a' value")
-	}
-}
-
-func TestEvery(t *testing.T) {
-	collection := Collect(2, 2, 2, 2)
-
-	if !collection.Every(collections.ValueEquals(2)) {
-		t.Error("all elements in the collection are equal")
-	}
-
-	collection.Put(4, 1)
-
-	if collection.Every(collections.ValueEquals(2)) {
-		t.Error("the collection contains a different element")
-	}
-}
-
-func TestFirstOrFail(t *testing.T) {
-	var (
-		foundKey   any
-		foundValue any
-		foundErr   error
-
-		collection = Collect("foo", "bar")
-	)
-
-	foundKey, foundValue, foundErr = collection.FirstOrFail(collections.ValueEquals("bar"))
-	if foundKey != 1 || foundValue != "bar" || foundErr != nil {
-		t.Errorf(
-			"Expected %d, %s, %v, got %d, %s, %v",
-			1, "bar", nil,
-			foundKey, foundValue, foundErr,
-		)
-	}
-
-	foundKey, foundValue, foundErr = collection.FirstOrFail(collections.ValueEquals("baz"))
-	if foundKey != nil || foundValue != "" || foundErr == nil {
-		t.Errorf(
-			"Expected %d, %s, %v, got %d, %s, %v",
-			0, "", errors.NewValueNotFoundError(),
-			foundKey, foundValue, foundErr,
-		)
-	}
-}
-
-func TestFlip(t *testing.T) {
-	collection := CollectMap(map[string]string{
-		"A": "1", "B": "2", "C": "3",
-	}).Sort(collections.Asc[string]())
-
-	expectedFlippedCollection := CollectMap(map[string]string{
-		"1": "A", "2": "B", "3": "C",
-	}).Sort(collections.Asc[string]())
-
-	flippedCollection := collection.Flip().Sort(collections.Asc[string]())
-
-	if !reflect.DeepEqual(flippedCollection.keys, expectedFlippedCollection.keys) {
-		t.Logf("%v||%v", flippedCollection.keys, expectedFlippedCollection.keys)
-		t.Error("collection keys didn't flip")
-	}
-
-	if !reflect.DeepEqual(flippedCollection.values, expectedFlippedCollection.values) {
-		t.Logf("%v||%v", flippedCollection.values, expectedFlippedCollection.values)
-		t.Error("collection values didn't flip")
-	}
-}
-
-func TestMerge(t *testing.T) {
-	newCollection := CollectMap(map[string]string{
-		"A": "foo",
-		"B": "bar",
-	})
-
-	collectionToMerge := CollectMap(map[string]string{
-		"B": "foobar",
-		"C": "baz",
-	})
-
-	mergedCollection := newCollection.Merge(collectionToMerge)
-
-	for _, v := range []string{"A", "B", "C"} {
-		_, err := mergedCollection.GetE(v)
-
-		if err != nil {
-			t.Errorf("Expected %v key to be in the collection %v but it was not", v, mergedCollection)
+	{
+		extractedKeys = extractedKeys.Sort(collections.Asc[string]())
+		if !reflect.DeepEqual(keys, extractedKeys.ToSlice()) {
+			t.Errorf("extracted keys should be %v. got %v", keys, extractedKeys)
 		}
 	}
 
-	for _, v := range []string{"foo", "foobar", "baz"} {
-		_, err := mergedCollection.SearchE(v)
-
-		if err != nil {
-			t.Errorf("Expected %v to be in the collection values %v but it was not", v, mergedCollection)
+	{
+		extractedValues = extractedValues.Sort(collections.Asc[string]())
+		if !reflect.DeepEqual(values, extractedValues.ToSlice()) {
+			t.Errorf("extracted values should be %v. got %v", values, extractedValues)
 		}
 	}
 
 }
 
-func TestCountBy(t *testing.T) {
-	type testCase[T comparable] struct {
-		name          string
-		collection    Collection[int, int]
-		mapper        func(n int) T
-		expectedCount map[T]int
+func TestCopy(t *testing.T) {
+	collection := Collect("foo", "bar", "baz")
+	copiedCollection := collection.Copy()
+
+	if !reflect.DeepEqual(collection, copiedCollection) {
+		t.Errorf("copied collection should be %v. got %v", collection, copiedCollection)
 	}
 
-	testCases := []testCase[bool]{
+	collection.Put(4, "qux")
+	if reflect.DeepEqual(collection, copiedCollection) {
+		t.Errorf("changing the collection should not affect it's copy")
+	}
+}
+
+func TestContains(t *testing.T) {
+	testCases := []struct {
+		description string
+		collection  Collection[int, string]
+		value       string
+		contains    bool
+	}{
 		{
-			name:          "count evens",
-			collection:    Collect(1, 2, 3, 4, 5),
-			mapper:        func(n int) bool { return n%2 == 0 },
-			expectedCount: map[bool]int{true: 2, false: 3},
+			"collection does not contain the value",
+			Collect("foo", "bar", "baz"),
+			"qux",
+			false,
 		},
 		{
-			name:          "count odds",
-			collection:    Collect(1, 2, 3, 4, 5),
-			mapper:        func(n int) bool { return n%2 == 1 },
-			expectedCount: map[bool]int{true: 3, false: 2},
-		},
-		{
-			name:          "count ones",
-			collection:    Collect(1, 2, 1, 3, 1),
-			mapper:        func(n int) bool { return n == 1 },
-			expectedCount: map[bool]int{true: 3, false: 2},
+			"collection contains the value",
+			Collect("foo", "bar", "baz"),
+			"bar",
+			true,
 		},
 	}
 
 	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			actualCount := CountBy(tc.collection, tc.mapper)
-			if !reflect.DeepEqual(actualCount, tc.expectedCount) {
-				t.Errorf("expected CountBy to equal %v. Got %v", tc.expectedCount, actualCount)
+		t.Run(tc.description, func(t *testing.T) {
+			if contains := tc.collection.Contains(collections.ValueEquals(tc.value)); contains != tc.contains {
+				t.Errorf("Contains result should be %v. got %v", tc.contains, contains)
 			}
 		})
 	}
+}
 
+func TestEvery(t *testing.T) {
+	testCases := []struct {
+		description string
+		collection  Collection[int, string]
+		value       string
+		contains    bool
+	}{
+		{
+			"not every element on the collection match",
+			Collect("foo", "bar", "foo"),
+			"foo",
+			false,
+		},
+		{
+			"every element matches",
+			Collect("foo", "foo", "foo"),
+			"foo",
+			true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			if contains := tc.collection.Every(collections.ValueEquals(tc.value)); contains != tc.contains {
+				t.Errorf("Contains result should be %v. got %v", tc.contains, contains)
+			}
+		})
+	}
+}
+
+func TestFlip(t *testing.T) {
+	keys := []string{"a", "b", "c"}
+	values := []string{"bar", "baz", "foo"}
+
+	collection := Combine(keys, values)
+	flipped := collection.Flip()
+
+	{
+		flippedKeys := flipped.Keys().Sort(collections.Asc[string]()).ToSlice()
+
+		if !reflect.DeepEqual(flippedKeys, values) {
+			t.Errorf("flipped keys should be %v. got %v", values, flippedKeys)
+		}
+	}
+
+	{
+		flippedValues := flipped.Values().Sort(collections.Asc[string]()).ToSlice()
+
+		if !reflect.DeepEqual(flippedValues, keys) {
+			t.Errorf("flipped keys should be %v. got %v", keys, flippedValues)
+		}
+	}
+}
+
+func TestFlipE(t *testing.T) {
+	keys := []string{"a", "b", "c"}
+	values := []string{"bar", "baz", "foo"}
+
+	collection := Combine(keys, values)
+	flipped, err := collection.FlipE()
+
+	if err != nil {
+		t.Errorf("expected no error. got'%s'.", err.Error())
+	}
+
+	{
+		flippedKeys := flipped.Keys().Sort(collections.Asc[string]()).ToSlice()
+
+		if !reflect.DeepEqual(flippedKeys, values) {
+			t.Errorf("flipped keys should be %v. got %v", values, flippedKeys)
+		}
+	}
+
+	{
+		flippedValues := flipped.Values().Sort(collections.Asc[string]()).ToSlice()
+
+		if !reflect.DeepEqual(flippedValues, keys) {
+			t.Errorf("flipped keys should be %v. got %v", keys, flippedValues)
+		}
+	}
+}
+
+func TestFlipEMismatchingTypes(t *testing.T) {
+	collection := Collect("foo", "bar", "baz")
+	_, err := collection.FlipE()
+
+	if err == nil {
+		t.Errorf("expected error. got nil")
+	}
+}
+
+func TestMerge(t *testing.T) {
+	a := Combine([]string{"a", "b"}, []string{"foo", "bar"})
+	b := Combine([]string{"a", "c", "d"}, []string{"quux", "baz", "qux"})
+	expected := Combine([]string{"a", "b", "c", "d"}, []string{"quux", "bar", "baz", "qux"})
+
+	concatenated := a.Merge(b)
+
+	if !reflect.DeepEqual(expected, concatenated) {
+		t.Errorf("concatenated collection should be %v. got %v", expected, concatenated)
+	}
 }
 
 func TestFilter(t *testing.T) {
@@ -696,20 +652,7 @@ func TestFilter(t *testing.T) {
 		return v > 2
 	})
 
-	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
-		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
-	}
-}
-
-func TestFilterWithMap(t *testing.T) {
-	collection := CollectMap(map[string]string{"foo": "foo", "bar": "bar"})
-	expectedNewCollection := CollectMap(map[string]string{"foo": "foo"})
-
-	newCollection := collection.Filter(func(k string, v string) bool {
-		return v == "foo"
-	})
-
-	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
+	if !reflect.DeepEqual(expectedNewCollection, newCollection) {
 		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
 	}
 }
@@ -722,138 +665,332 @@ func TestReject(t *testing.T) {
 		return v < 2
 	})
 
-	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
+	if !reflect.DeepEqual(expectedNewCollection, newCollection) {
 		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+	}
+}
+
+func TestForgetE(t *testing.T) {
+	testCases := []struct {
+		description string
+		collection  Collection[string, string]
+		key         string
+		err         error
+	}{
+		{
+			"key not present on the collection",
+			CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"}),
+			"d",
+			fmt.Errorf("key 'd' not found"),
+		},
+		{
+			"key is present on the collection",
+			CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"}),
+			"b",
+			nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			collection, err := tc.collection.ForgetE(tc.key)
+
+			if tc.err != nil {
+				if err == nil {
+					t.Errorf("expected error '%s'. got nil", tc.err.Error())
+				} else if tc.err.Error() != err.Error() {
+					t.Errorf("expected error '%s'. got '%s'", tc.err.Error(), err.Error())
+				}
+
+				return
+			}
+
+			if _, ok := tc.collection[tc.key]; ok {
+				t.Errorf("deleted key should not be on the receiver collection")
+			}
+
+			if _, ok := collection[tc.key]; ok {
+				t.Errorf("deleted key should not be on the returned collection")
+			}
+		})
 	}
 }
 
 func TestForget(t *testing.T) {
-	collection := CollectMap(map[string]int{"foo": 1, "bar": 2})
-
-	key := "foo"
-
-	newCollection, err := collection.Forget(key)
-
-	if err != nil {
-		t.Error(err)
+	testCases := []struct {
+		description string
+		collection  Collection[string, string]
+		key         string
+	}{
+		{
+			"key not present on the collection",
+			CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"}),
+			"d",
+		},
+		{
+			"key is present on the collection",
+			CollectMap(map[string]string{"a": "foo", "b": "bar", "c": "baz"}),
+			"b",
+		},
 	}
 
-	if _, err = newCollection.GetE(key); err == nil {
-		t.Errorf("The key %v must does not exist on collection %v", key, newCollection)
+	for _, tc := range testCases {
+		collection := tc.collection.Forget(tc.key)
 
+		if _, ok := tc.collection[tc.key]; ok {
+			t.Errorf("deleted key should not be on the receiver collection")
+		}
+
+		if _, ok := collection[tc.key]; ok {
+			t.Errorf("deleted key should not be on the returned collection")
+		}
 	}
 }
 
 func TestWhen(t *testing.T) {
-	collection := CollectMap(map[string]string{"foo": "foo"})
-	expectedNewCollection := CollectMap(map[string]string{"foo": "foo", "bar": "bar"})
-
-	newCollection := collection.When(true, func(c Collection[string, string]) Collection[string, string] {
-		return c.Put("bar", "bar")
-	})
-
-	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
-		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+	testCases := []struct {
+		description string
+		collection  Collection[string, string]
+		returned    Collection[string, string]
+		when        bool
+	}{
+		{
+			"when true",
+			CollectMap(map[string]string{"a": "foo", "b": "bar"}),
+			CollectMap(map[string]string{"c": "baz", "d": "qux"}),
+			true,
+		},
+		{
+			"when false",
+			CollectMap(map[string]string{"a": "foo", "b": "bar"}),
+			CollectMap(map[string]string{"a": "foo", "b": "bar"}),
+			false,
+		},
 	}
-}
 
-func TestWhenFalse(t *testing.T) {
-	collection := CollectMap(map[string]string{"foo": "foo"})
+	for _, tc := range testCases {
+		var calledWith Collection[string, string]
 
-	newCollection := collection.When(false, func(c Collection[string, string]) Collection[string, string] {
-		return c.Put("bar", "bar")
-	})
+		returned := tc.collection.When(
+			tc.when,
+			func(c Collection[string, string]) Collection[string, string] {
+				calledWith = c
+				return tc.returned
+			},
+		)
 
-	if !reflect.DeepEqual(collection.values, newCollection.values) {
-		t.Errorf("expected %v. Got %v", collection, newCollection)
+		if tc.when {
+			if !reflect.DeepEqual(calledWith, tc.collection) {
+				t.Errorf("function should've reveived %v. got %v", tc.collection, calledWith)
+			}
+		}
+
+		if !reflect.DeepEqual(returned, tc.returned) {
+			t.Errorf("When should've returned %v. got %v", tc.returned, returned)
+		}
 	}
 }
 
 func TestWhenEmpty(t *testing.T) {
-	collection := CollectMap(map[string]string{})
-	expectedNewCollection := CollectMap(map[string]string{"bar": "bar"})
-
-	newCollection := collection.WhenEmpty(func(c Collection[string, string]) Collection[string, string] {
-		return c.Put("bar", "bar")
-	})
-
-	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
-		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+	testCases := []struct {
+		description string
+		collection  Collection[string, string]
+		returned    Collection[string, string]
+	}{
+		{
+			"when collection is empty",
+			Collection[string, string]{},
+			CollectMap(map[string]string{"c": "baz", "d": "qux"}),
+		},
+		{
+			"when collection is not empty",
+			CollectMap(map[string]string{"a": "foo", "b": "bar"}),
+			CollectMap(map[string]string{"a": "foo", "b": "bar"}),
+		},
 	}
-}
 
-func TestWhenEmptyWithNotEmptyCollection(t *testing.T) {
-	collection := CollectMap(map[string]string{"foo": "foo"})
+	for _, tc := range testCases {
+		var calledWith Collection[string, string]
 
-	newCollection := collection.WhenEmpty(func(c Collection[string, string]) Collection[string, string] {
-		return c.Put("bar", "bar")
-	})
+		returned := tc.collection.WhenEmpty(
+			func(c Collection[string, string]) Collection[string, string] {
+				calledWith = c
+				return tc.returned
+			},
+		)
 
-	if !reflect.DeepEqual(collection.values, newCollection.values) {
-		t.Errorf("expected %v. Got %v", collection, newCollection)
+		if tc.collection.IsEmpty() {
+			if !reflect.DeepEqual(calledWith, tc.collection) {
+				t.Errorf("function should've reveived %v. got %v", tc.collection, calledWith)
+			}
+		}
+
+		if !reflect.DeepEqual(returned, tc.returned) {
+			t.Errorf("When should've returned %v. got %v", tc.returned, returned)
+		}
 	}
 }
 
 func TestWhenNotEmpty(t *testing.T) {
-	collection := CollectMap(map[string]string{"foo": "foo"})
-	expectedNewCollection := CollectMap(map[string]string{"foo": "foo", "bar": "bar"})
-
-	newCollection := collection.WhenNotEmpty(func(c Collection[string, string]) Collection[string, string] {
-		return c.Put("bar", "bar")
-	})
-
-	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
-		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+	testCases := []struct {
+		description string
+		collection  Collection[string, string]
+		returned    Collection[string, string]
+	}{
+		{
+			"when collection is empty",
+			Collection[string, string]{},
+			Collection[string, string]{},
+		},
+		{
+			"when collection is not empty",
+			CollectMap(map[string]string{"a": "foo", "b": "bar"}),
+			CollectMap(map[string]string{"c": "baz", "d": "qux"}),
+		},
 	}
-}
 
-func TestWhenNotEmptyWithEmptyCollection(t *testing.T) {
-	collection := CollectMap(map[string]string{})
+	for _, tc := range testCases {
+		var calledWith Collection[string, string]
 
-	newCollection := collection.WhenNotEmpty(func(c Collection[string, string]) Collection[string, string] {
-		return c.Put("bar", "bar")
-	})
+		returned := tc.collection.WhenNotEmpty(
+			func(c Collection[string, string]) Collection[string, string] {
+				calledWith = c
+				return tc.returned
+			},
+		)
 
-	if !reflect.DeepEqual(collection.values, newCollection.values) {
-		t.Errorf("expected %v. Got %v", collection, newCollection)
+		if !tc.collection.IsEmpty() {
+			if !reflect.DeepEqual(calledWith, tc.collection) {
+				t.Errorf("function should've reveived %v. got %v", tc.collection, calledWith)
+			}
+		}
+
+		if !reflect.DeepEqual(returned, tc.returned) {
+			t.Errorf("When should've returned %v. got %v", tc.returned, returned)
+		}
 	}
 }
 
 func TestUnless(t *testing.T) {
-	collection := CollectMap(map[string]string{"foo": "foo"})
-	expectedNewCollection := CollectMap(map[string]string{"foo": "foo", "bar": "bar"})
+	testCases := []struct {
+		description string
+		collection  Collection[string, string]
+		returned    Collection[string, string]
+		unless      bool
+	}{
+		{
+			"unless true",
+			CollectMap(map[string]string{"a": "foo", "b": "bar"}),
+			CollectMap(map[string]string{"a": "foo", "b": "bar"}),
+			true,
+		},
+		{
+			"unless false",
+			CollectMap(map[string]string{"a": "foo", "b": "bar"}),
+			CollectMap(map[string]string{"c": "baz", "d": "qux"}),
+			false,
+		},
+	}
 
-	newCollection := collection.Unless(false, func(c Collection[string, string]) Collection[string, string] {
-		return c.Put("bar", "bar")
-	})
+	for _, tc := range testCases {
+		var calledWith Collection[string, string]
 
-	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
-		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+		returned := tc.collection.Unless(
+			tc.unless,
+			func(c Collection[string, string]) Collection[string, string] {
+				calledWith = c
+				return tc.returned
+			},
+		)
+
+		if !tc.unless {
+			if !reflect.DeepEqual(calledWith, tc.collection) {
+				t.Errorf("function should've reveived %v. got %v", tc.collection, calledWith)
+			}
+		}
+
+		if !reflect.DeepEqual(returned, tc.returned) {
+			t.Errorf("When should've returned %v. got %v", tc.returned, returned)
+		}
 	}
 }
 
 func TestUnlessEmpty(t *testing.T) {
-	collection := CollectMap(map[string]string{})
-	expectedNewCollection := CollectMap(map[string]string{})
+	testCases := []struct {
+		description string
+		collection  Collection[string, string]
+		returned    Collection[string, string]
+	}{
+		{
+			"unless collection is empty",
+			CollectMap(map[string]string{"a": "foo", "b": "bar"}),
+			CollectMap(map[string]string{"c": "baz", "d": "qux"}),
+		},
+		{
+			"unless collection is not empty",
+			Collection[string, string]{},
+			Collection[string, string]{},
+		},
+	}
 
-	newCollection := collection.UnlessEmpty(func(c Collection[string, string]) Collection[string, string] {
-		return c.Put("bar", "bar")
-	})
+	for _, tc := range testCases {
+		var calledWith Collection[string, string]
 
-	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
-		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+		returned := tc.collection.UnlessEmpty(
+			func(c Collection[string, string]) Collection[string, string] {
+				calledWith = c
+				return tc.returned
+			},
+		)
+
+		if !tc.collection.IsEmpty() {
+			if !reflect.DeepEqual(calledWith, tc.collection) {
+				t.Errorf("function should've reveived %v. got %v", tc.collection, calledWith)
+			}
+		}
+
+		if !reflect.DeepEqual(returned, tc.returned) {
+			t.Errorf("Unless should've returned %v. got %v", tc.returned, returned)
+		}
 	}
 }
 
 func TestUnlessNotEmpty(t *testing.T) {
-	collection := CollectMap(map[string]string{})
-	expectedNewCollection := CollectMap(map[string]string{"bar": "bar"})
+	testCases := []struct {
+		description string
+		collection  Collection[string, string]
+		returned    Collection[string, string]
+	}{
+		{
+			"unless collection is empty",
+			Collection[string, string]{},
+			CollectMap(map[string]string{"c": "baz", "d": "qux"}),
+		},
+		{
+			"unless collection is not empty",
+			CollectMap(map[string]string{"a": "foo", "b": "bar"}),
+			CollectMap(map[string]string{"a": "foo", "b": "bar"}),
+		},
+	}
 
-	newCollection := collection.UnlessNotEmpty(func(c Collection[string, string]) Collection[string, string] {
-		return c.Put("bar", "bar")
-	})
+	for _, tc := range testCases {
+		var calledWith Collection[string, string]
 
-	if !reflect.DeepEqual(expectedNewCollection.values, newCollection.values) {
-		t.Errorf("expected %v. Got %v", expectedNewCollection, newCollection)
+		returned := tc.collection.UnlessNotEmpty(
+			func(c Collection[string, string]) Collection[string, string] {
+				calledWith = c
+				return tc.returned
+			},
+		)
+
+		if tc.collection.IsEmpty() {
+			if !reflect.DeepEqual(calledWith, tc.collection) {
+				t.Errorf("function should've reveived %v. got %v", tc.collection, calledWith)
+			}
+		}
+
+		if !reflect.DeepEqual(returned, tc.returned) {
+			t.Errorf("Unless should've returned %v. got %v", tc.returned, returned)
+		}
 	}
 }

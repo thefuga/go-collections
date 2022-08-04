@@ -46,6 +46,12 @@ func NewIndexOutOfBoundsError(cause ...error) error {
 	return wrap("index out of bounds", nil, cause)
 }
 
+type KeysValuesLegthMismatch error
+
+func NewKeysValuesLengthMismatch(cause ...error) error {
+	return wrap("keys and values don't have the same length", nil, cause)
+}
+
 func wrap(format string, args []any, cause []error) error {
 	msg := fmt.Sprintf(format, args...)
 
