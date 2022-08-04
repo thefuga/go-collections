@@ -167,8 +167,9 @@ func CutE[V any](slice *[]V, i int, optionalJ ...int) ([]V, error) {
 
 func DeleteE[V any](slice *[]V, i int, optionalJ ...int) error {
 	sliceLen := len(*slice)
+
 	i, j := bounds(i, optionalJ...)
-	if i >= sliceLen || j >= sliceLen {
+	if i < 0 || i >= sliceLen || j >= sliceLen {
 		return errors.NewIndexOutOfBoundsError()
 	}
 
