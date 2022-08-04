@@ -826,7 +826,6 @@ func TestMode(t *testing.T) {
 	}
 }
 
-
 func TestFirstWhereField(t *testing.T) {
 	users := []user{
 		{Name: "Jon", Email: "jon@collections.go", Age: 33},
@@ -859,9 +858,11 @@ func TestFirstWhereField(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		if user := FirstWhereField(tc.sut, tc.field, tc.matcher); user != tc.user {
-			t.Errorf("expected user to be %v. got %v", tc.user, user)
-		}
+		t.Run(tc.description, func(t *testing.T) {
+			if user := FirstWhereField(tc.sut, tc.field, tc.matcher); user != tc.user {
+				t.Errorf("expected user to be %v. got %v", tc.user, user)
+			}
+		})
 	}
 }
 
@@ -908,17 +909,19 @@ func TestFirstWhereFieldE(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		user, err := FirstWhereFieldE(tc.sut, tc.field, tc.matcher)
+		t.Run(tc.description, func(t *testing.T) {
+			user, err := FirstWhereFieldE(tc.sut, tc.field, tc.matcher)
 
-		if user != tc.user {
-			t.Errorf("expected user to be %v. got %v", tc.user, user)
-		}
-
-		if tc.err != nil || err != nil {
-			if tc.err.Error() != err.Error() {
-				t.Errorf("expected error '%s'. got %s", tc.err.Error(), err.Error())
+			if user != tc.user {
+				t.Errorf("expected user to be %v. got %v", tc.user, user)
 			}
-		}
+
+			if tc.err != nil || err != nil {
+				if tc.err.Error() != err.Error() {
+					t.Errorf("expected error '%s'. got %s", tc.err.Error(), err.Error())
+				}
+			}
+		})
 	}
 }
 
@@ -949,17 +952,19 @@ func TestFirstWhereE(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		v, err := FirstWhereE(tc.sut, tc.matcher)
+		t.Run(tc.description, func(t *testing.T) {
+			v, err := FirstWhereE(tc.sut, tc.matcher)
 
-		if v != tc.v {
-			t.Errorf("expected returned value to be %d. got %d", tc.v, v)
-		}
-
-		if tc.err != nil || err != nil {
-			if tc.err.Error() != err.Error() {
-				t.Errorf("expected error '%s'. got %s", tc.err.Error(), err.Error())
+			if v != tc.v {
+				t.Errorf("expected returned value to be %d. got %d", tc.v, v)
 			}
-		}
+
+			if tc.err != nil || err != nil {
+				if tc.err.Error() != err.Error() {
+					t.Errorf("expected error '%s'. got %s", tc.err.Error(), err.Error())
+				}
+			}
+		})
 	}
 }
 
@@ -1006,17 +1011,19 @@ func TestFirstWhereWithComposedMatchers(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		user, err := FirstWhereE(tc.sut, tc.matcher)
+		t.Run(tc.description, func(t *testing.T) {
+			user, err := FirstWhereE(tc.sut, tc.matcher)
 
-		if user != tc.user {
-			t.Errorf("expected user to be %v. got %v", tc.user, user)
-		}
-
-		if tc.err != nil || err != nil {
-			if tc.err.Error() != err.Error() {
-				t.Errorf("expected error '%s'. got %s", tc.err.Error(), err.Error())
+			if user != tc.user {
+				t.Errorf("expected user to be %v. got %v", tc.user, user)
 			}
-		}
+
+			if tc.err != nil || err != nil {
+				if tc.err.Error() != err.Error() {
+					t.Errorf("expected error '%s'. got %s", tc.err.Error(), err.Error())
+				}
+			}
+		})
 	}
 }
 
@@ -1044,9 +1051,11 @@ func TestFirstWhere(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		if v := FirstWhere(tc.sut, tc.matcher); v != tc.v {
-			t.Errorf("expected returned value to be %d. got %d", tc.v, v)
-		}
+		t.Run(tc.description, func(t *testing.T) {
+			if v := FirstWhere(tc.sut, tc.matcher); v != tc.v {
+				t.Errorf("expected returned value to be %d. got %d", tc.v, v)
+			}
+		})
 	}
 }
 
@@ -1077,4 +1086,5 @@ func TestContains(t *testing.T) {
 				t.Errorf("Contains result should be  %v. got %v", tc.contains, contains)
 			}
 		})
-  
+	}
+}
