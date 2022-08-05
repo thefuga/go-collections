@@ -1102,7 +1102,7 @@ func TestDuplicates(t *testing.T) {
 		},
 		{
 			"1 appearing twice",
-			[]string{1, 2, 1, 3, 4},
+			[]string{"1", "2", "1", "3", "4"},
 			map[string]int{"1": 2},
 		},
 		{
