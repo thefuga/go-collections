@@ -308,3 +308,16 @@ func FirstWhereFieldE[V any](slice []V, field string, matcher Matcher) (V, error
 
 	return *new(V), errors.NewValueNotFoundError()
 }
+
+// Duplicates returns duplicate values from the collection
+func Duplicates[V comparable](slice []V) map[V]int {
+	count := Tally(slice)
+
+	for k, v := range count {
+		if v == 1 {
+			delete(count, k)
+		}
+	}
+
+	return count
+}
