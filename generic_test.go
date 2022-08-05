@@ -1092,28 +1092,28 @@ func TestContains(t *testing.T) {
 func TestDuplicates(t *testing.T) {
 	testCases := []struct {
 		name     string
-		slice    []int
-		expected map[int]int
+		slice    []string
+		expected map[string]int
 	}{
 		{
 			"no duplicates",
-			[]int{1, 2, 3, 4},
-			map[int]int{},
+			[]string{"1", "2", "3", "4"},
+			map[string]int{},
 		},
 		{
 			"1 appearing twice",
-			[]int{1, 2, 1, 3, 4},
-			map[int]int{1: 2},
+			[]string{1, 2, 1, 3, 4},
+			map[string]int{"1": 2},
 		},
 		{
 			"1 and 2 appearing twice",
-			[]int{1, 2, 1, 3, 2},
-			map[int]int{1: 2, 2: 2},
+			[]string{"1", "2", "1", "3", "2"},
+			map[string]int{"1": 2, "2": 2},
 		},
 		{
 			"every element appearing twice",
-			[]int{1, 2, 3, 1, 2, 3},
-			map[int]int{1: 2, 2: 2, 3: 2},
+			[]string{"1", "2", "3", "1", "2", "3"},
+			map[string]int{"1": 2, "2": 2, "3": 2},
 		},
 	}
 
