@@ -43,3 +43,8 @@ func (c Collection[K, V]) Max() V {
 func (c Collection[K, V]) Median() float64 {
 	return collections.Median(c.ToSlice())
 }
+
+// Duplicates returns duplicate values from the collection
+func (c Collection[K, V]) Duplicates() map[V]int {
+	return collections.Duplicates(c.ToSlice())
+}

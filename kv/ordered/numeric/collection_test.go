@@ -1,6 +1,7 @@
 package numeric
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -109,6 +110,43 @@ func TestMedian(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			if actualMedian := tc.collection.Median(); actualMedian != tc.expectedMedian {
 				t.Errorf("expected median to be %f. Got %f", tc.expectedMedian, actualMedian)
+			}
+		})
+	}
+}
+
+func TestDuplicates(t *testing.T) {
+	testCases := []struct {
+		name       string
+		collection Collection[int, int]
+		expected   map[int]int
+	}{
+		{
+			"no duplicates",
+			Collect(1, 2, 3, 4),
+			map[int]int{},
+		},
+		{
+			"1 appearing twice",
+			Collect(1, 2, 1, 3, 4),
+			map[int]int{1: 2},
+		},
+		{
+			"1 and 2 appearing twice",
+			Collect(1, 2, 1, 3, 2),
+			map[int]int{1: 2, 2: 2},
+		},
+		{
+			"every element appearing twice",
+			Collect(1, 2, 3, 1, 2, 3),
+			map[int]int{1: 2, 2: 2, 3: 2},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := tc.collection.Duplicates(); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
 			}
 		})
 	}
