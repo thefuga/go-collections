@@ -96,7 +96,7 @@ func (c *Collection[K, V]) Get(k K) V {
 // GetE indexes the map with k, returning the corresponding value when it exists.
 // Should k not exist, a zeroed T value and an instance of errors.KeyNotFound
 // error is returned.
-// This function is safe to be used with empty maps
+// This function is safe to be used with empty maps.
 func (c Collection[K, V]) GetE(k K) (V, error) {
 	item, found := c[k]
 
@@ -146,8 +146,8 @@ func (c Collection[K, V]) Count() int {
 	return len(c)
 }
 
-// Put inserts v in the key represented by k. If k already exists on the map, it is
-// returned.
+// Put inserts v in the key represented by k. If k already exists on the map, it's
+// value is overridden.
 func (c Collection[K, V]) Put(k K, v V) Collection[K, V] {
 	c[k] = v
 
@@ -283,7 +283,7 @@ func (c Collection[K, V]) FlipE() (Collection[K, V], error) {
 	return flippedValues, nil
 }
 
-// Merge works similarly to Combine, but overrides conflicting keys.
+// Merge works similarly to Concat, but overrides conflicting keys.
 func (c Collection[K, V]) Merge(other Collection[K, V]) Collection[K, V] {
 	other.Each(func(k K, v V) {
 		c.Put(k, v)
