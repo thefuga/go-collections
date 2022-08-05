@@ -45,6 +45,6 @@ func (c Collection[K, V]) Median() float64 {
 }
 
 // Duplicates returns duplicate values from the collection
-func (c Collection[K, V]) Duplicates() map[V]int {
+func (c Collection[K, V]) Duplicates() []V {
 	return collections.Duplicates(c.ToSlice())
 }

@@ -119,27 +119,27 @@ func TestDuplicates(t *testing.T) {
 	testCases := []struct {
 		name       string
 		collection Collection[int, int]
-		expected   map[int]int
+		expected   []int
 	}{
 		{
 			"no duplicates",
 			Collect(1, 2, 3, 4),
-			map[int]int{},
+			[]int{},
 		},
 		{
 			"1 appearing twice",
 			Collect(1, 2, 1, 3, 4),
-			map[int]int{1: 2},
+			[]int{1},
 		},
 		{
 			"1 and 2 appearing twice",
 			Collect(1, 2, 1, 3, 2),
-			map[int]int{1: 2, 2: 2},
+			[]int{1, 2},
 		},
 		{
 			"every element appearing twice",
 			Collect(1, 2, 3, 1, 2, 3),
-			map[int]int{1: 2, 2: 2, 3: 2},
+			[]int{1, 2, 3},
 		},
 	}
 
