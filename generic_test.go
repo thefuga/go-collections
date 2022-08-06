@@ -1088,3 +1088,45 @@ func TestContains(t *testing.T) {
 		})
 	}
 }
+
+func TestDuplicates(t *testing.T) {
+	testCases := []struct {
+		name     string
+		slice    []string
+		expected []string
+	}{
+		{
+			"no duplicates",
+			[]string{"1", "2", "3", "4"},
+			[]string{},
+		},
+		{
+			"1 appearing twice",
+			[]string{"1", "2", "1", "3", "4"},
+			[]string{"1"},
+		},
+		{
+			"1 and 2 appearing twice",
+			[]string{"1", "2", "1", "3", "2"},
+			[]string{"1", "2"},
+		},
+		{
+			"every element appearing twice",
+			[]string{"1", "2", "3", "1", "2", "3"},
+			[]string{"1", "2", "3"},
+		},
+		{
+			"every element appearing thrice",
+			[]string{"1", "2", "3", "1", "2", "3", "1", "2", "3"},
+			[]string{"1", "2", "3"},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := Duplicates(tc.slice); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
