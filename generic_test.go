@@ -373,6 +373,63 @@ func TestMap(t *testing.T) {
 	}
 }
 
+func TestReduce(t *testing.T) {
+	testCases := []struct {
+		description string
+		input       []int
+		fn          func(int, int, int) int
+		initial     int
+		expected    int
+	}{
+		{
+			"reducing with sum",
+			[]int{1, 2, 3, 4, 5},
+			func(carry int, n int, _ int) int {
+				return carry + n
+			},
+			0,
+			15,
+		},
+		{
+			"reducing with subtraction",
+			[]int{1, 2, 3, 4, 5},
+			func(carry int, n int, _ int) int {
+				return carry - n
+			},
+			0,
+			-15,
+		},
+		{
+			"reducing with multiplication",
+			[]int{1, 2, 3, 4, 5},
+			func(carry int, n int, _ int) int {
+				return carry * n
+			},
+			1,
+			120,
+		},
+		{
+			"reducing with a fixed value",
+			[]int{1, 2, 3, 4, 5},
+			func(carry int, n int, _ int) int {
+				return 2
+			},
+			1,
+			2,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			actual := Reduce(tc.fn, tc.initial, tc.input)
+
+			if !reflect.DeepEqual(actual, tc.expected) {
+				t.Errorf("expected %d. got %d", tc.expected, actual)
+			}
+		})
+	}
+}
+
 func TestFirst(t *testing.T) {
 	testCases := []struct {
 		description string

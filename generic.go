@@ -157,6 +157,14 @@ func Map[T any](f func(i int, v T) T, slice []T) []T {
 	return mappedValues
 }
 
+// Reduce reduces the collection to a single value, passing the result of each
+// iteration into the subsequent iteration
+func Reduce[T, V any](f func(carry V, v T, i int) V, carry V, slice []T) V {
+	Each(func(i int, v T) { carry = f(carry, v, i) }, slice)
+
+	return carry
+}
+
 // Sort sorts the slice based on f. It can be used used with Asc or Desc functions
 // or with a custom closure.
 func Sort[T any](slice []T, f func(current, next T) bool) {
