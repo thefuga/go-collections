@@ -74,7 +74,7 @@ The major goals for this package are:
 
 - offer a good, clear interface to interact with slices and maps
 - use no external dependencies
-- good resource usage without micro-optimizations - this is not intended to be used by real-time or perfomance critical applications
+- good resource usage without micro-optimizations - this is not intended to be used by real-time or performance critical applications
 
 ### Limitations
 Some of the methods available on the Laravel Collections are - by design - impossible to be implemented in Go.
