@@ -333,3 +333,21 @@ func Duplicates[V comparable](slice []V) []V {
 
 	return duplicates
 }
+
+func Diff[V any](s []V, d []V) []V {
+	seen := make(map[any]uint8, len(d))
+	diff := []V{}
+
+	for _, n := range d {
+		seen[n] = 0
+	}
+
+	for _, n := range s {
+		if _, f := seen[n]; !f {
+			diff = append(diff, n)
+		}
+
+	}
+
+	return diff
+}

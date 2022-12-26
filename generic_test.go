@@ -1187,3 +1187,43 @@ func TestDuplicates(t *testing.T) {
 		})
 	}
 }
+
+func TestDiff(t *testing.T) {
+	type TestCase[T any] struct {
+		ReceiverSlice []T
+		DiffSlice     []T
+		Expected      []T
+	}
+
+	integerCases := []TestCase[int]{
+		{
+			[]int{1, 2, 3, 4, 5},
+			[]int{1, 2, 3},
+			[]int{4, 5},
+		},
+	}
+
+	stringCases := []TestCase[string]{
+		{
+			[]string{"foo", "bar"},
+			[]string{"foo"},
+			[]string{"bar"},
+		},
+	}
+
+	for _, tc := range integerCases {
+		t.Run("integer type", func(t *testing.T) {
+			if got := Diff(tc.ReceiverSlice, tc.DiffSlice); !reflect.DeepEqual(got, tc.Expected) {
+				t.Errorf("Expected '%v' got '%v' instead", tc.Expected, got)
+			}
+		})
+	}
+
+	for _, tc := range stringCases {
+		t.Run("String type", func(t *testing.T) {
+			if got := Diff(tc.ReceiverSlice, tc.DiffSlice); !reflect.DeepEqual(got, tc.Expected) {
+				t.Errorf("Expected '%v' got '%v' instead", tc.Expected, got)
+			}
+		})
+	}
+}
