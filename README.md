@@ -15,7 +15,7 @@ Pull requests are welcome. See [Contributing](https://github.com/thefuga/go-coll
 There are just functions with a slice type parameter to help the usage of slices. The main disadvantage here is the lack of piping.
 
 ```go
-func generciFunction() {
+func genericFunction() {
 	Each(
 		func(_, v int) {
 			fmt.Println(v) // 2, 3, 4, 5

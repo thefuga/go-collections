@@ -334,6 +334,24 @@ func Duplicates[V comparable](slice []V) []V {
 	return duplicates
 }
 
+func Diff[V any](s []V, d []V) []V {
+	seen := make(map[any]uint8, len(d))
+	diff := []V{}
+
+	for _, n := range d {
+		seen[n] = 0
+	}
+
+	for _, n := range s {
+		if _, f := seen[n]; !f {
+			diff = append(diff, n)
+		}
+
+	}
+
+	return diff
+}
+
 // Zip merges together the values of the given arrays at their corresponding indexes
 func Zip[V any](slices ...[]V) [][]V {
 	if len(slices) == 0 {

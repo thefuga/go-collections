@@ -16,7 +16,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] countBy
 - [ ] crossJoin
 - [ ] dd
-- [ ] diff
+- [x] diff
 - [ ] diffAssoc
 - [ ] diffKeys
 - [ ] doesntContain
