@@ -134,4 +134,4 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] whereNotNull
 - [ ] whereNull
 - [ ] wrap
-- [ ] zip
+- [x] zip
