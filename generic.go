@@ -352,7 +352,7 @@ func Diff[V any](s []V, d []V) []V {
 	return diff
 }
 
-// Zip merges together the values of the given arrays at their corresponding indexes
+// Zip merges the values of the given arrays at their corresponding indexes
 func Zip[V any](slices ...[]V) [][]V {
 	if len(slices) == 0 {
 		return [][]V{}
