@@ -334,20 +334,16 @@ func Duplicates[V comparable](slice []V) []V {
 	return duplicates
 }
 
-func Diff[V any](s []V, d []V) []V {
-	seen := make(map[any]uint8, len(d))
-	diff := []V{}
+func Diff[V comparable](slice1, slice2 []V) []V {
+	difference := []V{}
 
-	for _, n := range d {
-		seen[n] = 0
-	}
-
-	for _, n := range s {
-		if _, f := seen[n]; !f {
-			diff = append(diff, n)
+	for _, v := range slice1 {
+		if !Contains(slice2, func(_ any, v2 any) bool {
+			return v == v2
+		}) {
+			difference = append(difference, v)
 		}
-
 	}
 
-	return diff
+	return difference
 }
