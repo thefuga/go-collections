@@ -333,3 +333,28 @@ func Duplicates[V comparable](slice []V) []V {
 
 	return duplicates
 }
+
+// Zip merges together the values of the given arrays at their corresponding indexes
+func Zip[V any](slices ...[]V) [][]V {
+	if len(slices) == 0 {
+		return [][]V{}
+	}
+
+	minLen := len(slices[0])
+	for _, s := range slices {
+		if len(s) < minLen {
+			minLen = len(s)
+		}
+	}
+
+	result := make([][]V, minLen)
+
+	for i := range result {
+		result[i] = make([]V, len(slices))
+		for j := range result[i] {
+			result[i][j] = slices[j][i]
+		}
+	}
+
+	return result
+}

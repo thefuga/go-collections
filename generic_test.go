@@ -1187,3 +1187,67 @@ func TestDuplicates(t *testing.T) {
 		})
 	}
 }
+
+func TestZip(t *testing.T) {
+	testCases := []struct {
+		name     string
+		slices   [][]int
+		expected [][]int
+	}{
+		{
+			"no slices",
+			[][]int{},
+			[][]int{},
+		},
+		{
+			"same length",
+			[][]int{{1, 3, 5}, {2, 4, 6}},
+			[][]int{{1, 2}, {3, 4}, {5, 6}},
+		},
+		{
+			"shorter 'a'",
+			[][]int{{1, 3}, {2, 4, 6}},
+			[][]int{{1, 2}, {3, 4}},
+		},
+		{
+			"shorter 'b'",
+			[][]int{{1, 3, 5}, {2, 4}},
+			[][]int{{1, 2}, {3, 4}},
+		},
+		{
+			"empty 'a'",
+			[][]int{{}, {1, 2, 3}},
+			[][]int{},
+		},
+		{
+			"empty 'b'",
+			[][]int{{1, 2, 3}, {}},
+			[][]int{},
+		},
+		{
+			"multiple slices",
+			[][]int{{1}, {2}, {3}, {4}, {5}},
+			[][]int{{1, 2, 3, 4, 5}},
+		},
+		{
+			"one slice",
+			[][]int{{1, 2, 3, 4, 5}},
+			[][]int{{1}, {2}, {3}, {4}, {5}},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := Zip(tc.slices...); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
+
+func TestZippingTwiceReturnsTheOriginalInput(t *testing.T) {
+	input := [][]int{{1, 2}, {3, 4}}
+	if got := Zip(Zip(input...)...); !reflect.DeepEqual(input, got) {
+		t.Errorf("Expected '%v'. Got '%v'", input, got)
+	}
+}
