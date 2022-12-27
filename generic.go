@@ -334,16 +334,21 @@ func Duplicates[V comparable](slice []V) []V {
 	return duplicates
 }
 
-func Diff[V comparable](slice1, slice2 []V) []V {
-	difference := []V{}
+// Diff returns the difference from the left given slice against the right given slice
+func Diff[V comparable](leftSlice, rightSlice []V) []V {
+	seen := make(map[V]struct{}, len(rightSlice))
+	diff := []V{}
 
-	for _, v := range slice1 {
-		if !Contains(slice2, func(_ any, v2 any) bool {
-			return v == v2
-		}) {
-			difference = append(difference, v)
-		}
+	for _, v := range rightSlice {
+		seen[v] = struct{}{}
 	}
 
-	return difference
+	for _, v := range leftSlice {
+		if _, ok := seen[v]; !ok {
+			diff = append(diff, v)
+		}
+
+	}
+
+	return diff
 }
