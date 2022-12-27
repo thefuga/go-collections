@@ -337,12 +337,11 @@ func Duplicates[V comparable](slice []V) []V {
 // Diff returns the difference from the left given slice against the right given slice
 func Diff[V comparable](leftSlice, rightSlice []V) []V {
 	seen := make(map[V]struct{}, len(rightSlice))
-	diff := []V{}
-
 	for _, v := range rightSlice {
 		seen[v] = struct{}{}
 	}
 
+	diff := []V{}
 	for _, v := range leftSlice {
 		if _, ok := seen[v]; !ok {
 			diff = append(diff, v)
