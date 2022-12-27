@@ -334,7 +334,7 @@ func Duplicates[V comparable](slice []V) []V {
 	return duplicates
 }
 
-// Diff returns the difference from the left given slice against the right given slice
+// Diff returns a slice containing the elements that appear in the Left slice but not in the Right slice.
 func Diff[V comparable](leftSlice, rightSlice []V) []V {
 	seen := make(map[V]struct{}, len(rightSlice))
 	for _, v := range rightSlice {
