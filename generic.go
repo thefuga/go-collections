@@ -351,3 +351,28 @@ func Diff[V any](s []V, d []V) []V {
 
 	return diff
 }
+
+// Zip merges the values of the given slices at their corresponding indexes
+func Zip[V any](slices ...[]V) [][]V {
+	if len(slices) == 0 {
+		return [][]V{}
+	}
+
+	minLen := len(slices[0])
+	for _, s := range slices {
+		if len(s) < minLen {
+			minLen = len(s)
+		}
+	}
+
+	result := make([][]V, minLen)
+
+	for i := range result {
+		result[i] = make([]V, len(slices))
+		for j := range result[i] {
+			result[i][j] = slices[j][i]
+		}
+	}
+
+	return result
+}
