@@ -1403,3 +1403,39 @@ func TestUniqueBy(t *testing.T) {
 		})
 	}
 }
+
+func TestGroupBy(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    []int
+		f        func(i int) bool
+		expected map[bool][]int
+	}{
+		{
+			"bisect",
+			[]int{1, 2, 3, 4},
+			func(i int) bool { return i > 2 },
+			map[bool][]int{false: {1, 2}, true: {3, 4}},
+		},
+		{
+			"group by is even",
+			[]int{1, 2, 3, 4},
+			func(i int) bool { return i%2 == 0 },
+			map[bool][]int{true: {2, 4}, false: {1, 3}},
+		},
+		{
+			"group by is odd",
+			[]int{1, 2, 3, 4},
+			func(i int) bool { return i%2 == 1 },
+			map[bool][]int{false: {2, 4}, true: {1, 3}},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := GroupBy(tc.input, tc.f); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
