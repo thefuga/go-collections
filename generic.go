@@ -376,3 +376,18 @@ func Zip[V any](slices ...[]V) [][]V {
 
 	return result
 }
+
+// Unique returns all distinct items in the slice
+func Unique[V comparable](slice []V) []V {
+	unique := []V{}
+
+	seen := map[V]struct{}{}
+	for _, v := range slice {
+		if _, ok := seen[v]; !ok {
+			unique = append(unique, v)
+			seen[v] = struct{}{}
+		}
+	}
+
+	return unique
+}
