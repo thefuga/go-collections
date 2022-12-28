@@ -1291,3 +1291,45 @@ func TestZippingTwiceReturnsTheOriginalInput(t *testing.T) {
 		t.Errorf("Expected '%v'. Got '%v'", input, got)
 	}
 }
+
+func TestUnique(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    []int
+		expected []int
+	}{
+		{
+			"no duplicate",
+			[]int{1, 2, 3},
+			[]int{1, 2, 3},
+		},
+		{
+			"first value duplicate",
+			[]int{1, 1, 2, 3},
+			[]int{1, 2, 3},
+		},
+		{
+			"duplicate in the end",
+			[]int{1, 2, 3, 1},
+			[]int{1, 2, 3},
+		},
+		{
+			"every element is duplicate",
+			[]int{1, 1, 2, 2, 3, 3},
+			[]int{1, 2, 3},
+		},
+		{
+			"every element is duplicate in reverse order",
+			[]int{3, 3, 2, 2, 1, 1},
+			[]int{3, 2, 1},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := Unique(tc.input); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
