@@ -334,17 +334,17 @@ func Duplicates[V comparable](slice []V) []V {
 	return duplicates
 }
 
-func Diff[V any](s []V, d []V) []V {
-	seen := make(map[any]uint8, len(d))
-	diff := []V{}
-
-	for _, n := range d {
-		seen[n] = 0
+// Diff returns a slice containing the elements that appear in the Left slice but not in the Right slice.
+func Diff[V comparable](leftSlice, rightSlice []V) []V {
+	seen := make(map[V]struct{}, len(rightSlice))
+	for _, v := range rightSlice {
+		seen[v] = struct{}{}
 	}
 
-	for _, n := range s {
-		if _, f := seen[n]; !f {
-			diff = append(diff, n)
+	diff := []V{}
+	for _, v := range leftSlice {
+		if _, ok := seen[v]; !ok {
+			diff = append(diff, v)
 		}
 
 	}
