@@ -385,8 +385,8 @@ func Unique[V comparable](slice []V) []V {
 	for _, v := range slice {
 		if _, ok := seen[v]; !ok {
 			unique = append(unique, v)
+			seen[v] = struct{}{}
 		}
-		seen[v] = struct{}{}
 	}
 
 	return unique
