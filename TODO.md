@@ -37,7 +37,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] forget
 - [ ] forPage
 - [x] get
-- [ ] groupBy
+- [x] groupBy
 - [ ] implode
 - [ ] intersect
 - [ ] intersectByKeys
