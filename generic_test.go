@@ -1366,7 +1366,7 @@ func TestUniqueBy(t *testing.T) {
 	}
 
 	bobRoss := person{"bob", "ross"}
-	aliceHacker := person{"alice", "hacker"}
+	alyssaHacker := person{"alyssa", "hacker"}
 	bobMartin := person{"bob", "martin"}
 
 	testCases := []struct {
@@ -1377,19 +1377,19 @@ func TestUniqueBy(t *testing.T) {
 	}{
 		{
 			"first name",
-			[]person{bobRoss, aliceHacker, bobMartin},
+			[]person{bobRoss, alyssaHacker, bobMartin},
 			func(p person) string { return p.firstName },
-			[]person{bobRoss, aliceHacker},
+			[]person{bobRoss, alyssaHacker},
 		},
 		{
 			"last name",
-			[]person{bobRoss, aliceHacker, bobMartin},
+			[]person{bobRoss, alyssaHacker, bobMartin},
 			func(p person) string { return p.lastName },
-			[]person{bobRoss, aliceHacker, bobMartin},
+			[]person{bobRoss, alyssaHacker, bobMartin},
 		},
 		{
 			"fixed value",
-			[]person{bobRoss, aliceHacker, bobMartin},
+			[]person{bobRoss, alyssaHacker, bobMartin},
 			func(_ person) string { return "foo" },
 			[]person{bobRoss},
 		},
