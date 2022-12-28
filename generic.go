@@ -377,7 +377,7 @@ func Zip[V any](slices ...[]V) [][]V {
 	return result
 }
 
-// Unique returns all of the unique items in the slice
+// Unique returns all distinct items in the slice
 func Unique[V comparable](slice []V) []V {
 	unique := []V{}
 
