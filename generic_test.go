@@ -1404,7 +1404,7 @@ func TestUniqueBy(t *testing.T) {
 	}
 }
 
-func TestGroupBy(t *testing.T) {
+func TestGroupByPredicate(t *testing.T) {
 	testCases := []struct {
 		name     string
 		input    []int
@@ -1437,5 +1437,28 @@ func TestGroupBy(t *testing.T) {
 				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
 			}
 		})
+	}
+}
+
+func TestGroupByProperty(t *testing.T) {
+	type person struct {
+		firstName string
+		lastName  string
+	}
+	firstName := func(p person) string { return p.firstName }
+
+	bobRoss := person{"bob", "ross"}
+	alyssaHacker := person{"alyssa", "hacker"}
+	bobMartin := person{"bob", "martin"}
+
+	people := []person{bobRoss, alyssaHacker, bobMartin}
+
+	expected := map[string][]person{
+		"bob":    {bobRoss, bobMartin},
+		"alyssa": {alyssaHacker},
+	}
+
+	if got := GroupBy(people, firstName); !reflect.DeepEqual(got, expected) {
+		t.Errorf("Expected '%v'. Got '%v'", expected, got)
 	}
 }
