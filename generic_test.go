@@ -1403,3 +1403,62 @@ func TestUniqueBy(t *testing.T) {
 		})
 	}
 }
+
+func TestGroupByPredicate(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    []int
+		f        func(i int) bool
+		expected map[bool][]int
+	}{
+		{
+			"values greater than 2",
+			[]int{1, 2, 3, 4},
+			func(i int) bool { return i > 2 },
+			map[bool][]int{false: {1, 2}, true: {3, 4}},
+		},
+		{
+			"group evens",
+			[]int{1, 2, 3, 4},
+			func(i int) bool { return i%2 == 0 },
+			map[bool][]int{true: {2, 4}, false: {1, 3}},
+		},
+		{
+			"group odds",
+			[]int{1, 2, 3, 4},
+			func(i int) bool { return i%2 == 1 },
+			map[bool][]int{false: {2, 4}, true: {1, 3}},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := GroupBy(tc.input, tc.f); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
+
+func TestGroupByProperty(t *testing.T) {
+	type person struct {
+		firstName string
+		lastName  string
+	}
+	firstName := func(p person) string { return p.firstName }
+
+	bobRoss := person{"bob", "ross"}
+	alyssaHacker := person{"alyssa", "hacker"}
+	bobMartin := person{"bob", "martin"}
+
+	people := []person{bobRoss, alyssaHacker, bobMartin}
+
+	expected := map[string][]person{
+		"bob":    {bobRoss, bobMartin},
+		"alyssa": {alyssaHacker},
+	}
+
+	if got := GroupBy(people, firstName); !reflect.DeepEqual(got, expected) {
+		t.Errorf("Expected '%v'. Got '%v'", expected, got)
+	}
+}

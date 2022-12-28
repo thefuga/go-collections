@@ -407,3 +407,19 @@ func UniqueBy[V any, T comparable](slice []V, f func(v V) T) []V {
 
 	return unique
 }
+
+// GroupBy groups the slice's items by the return value of `f`
+func GroupBy[V any, T comparable](slice []V, f func(v V) T) map[T][]V {
+	result := map[T][]V{}
+
+	for _, v := range slice {
+		t := f(v)
+		if group, ok := result[t]; ok {
+			result[t] = append(group, v)
+		} else {
+			result[t] = []V{v}
+		}
+	}
+
+	return result
+}
