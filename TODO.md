@@ -111,7 +111,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] transform
 - [ ] undot
 - [ ] union
-- [ ] unique
+- [x] unique (Unique, UniqueBy)
 - [ ] uniqueStrict
 - [x] unless
 - [x] unlessEmpty

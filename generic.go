@@ -391,3 +391,19 @@ func Unique[V comparable](slice []V) []V {
 
 	return unique
 }
+
+// Unique uses the returned value of `f` to return distinct values in `slice`
+func UniqueBy[V any, T comparable](slice []V, f func(v V) T) []V {
+	unique := []V{}
+
+	seen := map[T]struct{}{}
+	for _, v := range slice {
+		t := f(v)
+		if _, ok := seen[t]; !ok {
+			unique = append(unique, v)
+			seen[t] = struct{}{}
+		}
+	}
+
+	return unique
+}
