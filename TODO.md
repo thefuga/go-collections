@@ -64,7 +64,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] nth
 - [x] only
 - [ ] pad
-- [ ] partition
+- [x] partition
 - [ ] pipe
 - [ ] pipeInto
 - [ ] pipeThrough

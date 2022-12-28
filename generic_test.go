@@ -1462,3 +1462,54 @@ func TestGroupByProperty(t *testing.T) {
 		t.Errorf("Expected '%v'. Got '%v'", expected, got)
 	}
 }
+
+func TestPartition(t *testing.T) {
+	testCases := []struct {
+		name          string
+		input         []int
+		f             func(i int) bool
+		expectedLeft  []int
+		expectedRight []int
+	}{
+		{
+			name:          "values greater less than or equal to 2",
+			input:         []int{1, 2, 3, 4},
+			f:             func(i int) bool { return i <= 2 },
+			expectedLeft:  []int{1, 2},
+			expectedRight: []int{3, 4},
+		},
+		{
+			name:          "even and odds",
+			input:         []int{1, 2, 3, 4},
+			f:             func(i int) bool { return i%2 == 0 },
+			expectedLeft:  []int{2, 4},
+			expectedRight: []int{1, 3},
+		},
+		{
+			name:          "all true",
+			input:         []int{1, 2, 3, 4},
+			f:             func(_ int) bool { return true },
+			expectedLeft:  []int{1, 2, 3, 4},
+			expectedRight: []int{},
+		},
+		{
+			name:          "all false",
+			input:         []int{1, 2, 3, 4},
+			f:             func(_ int) bool { return false },
+			expectedLeft:  []int{},
+			expectedRight: []int{1, 2, 3, 4},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			left, right := Partition(tc.input, tc.f)
+			if !reflect.DeepEqual(left, tc.expectedLeft) {
+				t.Errorf("Expected left '%v'. Got '%v'", tc.expectedLeft, left)
+			}
+			if !reflect.DeepEqual(left, tc.expectedLeft) {
+				t.Errorf("Expected right '%v'. Got '%v'", tc.expectedRight, right)
+			}
+		})
+	}
+}
