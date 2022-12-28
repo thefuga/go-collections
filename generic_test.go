@@ -1188,39 +1188,64 @@ func TestDuplicates(t *testing.T) {
 	}
 }
 
-func TestDiff(t *testing.T) {
-	type TestCase[T any] struct {
-		ReceiverSlice []T
-		DiffSlice     []T
-		Expected      []T
-	}
+type TestCase[T any] struct {
+	Name          string
+	ReceiverSlice []T
+	DiffSlice     []T
+	Expected      []T
+}
+
+func TestDiffWithInteger(t *testing.T) {
 
 	integerCases := []TestCase[int]{
 		{
+			"ordered values",
 			[]int{1, 2, 3, 4, 5},
 			[]int{1, 2, 3},
 			[]int{4, 5},
 		},
-	}
-
-	stringCases := []TestCase[string]{
 		{
-			[]string{"foo", "bar"},
-			[]string{"foo"},
-			[]string{"bar"},
+			"unordored values",
+			[]int{5, 4, 3, 2, 1},
+			[]int{3, 2, 1},
+			[]int{5, 4},
+		},
+		{
+			"values repeats",
+			[]int{1, 2, 2, 2, 2},
+			[]int{2},
+			[]int{1},
 		},
 	}
 
 	for _, tc := range integerCases {
-		t.Run("integer type", func(t *testing.T) {
+		t.Run(tc.Name, func(t *testing.T) {
 			if got := Diff(tc.ReceiverSlice, tc.DiffSlice); !reflect.DeepEqual(got, tc.Expected) {
 				t.Errorf("Expected '%v' got '%v' instead", tc.Expected, got)
 			}
 		})
 	}
 
+}
+
+func TestDiffWithString(t *testing.T) {
+	stringCases := []TestCase[string]{
+		{
+			"small case values",
+			[]string{"foo", "bar"},
+			[]string{"foo"},
+			[]string{"bar"},
+		},
+		{
+			"upper case values",
+			[]string{"FOO", "BAR"},
+			[]string{"foo"},
+			[]string{"FOO", "BAR"},
+		},
+	}
+
 	for _, tc := range stringCases {
-		t.Run("String type", func(t *testing.T) {
+		t.Run(tc.Name, func(t *testing.T) {
 			if got := Diff(tc.ReceiverSlice, tc.DiffSlice); !reflect.DeepEqual(got, tc.Expected) {
 				t.Errorf("Expected '%v' got '%v' instead", tc.Expected, got)
 			}
