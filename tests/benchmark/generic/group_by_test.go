@@ -9,9 +9,9 @@ import (
 
 func BenchmarkGroupBy(b *testing.B) {
 	slice := benchmark.BuildIntSlice()
-	idEven := func(i int) bool { return i%2 == 0 }
+	isEven := func(i int) bool { return i%2 == 0 }
 
 	for n := 0; n < b.N; n++ {
-		GroupBy(slice, idEven)
+		GroupBy(slice, isEven)
 	}
 }
