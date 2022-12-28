@@ -48,7 +48,7 @@ func TestGetMethod(t *testing.T) {
 
 	if _, err = collection.GetE(3); err.Error() != "key '3' not found" {
 		t.Error(err)
-		t.Error("Getting an unexisting key must return an error!")
+		t.Error("Getting a nonexisting key must return an error!")
 	}
 }
 
@@ -125,7 +125,7 @@ func TestSearchEMethod(t *testing.T) {
 	}
 
 	if _, err := collection.SearchE('a'); err.Error() != "value not found" {
-		t.Error("searching an unexisting item must return an error")
+		t.Error("searching a nonexisting item must return an error")
 	}
 }
 

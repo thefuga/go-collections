@@ -182,8 +182,8 @@ func Copy[V any](slice []V) []V {
 
 // Cut uses CutE, omitting the error.
 func Cut[V any](slice *[]V, i int, optionalJ ...int) []V {
-	cutted, _ := CutE(slice, i, optionalJ...)
-	return cutted
+	cut, _ := CutE(slice, i, optionalJ...)
+	return cut
 }
 
 // CutE removes and returns the portion of the slice limited by i (included) and j (not included).
@@ -195,8 +195,8 @@ func CutE[V any](slice *[]V, i int, optionalJ ...int) ([]V, error) {
 		return nil, errors.NewIndexOutOfBoundsError()
 	}
 
-	cutted := make([]V, j-i)
-	copy(cutted, (*slice)[i:])
+	cut := make([]V, j-i)
+	copy(cut, (*slice)[i:])
 
 	copy((*slice)[i:], (*slice)[j:])
 	for k, n := sliceLen-j+i, sliceLen; k < n; k++ {
@@ -204,7 +204,7 @@ func CutE[V any](slice *[]V, i int, optionalJ ...int) ([]V, error) {
 	}
 	*slice = (*slice)[:sliceLen-j+i]
 
-	return cutted, nil
+	return cut, nil
 }
 
 // DeleteE deletes the element corresponding to i from the slice. Every element on the

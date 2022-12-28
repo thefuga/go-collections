@@ -122,7 +122,7 @@ func TestAnd(t *testing.T) {
 func TestAndValue(t *testing.T) {
 	i := 10
 
-	if !AndValue[int](
+	if !AndValue(
 		11,
 		func(v int) Matcher { return ValueGT(-v) },
 		func(v int) Matcher { return ValueLT(v) },
@@ -142,7 +142,7 @@ func TestOr(t *testing.T) {
 func TestOrValue(t *testing.T) {
 	i := 11
 
-	if !OrValue[int](
+	if !OrValue(
 		10,
 		func(v int) Matcher { return ValueGT(v) },
 		func(v int) Matcher { return ValueLT(2 * v) },

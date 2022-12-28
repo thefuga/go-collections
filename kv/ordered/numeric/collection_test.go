@@ -95,12 +95,12 @@ func TestMedian(t *testing.T) {
 			expectedMedian: 3.5,
 		},
 		{
-			name:           "wikepedia example 1",
+			name:           "Wikipedia example 1",
 			collection:     Collect(1, 3, 3, 6, 7, 8, 9),
 			expectedMedian: 6.0,
 		},
 		{
-			name:           "wikepedia example 2",
+			name:           "Wikipedia example 2",
 			collection:     Collect(1, 2, 3, 4, 5, 7, 8, 9),
 			expectedMedian: 4.5,
 		},

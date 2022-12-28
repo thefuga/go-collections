@@ -41,13 +41,13 @@ func NewEmptyCollectionError(cause ...error) error {
 	return wrap("empty collection", nil, cause)
 }
 
-type IntexOutOfBoundsError error
+type IndexOutOfBoundsError error
 
 func NewIndexOutOfBoundsError(cause ...error) error {
 	return wrap("index out of bounds", nil, cause)
 }
 
-type KeysValuesLegthMismatch error
+type KeysValuesLengthMismatch error
 
 func NewKeysValuesLengthMismatch(cause ...error) error {
 	return wrap("keys and values don't have the same length", nil, cause)

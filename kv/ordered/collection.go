@@ -22,7 +22,7 @@ func Collect[T any](items ...T) Collection[int, T] {
 	return CollectSlice(items)
 }
 
-// CollectSlice makes a new collection, given each item a numeric sequencial key corresponding
+// CollectSlice makes a new collection, given each item a numeric sequential key corresponding
 // to the item index.
 func CollectSlice[T any](items []T) Collection[int, T] {
 	collection := makeCollection[int, T](len(items))

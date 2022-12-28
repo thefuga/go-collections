@@ -179,11 +179,11 @@ func TestPop(t *testing.T) {
 			}
 
 			if tc.sut.Count() != tc.count {
-				t.Errorf("expected count after poping to be %d. got %d", tc.count, tc.sut.Count())
+				t.Errorf("expected count after popping to be %d. got %d", tc.count, tc.sut.Count())
 			}
 
 			if tc.sut.Capacity() != tc.capacity {
-				t.Errorf("expected capacity after poping to be %d. got %d", tc.capacity, tc.sut.Capacity())
+				t.Errorf("expected capacity after popping to be %d. got %d", tc.capacity, tc.sut.Capacity())
 			}
 		})
 	}
@@ -231,11 +231,11 @@ func TestPopE(t *testing.T) {
 			}
 
 			if tc.sut.Count() != tc.count {
-				t.Errorf("expected count after poping to be %d. got %d", tc.count, tc.sut.Count())
+				t.Errorf("expected count after popping to be %d. got %d", tc.count, tc.sut.Count())
 			}
 
 			if tc.sut.Capacity() != tc.capacity {
-				t.Errorf("expected capacity after poping to be %d. got %d", tc.capacity, tc.sut.Capacity())
+				t.Errorf("expected capacity after popping to be %d. got %d", tc.capacity, tc.sut.Capacity())
 			}
 		})
 	}
@@ -282,7 +282,7 @@ func TestSearch(t *testing.T) {
 			-1,
 		},
 		{
-			"searching an unexisting element",
+			"searching a nonexisting element",
 			Collection[any]{1, "foo", 1.0},
 			"bar",
 			-1,
@@ -322,7 +322,7 @@ func TestSearchE(t *testing.T) {
 			fmt.Errorf("value not found"),
 		},
 		{
-			"searching an unexisting element",
+			"searching a nonexisting element",
 			Collection[any]{1, "foo", 1.0},
 			"bar",
 			-1,
@@ -580,7 +580,7 @@ func TestForgetE(t *testing.T) {
 		err         error
 	}{
 		{
-			"deleting an unexisting key",
+			"deleting a nonexisting key",
 			Collect("foo", "bar", "baz"),
 			Collect("foo", "bar", "baz"),
 			3,
@@ -600,7 +600,7 @@ func TestForgetE(t *testing.T) {
 			err := tc.sut.ForgetE(tc.i)
 			if !reflect.DeepEqual(tc.sut, tc.expected) {
 				t.Errorf(
-					"expected slice after deletting the key to be %v. got %v",
+					"expected slice after deleting the key to be %v. got %v",
 					tc.expected,
 					tc.sut,
 				)

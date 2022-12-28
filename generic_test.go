@@ -164,11 +164,11 @@ func TestPop(t *testing.T) {
 			}
 
 			if len(tc.sut) != tc.count {
-				t.Errorf("expected count after poping to be %d. got %d", tc.count, len(tc.sut))
+				t.Errorf("expected count after popping to be %d. got %d", tc.count, len(tc.sut))
 			}
 
 			if cap(tc.sut) != tc.capacity {
-				t.Errorf("expected capacity after poping to be %d. got %d", tc.capacity, cap(tc.sut))
+				t.Errorf("expected capacity after popping to be %d. got %d", tc.capacity, cap(tc.sut))
 			}
 		})
 	}
@@ -216,11 +216,11 @@ func TestPopE(t *testing.T) {
 			}
 
 			if len(tc.sut) != tc.count {
-				t.Errorf("expected count after poping to be %d. got %d", tc.count, len(tc.sut))
+				t.Errorf("expected count after popping to be %d. got %d", tc.count, len(tc.sut))
 			}
 
 			if cap(tc.sut) != tc.capacity {
-				t.Errorf("expected capacity after poping to be %d. got %d", tc.capacity, cap(tc.sut))
+				t.Errorf("expected capacity after popping to be %d. got %d", tc.capacity, cap(tc.sut))
 			}
 		})
 	}
@@ -253,7 +253,7 @@ func TestSearch(t *testing.T) {
 			-1,
 		},
 		{
-			"searching an unexisting element",
+			"searching a nonexisting element",
 			[]any{1, "foo", 1.0},
 			"bar",
 			-1,
@@ -293,7 +293,7 @@ func TestSearchE(t *testing.T) {
 			fmt.Errorf("value not found"),
 		},
 		{
-			"searching an unexisting element",
+			"searching a nonexisting element",
 			[]any{1, "foo", 1.0},
 			"bar",
 			-1,
@@ -604,7 +604,7 @@ func TestCut(t *testing.T) {
 			actual := Cut(&tc.from, tc.begin, tc.end)
 
 			if !reflect.DeepEqual(tc.expected, actual) {
-				t.Errorf("expected cutted slice to be %v. got %v", tc.expected, actual)
+				t.Errorf("expected cut slice to be %v. got %v", tc.expected, actual)
 			}
 
 			if !reflect.DeepEqual(tc.remaining, tc.from) {
@@ -649,7 +649,7 @@ func TestCutE(t *testing.T) {
 			actual, err := CutE(&tc.from, tc.begin, tc.end)
 
 			if !reflect.DeepEqual(tc.expected, actual) {
-				t.Errorf("expected cutted slice to be %v. got %v", tc.expected, actual)
+				t.Errorf("expected cut slice to be %v. got %v", tc.expected, actual)
 			}
 
 			if !reflect.DeepEqual(tc.remaining, tc.from) {
@@ -674,7 +674,7 @@ func TestForgetE(t *testing.T) {
 		err         error
 	}{
 		{
-			"deleting an unexisting key",
+			"deleting a nonexisting key",
 			[]string{"foo", "bar", "baz"},
 			[]string{"foo", "bar", "baz"},
 			3,
@@ -694,7 +694,7 @@ func TestForgetE(t *testing.T) {
 			err := ForgetE(&tc.sut, tc.i)
 			if !reflect.DeepEqual(tc.sut, tc.expected) {
 				t.Errorf(
-					"expected slice after deletting the key to be %v. got %v",
+					"expected slice after deleting the key to be %v. got %v",
 					tc.expected,
 					tc.sut,
 				)
@@ -718,7 +718,7 @@ func TestDeleteE(t *testing.T) {
 		err         error
 	}{
 		{
-			"deleting an unexisting key",
+			"deleting a nonexisting key",
 			[]string{"foo", "bar", "baz"},
 			[]string{"foo", "bar", "baz"},
 			3,
@@ -738,7 +738,7 @@ func TestDeleteE(t *testing.T) {
 			err := DeleteE(&tc.sut, tc.i)
 			if !reflect.DeepEqual(tc.sut, tc.expected) {
 				t.Errorf(
-					"expected slice after deletting the key to be %v. got %v",
+					"expected slice after deleting the key to be %v. got %v",
 					tc.expected,
 					tc.sut,
 				)
@@ -787,7 +787,7 @@ func TestShift(t *testing.T) {
 			}
 
 			if length := len(tc.sut); length != tc.length {
-				t.Errorf("expected sut lenght to be %d. got %d", tc.length, length)
+				t.Errorf("expected sut length to be %d. got %d", tc.length, length)
 			}
 		})
 	}
@@ -829,7 +829,7 @@ func TestShiftE(t *testing.T) {
 			}
 
 			if length := len(tc.sut); length != tc.length {
-				t.Errorf("expected sut lenght to be %d. got %d", tc.length, length)
+				t.Errorf("expected sut length to be %d. got %d", tc.length, length)
 			}
 
 			if tc.err != nil || err != nil {

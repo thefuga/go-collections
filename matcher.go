@@ -23,7 +23,7 @@ func ValueEquals(value any) Matcher {
 }
 
 // ValueDiffers builds a matcher to compare the given value (with reflect.DeepEqual)
-// to the value passed by the matcher caller. It has the opposite behaviour from ValueEquals
+// to the value passed by the matcher caller. It has the opposite behavior from ValueEquals
 func ValueDiffers(value any) Matcher {
 	return func(_ any, collectionValue any) bool {
 		return !reflect.DeepEqual(value, collectionValue)
@@ -96,7 +96,7 @@ func And[V any](matchers ...Matcher) Matcher {
 }
 
 // AndValue is similar to And, but it receives matchers wrapped by a function which
-// will receive v. It is useful to compare build matchers dinamically at the execution time
+// will receive v. It is useful to compare build matchers dynamically at the execution time
 // rather than at the function's call time (i.e. the composed matchers won't be called until
 // the higher order matcher is called).
 func AndValue[V any](v V, matchers ...func(V) Matcher) Matcher {
