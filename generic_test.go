@@ -1360,44 +1360,44 @@ func TestUnique(t *testing.T) {
 }
 
 func TestUniqueBy(t *testing.T) {
-	type user struct {
+	type person struct {
 		firstName string
 		lastName  string
 	}
 
-	bobRoss := user{"bob", "ross"}
-	aliceHacker := user{"alice", "hacker"}
-	bobMartin := user{"bob", "martin"}
+	bobRoss := person{"bob", "ross"}
+	aliceHacker := person{"alice", "hacker"}
+	bobMartin := person{"bob", "martin"}
 
 	testCases := []struct {
 		name     string
-		input    []user
-		fn       func(u user) string
-		expected []user
+		input    []person
+		f        func(p person) string
+		expected []person
 	}{
 		{
 			"first name",
-			[]user{bobRoss, aliceHacker, bobMartin},
-			func(u user) string { return u.firstName },
-			[]user{bobRoss, aliceHacker},
+			[]person{bobRoss, aliceHacker, bobMartin},
+			func(p person) string { return p.firstName },
+			[]person{bobRoss, aliceHacker},
 		},
 		{
 			"last name",
-			[]user{bobRoss, aliceHacker, bobMartin},
-			func(u user) string { return u.lastName },
-			[]user{bobRoss, aliceHacker, bobMartin},
+			[]person{bobRoss, aliceHacker, bobMartin},
+			func(p person) string { return p.lastName },
+			[]person{bobRoss, aliceHacker, bobMartin},
 		},
 		{
 			"fixed value",
-			[]user{bobRoss, aliceHacker, bobMartin},
-			func(_ user) string { return "foo" },
-			[]user{bobRoss},
+			[]person{bobRoss, aliceHacker, bobMartin},
+			func(_ person) string { return "foo" },
+			[]person{bobRoss},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := UniqueBy(tc.input, tc.fn); !reflect.DeepEqual(got, tc.expected) {
+			if got := UniqueBy(tc.input, tc.f); !reflect.DeepEqual(got, tc.expected) {
 				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
 			}
 		})
