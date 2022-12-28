@@ -45,7 +45,7 @@ func ExampleCollection_Put() {
 }
 
 func ExampleCollection_Push() {
-	c := Collect[int](123, 456)
+	c := Collect(123, 456)
 	c.Push(789)
 	fmt.Printf("%v", c.Get(2))
 	// Output:

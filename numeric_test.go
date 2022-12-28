@@ -141,12 +141,12 @@ func TestMedian(t *testing.T) {
 			3.5,
 		},
 		{
-			"wikepedia example 1",
+			"Wikipedia example 1",
 			[]int{1, 3, 3, 6, 7, 8, 9},
 			6.0,
 		},
 		{
-			"wikepedia example 2",
+			"Wikipedia example 2",
 			[]int{1, 2, 3, 4, 5, 7, 8, 9},
 			4.5,
 		},

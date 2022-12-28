@@ -11,7 +11,7 @@ import (
 	"github.com/thefuga/go-collections/slice"
 )
 
-// Collection is a custom generic map type specially useful to pipe generric methos.
+// Collection is a custom generic map type specially useful to pipe generic method.
 type Collection[K comparable, V any] map[K]V
 
 // Collect returns the result of CollectSlice passing the given items.
@@ -19,7 +19,7 @@ func Collect[T any](items ...T) Collection[int, T] {
 	return CollectSlice(items)
 }
 
-// CollectSlice makes a map[int]T, given each item a numeric sequencial key corresponding
+// CollectSlice makes a map[int]T, given each item a numeric sequential key corresponding
 // to the item index.
 func CollectSlice[T any](items []T) Collection[int, T] {
 	collection := make(Collection[int, T], len(items))
@@ -46,7 +46,7 @@ func Combine[K comparable, V any](
 
 // CombineE uses the first slice as keys and the second as values to build a map.
 // The order is preserved.
-// Should the lenght of keys and values slices be different, an instance of errors.KeysValuesLegthMismatch
+// Should the length of keys and values slices be different, an instance of errors.KeysValuesLengthMismatch
 // is returned.
 func CombineE[K comparable, V any](
 	keys slice.Collection[K], values slice.Collection[V],
