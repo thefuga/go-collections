@@ -1412,19 +1412,19 @@ func TestGroupBy(t *testing.T) {
 		expected map[bool][]int
 	}{
 		{
-			"bisect",
+			"values greater than 2",
 			[]int{1, 2, 3, 4},
 			func(i int) bool { return i > 2 },
 			map[bool][]int{false: {1, 2}, true: {3, 4}},
 		},
 		{
-			"group by is even",
+			"group evens",
 			[]int{1, 2, 3, 4},
 			func(i int) bool { return i%2 == 0 },
 			map[bool][]int{true: {2, 4}, false: {1, 3}},
 		},
 		{
-			"group by is odd",
+			"group odds",
 			[]int{1, 2, 3, 4},
 			func(i int) bool { return i%2 == 1 },
 			map[bool][]int{false: {2, 4}, true: {1, 3}},
