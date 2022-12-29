@@ -4,7 +4,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] all (ToSlice)
 - [x] average
 - [x] avg (Average)
-- [ ] chunk
+- [x] chunk
 - [ ] chunkWhile
 - [ ] collapse
 - [x] collect (Collect, CollectMap)
