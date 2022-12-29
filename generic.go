@@ -424,18 +424,16 @@ func GroupBy[V any, T comparable](slice []V, f func(v V) T) map[T][]V {
 	return result
 }
 
-// Partition returns two slices: the first containing all elements that returned
-// `true` for `f`, and the second containing all others
-func Partition[V any](slice []V, f func(v V) bool) ([]V, []V) {
+// Partition divides the slice into two slices based on the given predicate function.
+// It returns a slice of elements that satisfy the predicate and a slice of elements that do not.
+func Partition[V any](slice []V, predicate func(v V) bool) ([]V, []V) {
 	pass, reject := []V{}, []V{}
-
 	for _, v := range slice {
-		if f(v) {
+		if predicate(v) {
 			pass = append(pass, v)
 		} else {
 			reject = append(reject, v)
 		}
 	}
-
 	return pass, reject
 }
