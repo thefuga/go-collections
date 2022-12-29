@@ -1513,3 +1513,45 @@ func TestPartition(t *testing.T) {
 		})
 	}
 }
+
+func TestChunk(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    []int
+		size     int
+		expected [][]int
+	}{
+		{
+			name:     "no elements left",
+			input:    []int{1, 2, 3, 4, 5, 6},
+			size:     2,
+			expected: [][]int{{1, 2}, {3, 4}, {5, 6}},
+		},
+		{
+			name:     "elements left",
+			input:    []int{1, 2, 3, 4, 5},
+			size:     2,
+			expected: [][]int{{1, 2}, {3, 4}, {5}},
+		},
+		{
+			name:     "one big chunk",
+			input:    []int{1, 2, 3, 4, 5, 6},
+			size:     6,
+			expected: [][]int{{1, 2, 3, 4, 5, 6}},
+		},
+		{
+			name:     "chunks of one",
+			input:    []int{1, 2, 3, 4, 5, 6},
+			size:     1,
+			expected: [][]int{{1}, {2}, {3}, {4}, {5}, {6}},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := Chunk(tc.input, tc.size); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}

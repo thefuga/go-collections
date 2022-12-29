@@ -437,3 +437,24 @@ func Partition[V any](slice []V, predicate func(v V) bool) ([]V, []V) {
 	}
 	return pass, reject
 }
+
+func divCeil(a, b int) int {
+	if a%b == 0 {
+		return a / b
+	}
+	return a/b + 1
+}
+
+// Chunk breaks the slice into multiple, smaller slices of a given size
+func Chunk[V any](slice []V, size int) [][]V {
+	result := make([][]V, divCeil(len(slice), size))
+	for i := range result {
+		result[i] = make([]V, 0, size)
+	}
+
+	for i, v := range slice {
+		result[i/size] = append(result[i/size], v)
+	}
+
+	return result
+}
