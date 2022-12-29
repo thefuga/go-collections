@@ -462,3 +462,12 @@ func Reverse[V any](slice []V) []V {
 	}
 	return slice
 }
+
+// SumBy accumulates values returned by `f`
+func SumBy[V any, T Number](slice []V, f func(v V) T) T {
+	var sum T
+	for _, v := range slice {
+		sum += f(v)
+	}
+	return sum
+}
