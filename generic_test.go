@@ -1555,3 +1555,45 @@ func TestChunk(t *testing.T) {
 		})
 	}
 }
+
+func TestReverse(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    []int
+		expected []int
+	}{
+		{
+			name:     "even number of elements",
+			input:    []int{1, 2, 3, 4},
+			expected: []int{4, 3, 2, 1},
+		},
+		{
+			name:     "odd number of elements",
+			input:    []int{1, 2, 3},
+			expected: []int{3, 2, 1},
+		},
+		{
+			name:     "empty",
+			input:    []int{},
+			expected: []int{},
+		},
+		{
+			name:     "one element",
+			input:    []int{1},
+			expected: []int{1},
+		},
+		{
+			name:     "two elements",
+			input:    []int{1, 2},
+			expected: []int{2, 1},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := Reverse(tc.input); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}

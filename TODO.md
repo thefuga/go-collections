@@ -76,12 +76,12 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] put
 - [ ] random
 - [ ] range
-- [ ] reduce
+- [x] reduce
 - [ ] reduceSpread
 - [x] reject
 - [ ] replace
 - [ ] replaceRecursive
-- [ ] reverse
+- [x] reverse
 - [x] search (by value)
 - [ ] shift
 - [ ] shuffle
