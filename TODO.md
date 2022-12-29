@@ -100,7 +100,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] splice
 - [ ] split
 - [ ] splitIn
-- [ ] sum
+- [x] sum (Sum, SumBy)
 - [ ] take
 - [ ] takeUntil
 - [ ] takeWhile

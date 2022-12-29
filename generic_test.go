@@ -1597,3 +1597,81 @@ func TestReverse(t *testing.T) {
 		})
 	}
 }
+
+func TestSumByInt(t *testing.T) {
+	type item struct {
+		a int
+		b int
+	}
+
+	i1 := item{1, 2}
+	i2 := item{3, 4}
+	i3 := item{5, 6}
+
+	testCases := []struct {
+		name     string
+		input    []item
+		f        func(i item) int
+		expected int
+	}{
+		{
+			name:     "sum by property a",
+			input:    []item{i1, i2, i3},
+			f:        func(i item) int { return i.a },
+			expected: i1.a + i2.a + i3.a,
+		},
+		{
+			name:     "sum by property b",
+			input:    []item{i1, i2, i3},
+			f:        func(i item) int { return i.b },
+			expected: i1.b + i2.b + i3.b,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := SumBy(tc.input, tc.f); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%d'. Got '%d'", tc.expected, got)
+			}
+		})
+	}
+}
+
+func TestSumByFloat(t *testing.T) {
+	type item struct {
+		a float64
+		b float64
+	}
+
+	i1 := item{1.0, 2.0}
+	i2 := item{3.0, 4.0}
+	i3 := item{5.0, 6.0}
+
+	testCases := []struct {
+		name     string
+		input    []item
+		f        func(i item) float64
+		expected float64
+	}{
+		{
+			name:     "sum by property a",
+			input:    []item{i1, i2, i3},
+			f:        func(i item) float64 { return i.a },
+			expected: i1.a + i2.a + i3.a,
+		},
+		{
+			name:     "sum by property b",
+			input:    []item{i1, i2, i3},
+			f:        func(i item) float64 { return i.b },
+			expected: i1.b + i2.b + i3.b,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := SumBy(tc.input, tc.f); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%f'. Got '%f'", tc.expected, got)
+			}
+		})
+	}
+}
