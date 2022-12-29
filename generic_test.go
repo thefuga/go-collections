@@ -1583,7 +1583,7 @@ func TestReverse(t *testing.T) {
 			expected: []int{1},
 		},
 		{
-			name:     "two element",
+			name:     "two elements",
 			input:    []int{1, 2},
 			expected: []int{2, 1},
 		},
