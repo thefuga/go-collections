@@ -124,8 +124,8 @@ func TestAndValue(t *testing.T) {
 
 	if !AndValue(
 		11,
-		func(v int) Matcher { return ValueGT(-v) },
-		func(v int) Matcher { return ValueLT(v) },
+		func(v int) AnyMatcher { return ValueGT(-v) },
+		func(v int) AnyMatcher { return ValueLT(v) },
 	)(0, i) {
 		t.Error("10 is greater than -11 and lesser than 11")
 	}
@@ -144,8 +144,8 @@ func TestOrValue(t *testing.T) {
 
 	if !OrValue(
 		10,
-		func(v int) Matcher { return ValueGT(v) },
-		func(v int) Matcher { return ValueLT(2 * v) },
+		func(v int) AnyMatcher { return ValueGT(v) },
+		func(v int) AnyMatcher { return ValueLT(2 * v) },
 	)(0, i) {
 		t.Error("11 is greater than 10 and lesser than 20")
 	}

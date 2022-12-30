@@ -18,7 +18,7 @@ func Collect[V any](values ...V) Collection[V] {
 }
 
 // Contains passes the collection and the given params to the generic Contains function.
-func (c Collection[V]) Contains(matcher collections.Matcher) bool {
+func (c Collection[V]) Contains(matcher collections.AnyMatcher) bool {
 	return collections.Contains(c, matcher)
 }
 

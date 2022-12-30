@@ -536,7 +536,7 @@ func TestContains(t *testing.T) {
 	testCases := []struct {
 		description string
 		collection  Collection[int]
-		matcher     collections.Matcher
+		matcher     collections.AnyMatcher
 		contains    bool
 	}{
 		{

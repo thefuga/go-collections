@@ -895,7 +895,7 @@ func TestFirstWhereField(t *testing.T) {
 		description string
 		sut         []user
 		field       string
-		matcher     Matcher
+		matcher     AnyMatcher
 		user        user
 	}{
 		{
@@ -935,7 +935,7 @@ func TestFirstWhereFieldE(t *testing.T) {
 		description string
 		sut         []user
 		field       string
-		matcher     Matcher
+		matcher     AnyMatcher
 		user        user
 		err         error
 	}{
@@ -988,7 +988,7 @@ func TestFirstWhereE(t *testing.T) {
 	testCases := []struct {
 		description string
 		sut         []int
-		matcher     Matcher
+		matcher     AnyMatcher
 		v           int
 		err         error
 	}{
@@ -1037,7 +1037,7 @@ func TestFirstWhereWithComposedMatchers(t *testing.T) {
 		description string
 		sut         []user
 		field       string
-		matcher     Matcher
+		matcher     AnyMatcher
 		user        user
 		err         error
 	}{
@@ -1090,7 +1090,7 @@ func TestFirstWhere(t *testing.T) {
 	testCases := []struct {
 		description string
 		sut         []int
-		matcher     Matcher
+		matcher     AnyMatcher
 		v           int
 	}{
 		{
@@ -1120,7 +1120,7 @@ func TestContains(t *testing.T) {
 	testCases := []struct {
 		description string
 		slice       []int
-		matcher     Matcher
+		matcher     AnyMatcher
 		contains    bool
 	}{
 		{

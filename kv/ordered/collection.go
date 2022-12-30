@@ -234,7 +234,7 @@ func (c Collection[K, V]) FirstE() (V, error) {
 
 // FirstOrFail returns the key-value pair of the first occurrence matched by f.
 // Should no entry match, an instance of NewValueNotFoundError is returned.
-func (c Collection[K, V]) FirstOrFail(f collections.Matcher) (K, V, error) {
+func (c Collection[K, V]) FirstOrFail(f collections.AnyMatcher) (K, V, error) {
 	var (
 		found bool
 		v     V
@@ -340,13 +340,13 @@ func (c Collection[K, V]) Concat(concatTo Collection[K, V]) Collection[K, V] {
 }
 
 // Contains checks if any values on the Collection match f.
-func (c Collection[K, V]) Contains(f collections.Matcher) bool {
+func (c Collection[K, V]) Contains(f collections.AnyMatcher) bool {
 	_, _, err := c.FirstOrFail(f)
 	return err == nil
 }
 
 // Every checks if every value on the Collection match f.
-func (c Collection[K, V]) Every(f collections.Matcher) bool {
+func (c Collection[K, V]) Every(f collections.AnyMatcher) bool {
 	contains := true
 
 	c.Each(func(k K, v V) {
