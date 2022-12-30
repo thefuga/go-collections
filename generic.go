@@ -489,13 +489,11 @@ func Interpose[V any](slice []V, sep V) []V {
 
 	resultLen := len(slice)*2 - 1
 	result := make([]V, resultLen)
+	result[resultLen-1] = slice[len(slice)-1]
 
-	for i, v := range slice {
-		result[i*2] = v
-	}
-
-	for i := 1; i < resultLen; i = i + 2 {
-		result[i] = sep
+	for i := 0; i+1 < len(slice); i++ {
+		result[i*2] = slice[i]
+		result[i*2+1] = sep
 	}
 
 	return result
