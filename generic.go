@@ -471,3 +471,12 @@ func SumBy[V any, T Number](slice []V, f func(v V) T) T {
 	}
 	return sum
 }
+
+// Range returns a slice containing integers in the specified range (i.e. [min, max])
+func Range[T Integer](min, max T) []T {
+	result := make([]T, max-min+1)
+	for i := range result {
+		result[i] = T(i) + min
+	}
+	return result
+}

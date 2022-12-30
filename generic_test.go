@@ -1675,3 +1675,39 @@ func TestSumByFloat(t *testing.T) {
 		})
 	}
 }
+
+func TestRange(t *testing.T) {
+	testCases := []struct {
+		name     string
+		min      int
+		max      int
+		expected []int
+	}{
+		{
+			name:     "is inclusive",
+			min:      0,
+			max:      1,
+			expected: []int{0, 1},
+		},
+		{
+			name:     "returns a slice with a single element when min = max",
+			min:      1,
+			max:      1,
+			expected: []int{1},
+		},
+		{
+			name:     "returns an empty slice when min > max",
+			min:      1,
+			max:      0,
+			expected: []int{},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := Range(tc.min, tc.max); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
