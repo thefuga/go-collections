@@ -480,3 +480,22 @@ func Range[T Integer](min, max T) []T {
 	}
 	return result
 }
+
+func Interpose[V any](slice []V, sep V) []V {
+	if len(slice) == 0 {
+		return slice
+	}
+
+	resultLen := len(slice)*2 - 1
+	result := make([]V, resultLen)
+
+	for i, v := range slice {
+		result[i*2] = v
+	}
+
+	for i := 1; i < resultLen; i = i + 2 {
+		result[i] = sep
+	}
+
+	return result
+}

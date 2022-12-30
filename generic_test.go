@@ -1711,3 +1711,51 @@ func TestRange(t *testing.T) {
 		})
 	}
 }
+
+func TestInterpose(t *testing.T) {
+	testCases := []struct {
+		name     string
+		slice    []string
+		sep      string
+		expected []string
+	}{
+		{
+			name:     "with even slice length",
+			slice:    []string{"1", "2", "3", "4"},
+			sep:      ",",
+			expected: []string{"1", ",", "2", ",", "3", ",", "4"},
+		},
+		{
+			name:     "with odd slice length",
+			slice:    []string{"1", "2", "3"},
+			sep:      ",",
+			expected: []string{"1", ",", "2", ",", "3"},
+		},
+		{
+			name:     "empty slice",
+			slice:    []string{},
+			sep:      ",",
+			expected: []string{},
+		},
+		{
+			name:     "one element",
+			slice:    []string{"a"},
+			sep:      ",",
+			expected: []string{"a"},
+		},
+		{
+			name:     "two elements",
+			slice:    []string{"a", "b"},
+			sep:      ",",
+			expected: []string{"a", ",", "b"},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := Interpose(tc.slice, tc.sep); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
