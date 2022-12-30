@@ -481,6 +481,7 @@ func Range[T Integer](min, max T) []T {
 	return result
 }
 
+// Interpose adds `sep` between every element in `slice`
 func Interpose[V any](slice []V, sep V) []V {
 	if len(slice) == 0 {
 		return slice
