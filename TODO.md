@@ -1,6 +1,8 @@
 # TODO
+
 The list bellow is based on methods available on https://laravel.com/docs/9.x/collections#available-methods
 Not all methods will make sense on Go and won't be implemented.
+
 - [x] all (ToSlice)
 - [x] average
 - [x] avg (Average)
@@ -35,7 +37,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] flatten
 - [x] flip
 - [x] forget
-- [ ] forPage
+- [x] forPage
 - [x] get
 - [x] groupBy
 - [ ] implode
@@ -90,7 +92,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] skipWhile
 - [ ] sliding
 - [ ] sole
-- [x] sort 
+- [x] sort
 - [ ] sortBy
 - [ ] sortByDesc
 - [ ] sortDesc

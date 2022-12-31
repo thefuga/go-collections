@@ -1759,3 +1759,71 @@ func TestInterpose(t *testing.T) {
 		})
 	}
 }
+
+func TestForPage(t *testing.T) {
+	testCases := []struct {
+		name     string
+		slice    []int
+		page     int
+		size     int
+		expected []int
+	}{
+		{
+			name:     "1 through 9, page 1 with size 3",
+			slice:    []int{1, 2, 3, 4, 5, 6, 7, 8, 9},
+			page:     1,
+			size:     3,
+			expected: []int{1, 2, 3},
+		},
+		{
+			name:     "1 through 9, page 2 with size 3",
+			slice:    []int{1, 2, 3, 4, 5, 6, 7, 8, 9},
+			page:     2,
+			size:     3,
+			expected: []int{4, 5, 6},
+		},
+		{
+			name:     "1 through 9, page 3 with size 3",
+			slice:    []int{1, 2, 3, 4, 5, 6, 7, 8, 9},
+			page:     3,
+			size:     3,
+			expected: []int{7, 8, 9},
+		},
+		{
+			name:     "page = 0",
+			slice:    []int{1, 2, 3},
+			page:     0,
+			size:     3,
+			expected: []int{},
+		},
+		{
+			name:     "page * size > len(slice)",
+			slice:    []int{1, 2, 3},
+			page:     2,
+			size:     3,
+			expected: []int{},
+		},
+		{
+			name:     "size = len(slice)",
+			slice:    []int{1, 2, 3},
+			page:     1,
+			size:     3,
+			expected: []int{1, 2, 3},
+		},
+		{
+			name:     "size > len(slice)",
+			slice:    []int{1, 2, 3},
+			page:     1,
+			size:     10,
+			expected: []int{1, 2, 3},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := ForPage(tc.slice, tc.page, tc.size); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
