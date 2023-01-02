@@ -1,6 +1,10 @@
 package collections
 
-import "reflect"
+import (
+	"reflect"
+
+	"github.com/thefuga/go-collections/internal"
+)
 
 // Matcher is used by matchers on functions that  must compare keys and values from
 // a collection.
@@ -32,7 +36,7 @@ func ValueDiffers(value any) Matcher {
 
 // ValueGT compares the given numeric value to check if it is greater than the value
 // given by the matcher's caller.
-func ValueGT[T Number](value T) Matcher {
+func ValueGT[T internal.Number](value T) Matcher {
 	return func(_ any, collectionValue any) bool {
 		if cast, ok := collectionValue.(T); ok {
 			return value < cast
@@ -43,7 +47,7 @@ func ValueGT[T Number](value T) Matcher {
 
 // ValueLT compares the given numeric value to check if it is lesser than the value
 // given by the matcher's caller.
-func ValueLT[T Number](value T) Matcher {
+func ValueLT[T internal.Number](value T) Matcher {
 	return func(_ any, collectionValue any) bool {
 		if cast, ok := collectionValue.(T); ok {
 			return value > cast
@@ -143,7 +147,7 @@ func OrValue[V any](v V, matchers ...func(V) Matcher) Matcher {
 
 // Asc can be used as a Sort param to order collections in ascending order. It only
 // works on slices holding Relational values.
-func Asc[T Relational]() func(T, T) bool {
+func Asc[T internal.Relational]() func(T, T) bool {
 	return func(current, next T) bool {
 		return current < next
 	}
@@ -151,7 +155,7 @@ func Asc[T Relational]() func(T, T) bool {
 
 // Desc can be used as a Sort param to order collections in descending order. It only
 // works on slices holding Relational values.
-func Desc[T Relational]() func(T, T) bool {
+func Desc[T internal.Relational]() func(T, T) bool {
 	return func(current, next T) bool {
 		return current > next
 	}

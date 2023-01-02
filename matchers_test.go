@@ -1,6 +1,10 @@
 package collections
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/thefuga/go-collections/internal"
+)
 
 func TestKeyEquals(t *testing.T) {
 	if !KeyEquals("foo")("foo", nil) {
@@ -63,7 +67,7 @@ func TestAssert(t *testing.T) {
 	underlyingValue := "generic value"
 	var genericType any = underlyingValue
 
-	concreteType, _ = Assert[string](genericType)
+	concreteType, _ = internal.Assert[string](genericType)
 
 	if concreteType != underlyingValue {
 		t.Error("Expected concreteType to have the value of underlyingValue")
@@ -74,7 +78,7 @@ func TestAssertE(t *testing.T) {
 	underlyingValue := "generic value"
 	var genericType any = underlyingValue
 
-	concreteType, assertionErr := AssertE[string](genericType)
+	concreteType, assertionErr := internal.AssertE[string](genericType)
 
 	if assertionErr != nil {
 		t.Error("Unexpected error casting value.")
@@ -84,7 +88,7 @@ func TestAssertE(t *testing.T) {
 		t.Error("Expected concreteType to have the value of underlyingValue")
 	}
 
-	zeroValue, assertionErr := AssertE[int](genericType)
+	zeroValue, assertionErr := internal.AssertE[int](genericType)
 
 	if zeroValue != 0 {
 		t.Error("Cast value should be zeroed when an invalid type is given")

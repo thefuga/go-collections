@@ -8,6 +8,7 @@ import (
 
 	"github.com/thefuga/go-collections"
 	"github.com/thefuga/go-collections/errors"
+	"github.com/thefuga/go-collections/internal"
 	"github.com/thefuga/go-collections/slice"
 )
 
@@ -262,7 +263,7 @@ func (c Collection[K, V]) Flip() Collection[K, V] {
 
 // Flip makes a new collection, flipping the values with the keys.
 func (c Collection[K, V]) FlipE() (Collection[K, V], error) {
-	if _, err := collections.AssertE[V](*new(K)); err != nil {
+	if _, err := internal.AssertE[V](*new(K)); err != nil {
 		return c, err
 
 	}
@@ -270,8 +271,8 @@ func (c Collection[K, V]) FlipE() (Collection[K, V], error) {
 	flippedValues := make(map[K]V, c.Count())
 
 	c.Each(func(k K, v V) {
-		castKey, keyOk := collections.Assert[K](v)
-		castValue, valueOk := collections.Assert[V](k)
+		castKey, keyOk := internal.Assert[K](v)
+		castValue, valueOk := internal.Assert[V](k)
 
 		if keyOk && valueOk {
 			flippedValues[castKey] = castValue
