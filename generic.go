@@ -502,13 +502,8 @@ func Interpose[V any](slice []V, sep V) []V {
 
 // ForPage returns a slice containing the items that would be present on a given page number
 func ForPage[V any](slice []V, page, size int) []V {
-	lower, upper := (page-1)*size, (page-1)*size+size
-	if upper > len(slice) {
-		upper = len(slice)
-	}
-	if lower < 0 || lower > upper {
-		return []V{}
-	}
+	lower := internal.Max((page-1)*size, 0)
+	upper := internal.Min(lower+size, len(slice))
 	return slice[lower:upper]
 }
 
