@@ -46,7 +46,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] isEmpty
 - [ ] isNotEmpty
 - [ ] join
-- [ ] keyBy
+- [x] keyBy
 - [ ] keys
 - [x] last
 - [ ] lazy

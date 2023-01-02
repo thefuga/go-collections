@@ -1827,3 +1827,52 @@ func TestForPage(t *testing.T) {
 		})
 	}
 }
+
+func TestKeyBy(t *testing.T) {
+	type person struct {
+		firstName string
+		lastName  string
+	}
+
+	bobRoss := person{"bob", "ross"}
+	alyssaHacker := person{"alyssa", "hacker"}
+	bobMartin := person{"bob", "martin"}
+
+	testCases := []struct {
+		name     string
+		input    []person
+		f        func(p person) string
+		expected map[string]person
+	}{
+		{
+			name:     "first name",
+			input:    []person{bobRoss, alyssaHacker, bobMartin},
+			f:        func(p person) string { return p.firstName },
+			expected: map[string]person{"bob": bobMartin, "alyssa": alyssaHacker},
+		},
+		{
+			name:  "last name",
+			input: []person{bobRoss, alyssaHacker, bobMartin},
+			f:     func(p person) string { return p.lastName },
+			expected: map[string]person{
+				"ross":   bobRoss,
+				"hacker": alyssaHacker,
+				"martin": bobMartin,
+			},
+		},
+		{
+			name:     "fixed value will return the last value",
+			input:    []person{bobRoss, alyssaHacker, bobMartin},
+			f:        func(p person) string { return "foo" },
+			expected: map[string]person{"foo": bobMartin},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := KeyBy(tc.input, tc.f); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
