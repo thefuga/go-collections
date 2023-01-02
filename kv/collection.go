@@ -239,12 +239,12 @@ func (c Collection[K, V]) Concat(concatTo Collection[K, V]) Collection[K, V] {
 }
 
 // Contains checks if any values on the Collection match f.
-func (c Collection[K, V]) Contains(f collections.Matcher) bool {
+func (c Collection[K, V]) Contains(f collections.AnyMatcher) bool {
 	return c.Values().Contains(f)
 }
 
 // Every checks if every value on the Collection match f.
-func (c Collection[K, V]) Every(f collections.Matcher) bool {
+func (c Collection[K, V]) Every(f collections.AnyMatcher) bool {
 	for k, v := range c {
 		if !f(k, v) {
 			return false

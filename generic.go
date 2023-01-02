@@ -270,7 +270,7 @@ func Mode[T comparable](slice []T) []T {
 }
 
 // Contains checks if the slice holds at least one value matching the given matcher.
-func Contains[V any](slice []V, matcher Matcher) bool {
+func Contains[V any](slice []V, matcher AnyMatcher) bool {
 	for i, v := range slice {
 		if matcher(i, v) {
 			return true
@@ -281,14 +281,14 @@ func Contains[V any](slice []V, matcher Matcher) bool {
 }
 
 // FirstWhere uses FirstWhereE, omitting the error.
-func FirstWhere[V any](slice []V, matcher Matcher) V {
+func FirstWhere[V any](slice []V, matcher AnyMatcher) V {
 	v, _ := FirstWhereE(slice, matcher)
 	return v
 }
 
 // FirstWhereE returns the first value matched by the given matcher. Should no value
 // match, an instance of errors.ValueNotFoundError is returned.
-func FirstWhereE[V any](slice []V, matcher Matcher) (V, error) {
+func FirstWhereE[V any](slice []V, matcher AnyMatcher) (V, error) {
 	for i, v := range slice {
 		if matcher(i, v) {
 			return v, nil
@@ -299,7 +299,7 @@ func FirstWhereE[V any](slice []V, matcher Matcher) (V, error) {
 }
 
 // FirstWhereField uses FirstWhereFieldE, omitting the error.
-func FirstWhereField[V any](slice []V, field string, matcher Matcher) V {
+func FirstWhereField[V any](slice []V, field string, matcher AnyMatcher) V {
 	v, _ := FirstWhereFieldE(slice, field, matcher)
 	return v
 }
@@ -308,7 +308,7 @@ func FirstWhereField[V any](slice []V, field string, matcher Matcher) V {
 // on S.
 // Should either no element match, the field doesn't exist on the struct V, or V is not
 // a struct, an instance of errors.ValueNotFoundError is returned.
-func FirstWhereFieldE[V any](slice []V, field string, matcher Matcher) (V, error) {
+func FirstWhereFieldE[V any](slice []V, field string, matcher AnyMatcher) (V, error) {
 	for i, v := range slice {
 		if FieldMatch[V](field, matcher)(i, v) {
 			return v, nil
