@@ -2,10 +2,11 @@ package collections
 
 import (
 	"github.com/thefuga/go-collections/errors"
+	"github.com/thefuga/go-collections/internal"
 )
 
 // Sum sums all the values stored on the numeric slice and returns the result.
-func Sum[T Number](slice []T) T {
+func Sum[T internal.Number](slice []T) T {
 	var sum T
 
 	for _, v := range slice {
@@ -17,7 +18,7 @@ func Sum[T Number](slice []T) T {
 
 // AverageE calculates the average value of the slice. Should the slice be empty,
 // an instance of errors.EmptyCollectionError is returned.
-func AverageE[T Number](slice []T) (T, error) {
+func AverageE[T internal.Number](slice []T) (T, error) {
 	if len(slice) == 0 {
 		return *new(T), errors.NewEmptyCollectionError()
 	}
@@ -26,14 +27,14 @@ func AverageE[T Number](slice []T) (T, error) {
 }
 
 // Average uses AverageE, omitting the error.
-func Average[T Number](slice []T) T {
+func Average[T internal.Number](slice []T) T {
 	avg, _ := AverageE(slice)
 	return avg
 }
 
 // MinE returns the minimal value stored on the numeric slice. Should the slice be
 // empty, an error is returned.
-func MinE[T Number](slice []T) (T, error) {
+func MinE[T internal.Number](slice []T) (T, error) {
 	min, err := FirstE(slice)
 
 	if err != nil {
@@ -50,14 +51,14 @@ func MinE[T Number](slice []T) (T, error) {
 }
 
 // Min uses MinE, omitting the error.
-func Min[T Number](slice []T) T {
+func Min[T internal.Number](slice []T) T {
 	min, _ := MinE(slice)
 	return min
 }
 
 // MaxE returns the maximum value stored on the numeric slice. Should the slice be
 // empty, an error is returned.
-func MaxE[T Number](slice []T) (T, error) {
+func MaxE[T internal.Number](slice []T) (T, error) {
 	max, err := FirstE(slice)
 
 	if err != nil {
@@ -74,13 +75,13 @@ func MaxE[T Number](slice []T) (T, error) {
 }
 
 // Max uses MaxE, omitting the error.
-func Max[T Number](slice []T) T {
+func Max[T internal.Number](slice []T) T {
 	max, _ := MaxE(slice)
 	return max
 }
 
 // Median calculates and returns the median value of the slice.
-func Median[T Number](slice []T) float64 {
+func Median[T internal.Number](slice []T) float64 {
 	Sort(slice, Asc[T]())
 
 	halfway := int(len(slice) / 2)

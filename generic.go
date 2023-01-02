@@ -6,6 +6,7 @@ import (
 	"sort"
 
 	"github.com/thefuga/go-collections/errors"
+	"github.com/thefuga/go-collections/internal"
 )
 
 // Get calls GetE, omitting the error.
@@ -464,7 +465,7 @@ func Reverse[V any](slice []V) []V {
 }
 
 // SumBy accumulates values returned by `f`
-func SumBy[V any, T Number](slice []V, f func(v V) T) T {
+func SumBy[V any, T internal.Number](slice []V, f func(v V) T) T {
 	var sum T
 	for _, v := range slice {
 		sum += f(v)
@@ -473,7 +474,7 @@ func SumBy[V any, T Number](slice []V, f func(v V) T) T {
 }
 
 // Range returns a slice containing integers in the specified range (i.e. [min, max])
-func Range[T Integer](min, max T) []T {
+func Range[T internal.Integer](min, max T) []T {
 	result := make([]T, max-min+1)
 	for i := range result {
 		result[i] = T(i) + min
@@ -501,13 +502,8 @@ func Interpose[V any](slice []V, sep V) []V {
 
 // ForPage returns a slice containing the items that would be present on a given page number
 func ForPage[V any](slice []V, page, size int) []V {
-	lower, upper := (page-1)*size, (page-1)*size+size
-	if upper > len(slice) {
-		upper = len(slice)
-	}
-	if lower < 0 || lower > upper {
-		return []V{}
-	}
+	lower := internal.Max((page-1)*size, 0)
+	upper := internal.Min(lower+size, len(slice))
 	return slice[lower:upper]
 }
 

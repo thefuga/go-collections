@@ -1,4 +1,4 @@
-package collections
+package internal
 
 import "github.com/thefuga/go-collections/errors"
 

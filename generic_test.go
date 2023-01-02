@@ -1790,11 +1790,11 @@ func TestForPage(t *testing.T) {
 			expected: []int{7, 8, 9},
 		},
 		{
-			name:     "page = 0",
+			name:     "page < 1 is equal to page = 1",
 			slice:    []int{1, 2, 3},
 			page:     0,
 			size:     3,
-			expected: []int{},
+			expected: []int{1, 2, 3},
 		},
 		{
 			name:     "page * size > len(slice)",

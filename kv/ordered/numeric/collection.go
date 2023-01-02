@@ -2,17 +2,18 @@ package numeric
 
 import (
 	"github.com/thefuga/go-collections"
+	"github.com/thefuga/go-collections/internal"
 	"github.com/thefuga/go-collections/kv/ordered"
 )
 
 // Collection is an ordered collection which ensures all values are numbers. This
 // allows for methods that are only applicable to numbers, such as sums and so on.
-type Collection[K comparable, V collections.Number] struct {
+type Collection[K comparable, V internal.Number] struct {
 	ordered.Collection[K, V]
 }
 
 // Collect returns an ordered numeric collection containing the given values
-func Collect[V collections.Number](n ...V) Collection[int, V] {
+func Collect[V internal.Number](n ...V) Collection[int, V] {
 	return Collection[int, V]{ordered.Collect(n...)}
 }
 

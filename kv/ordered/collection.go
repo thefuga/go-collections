@@ -5,6 +5,7 @@ import (
 
 	"github.com/thefuga/go-collections"
 	"github.com/thefuga/go-collections/errors"
+	"github.com/thefuga/go-collections/internal"
 	"github.com/thefuga/go-collections/kv"
 	"github.com/thefuga/go-collections/slice"
 )
@@ -72,7 +73,7 @@ func Get[K comparable, T, V any](c Collection[K, V], k K) (T, error) {
 		return *new(T), getErr
 	}
 
-	return collections.AssertE[T](genericValue)
+	return internal.AssertE[T](genericValue)
 }
 
 // TODO
@@ -97,7 +98,7 @@ func (c *Collection[K, V]) Put(k K, v V) Collection[K, V] {
 // Push appends v to the end of the collection. The value will be associated with
 // a key corresponding to the count of the collection at the time of pushing.
 func (c *Collection[K, V]) Push(v V) Collection[K, V] {
-	if castK, ok := collections.Assert[K](c.Count()); ok {
+	if castK, ok := internal.Assert[K](c.Count()); ok {
 		c.Put(castK, v)
 	}
 
@@ -305,12 +306,12 @@ func (c Collection[K, V]) CombineE(values Collection[K, V]) (Collection[K, V], e
 	combined := makeCollection[K, V](c.Count())
 
 	for i := 0; i < c.Count(); i++ {
-		k, err := collections.AssertE[K](c.values[c.keys[i]])
+		k, err := internal.AssertE[K](c.values[c.keys[i]])
 		if err != nil {
 			return combined, err
 		}
 
-		v, err := collections.AssertE[V](values.values[values.keys[i]])
+		v, err := internal.AssertE[V](values.values[values.keys[i]])
 		if err != nil {
 			return combined, err
 		}
@@ -368,8 +369,8 @@ func (c Collection[K, V]) Flip() Collection[K, V] {
 	flippedValues := make(map[K]V, c.Count())
 
 	c.Each(func(k K, v V) {
-		castKey, keyOk := collections.Assert[K](v)
-		castValue, valueOk := collections.Assert[V](k)
+		castKey, keyOk := internal.Assert[K](v)
+		castValue, valueOk := internal.Assert[V](k)
 
 		if keyOk && valueOk {
 			flippedKeys = append(flippedKeys, castKey)
