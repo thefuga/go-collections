@@ -510,3 +510,13 @@ func ForPage[V any](slice []V, page, size int) []V {
 	}
 	return slice[lower:upper]
 }
+
+// KeyBy keys the collection by the given key
+// If multiple items have the same key, the last one will appear in the new collection
+func KeyBy[V any, K comparable](slice []V, f func(v V) K) map[K]V {
+	result := map[K]V{}
+	for _, v := range slice {
+		result[f(v)] = v
+	}
+	return result
+}
