@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+
+	"github.com/thefuga/go-collections/errors"
 )
 
 func TestGet(t *testing.T) {
@@ -1872,6 +1874,111 @@ func TestKeyBy(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := KeyBy(tc.input, tc.f); !reflect.DeepEqual(got, tc.expected) {
 				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
+
+func TestLastBy(t *testing.T) {
+	testCases := []struct {
+		name     string
+		slice    []int
+		matcher  Matcher[int, int]
+		expected int
+	}{
+		{
+			name:     "last even number",
+			slice:    []int{1, 2, 3, 4},
+			matcher:  func(_, n int) bool { return n%2 == 0 },
+			expected: 4,
+		},
+		{
+			name:     "last odd number",
+			slice:    []int{1, 2, 3, 4},
+			matcher:  func(_, n int) bool { return n%2 == 1 },
+			expected: 3,
+		},
+		{
+			name:     "return zero value when no element matches",
+			slice:    []int{1, 2, 3, 4},
+			matcher:  func(_, _ int) bool { return false },
+			expected: 0,
+		},
+		{
+			name:     "empty slice with true matcher",
+			slice:    []int{},
+			matcher:  func(_, _ int) bool { return true },
+			expected: 0,
+		},
+		{
+			name:     "empty slice with false matcher",
+			slice:    []int{},
+			matcher:  func(_, _ int) bool { return false },
+			expected: 0,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := LastBy(tc.slice, tc.matcher); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
+
+func TestLastByE(t *testing.T) {
+	testCases := []struct {
+		name        string
+		slice       []int
+		matcher     Matcher[int, int]
+		expected    int
+		expectedErr error
+	}{
+		{
+			name:        "last even with odd numbers",
+			slice:       []int{1, 3},
+			matcher:     func(_, n int) bool { return n%2 == 0 },
+			expected:    0,
+			expectedErr: errors.NewValueNotFoundError(),
+		},
+		{
+			name:        "last odd with even numbers",
+			slice:       []int{2, 4},
+			matcher:     func(_, n int) bool { return n%2 == 1 },
+			expected:    0,
+			expectedErr: errors.NewValueNotFoundError(),
+		},
+		{
+			name:        "empty slice with false matcher",
+			slice:       []int{},
+			matcher:     func(_, n int) bool { return false },
+			expected:    0,
+			expectedErr: errors.NewValueNotFoundError(),
+		},
+		{
+			name:        "empty slice with true matcher",
+			slice:       []int{},
+			matcher:     func(_, n int) bool { return true },
+			expected:    0,
+			expectedErr: errors.NewValueNotFoundError(),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := LastByE(tc.slice, tc.matcher)
+
+			if !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+
+			if tc.expectedErr == nil {
+				return
+			}
+
+			if err == nil && err.Error() != tc.expectedErr.Error() {
+				t.Errorf("Expected error '%v'. Got error '%v'", tc.expectedErr, err)
 			}
 		})
 	}

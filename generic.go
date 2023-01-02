@@ -119,6 +119,23 @@ func LastE[T any](slice []T) (T, error) {
 	return GetE(len(slice)-1, slice)
 }
 
+// LastBy uses LastByE, omitting the error.
+func LastBy[T any](slice []T, matcher Matcher[int, T]) T {
+	v, _ := LastByE(slice, matcher)
+	return v
+}
+
+// LastByE returns the last matched element in the slice.
+func LastByE[T any](slice []T, matcher Matcher[int, T]) (T, error) {
+	for i := len(slice) - 1; i >= 0; i-- {
+		if matcher(i, slice[i]) {
+			return slice[i], nil
+		}
+	}
+
+	return *new(T), errors.NewValueNotFoundError()
+}
+
 // Each ia a typical for loop. The current index and values are passed to the closure
 // on each iteration.
 func Each[T any](f func(i int, v T), slice []T) {
