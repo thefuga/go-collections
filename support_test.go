@@ -6,7 +6,7 @@ type user struct {
 	Age   int
 }
 
-func usernameMatch(u user) Matcher {
+func usernameMatch(u user) AnyMatcher {
 	return func(_, v any) bool {
 		collectionUser, ok := v.(user)
 		if !ok {
@@ -17,7 +17,7 @@ func usernameMatch(u user) Matcher {
 	}
 }
 
-func ageMatch(u user) Matcher {
+func ageMatch(u user) AnyMatcher {
 	return func(_, v any) bool {
 		collectionUser, ok := v.(user)
 		if !ok {

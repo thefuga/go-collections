@@ -6,13 +6,14 @@ import (
 	"github.com/thefuga/go-collections/internal"
 )
 
-// Matcher is used by matchers on functions that  must compare keys and values from
+// AnyMatcher is used by matchers on functions that  must compare keys and values from
 // a collection.
 // It is used as a functional option. To learn more, see: https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
-type Matcher func(key any, value any) bool
+type Matcher[K any, V any] func(key K, value V) bool
+type AnyMatcher = Matcher[any, any]
 
 // KeyEquals builds a matcher to compare the given key to the key passed by the matcher caller.
-func KeyEquals(key any) Matcher {
+func KeyEquals(key any) AnyMatcher {
 	return func(collectionKey any, _ any) bool {
 		return key == collectionKey
 	}
@@ -20,7 +21,7 @@ func KeyEquals(key any) Matcher {
 
 // ValueEquals builds a matcher to compare the given value (with reflect.DeepEqual)
 // to the value passed by the matcher caller.
-func ValueEquals(value any) Matcher {
+func ValueEquals(value any) AnyMatcher {
 	return func(_ any, collectionValue any) bool {
 		return reflect.DeepEqual(value, collectionValue)
 	}
@@ -28,7 +29,7 @@ func ValueEquals(value any) Matcher {
 
 // ValueDiffers builds a matcher to compare the given value (with reflect.DeepEqual)
 // to the value passed by the matcher caller. It has the opposite behavior from ValueEquals
-func ValueDiffers(value any) Matcher {
+func ValueDiffers(value any) AnyMatcher {
 	return func(_ any, collectionValue any) bool {
 		return !reflect.DeepEqual(value, collectionValue)
 	}
@@ -36,7 +37,7 @@ func ValueDiffers(value any) Matcher {
 
 // ValueGT compares the given numeric value to check if it is greater than the value
 // given by the matcher's caller.
-func ValueGT[T internal.Number](value T) Matcher {
+func ValueGT[T internal.Number](value T) AnyMatcher {
 	return func(_ any, collectionValue any) bool {
 		if cast, ok := collectionValue.(T); ok {
 			return value < cast
@@ -47,7 +48,7 @@ func ValueGT[T internal.Number](value T) Matcher {
 
 // ValueLT compares the given numeric value to check if it is lesser than the value
 // given by the matcher's caller.
-func ValueLT[T internal.Number](value T) Matcher {
+func ValueLT[T internal.Number](value T) AnyMatcher {
 	return func(_ any, collectionValue any) bool {
 		if cast, ok := collectionValue.(T); ok {
 			return value > cast
@@ -56,15 +57,15 @@ func ValueLT[T internal.Number](value T) Matcher {
 	}
 }
 
-// FieldEquals uses FieldMatch composed with ValueEquals as the matcher.
-func FieldEquals[V any](field string, value any) Matcher {
+	// FieldEquals uses FieldMatch composed with ValueEquals as the matcher.
+	func FieldEquals[V any](field string, value any) AnyMatcher {
 	return FieldMatch[V](field, ValueEquals(value))
 }
 
 // FieldMatch will attempt to retrieve the value corresponding to the given struct
 // field name. V must be a struct, otherwise calls to the matcher will always return false.
 // The retrieved value will be used to supply the given matcher.
-func FieldMatch[V any](field string, matcher Matcher) Matcher {
+func FieldMatch[V any](field string, matcher AnyMatcher) AnyMatcher {
 	return func(_, v any) bool {
 		cast, ok := v.(V)
 		if !ok {
@@ -87,7 +88,7 @@ func FieldMatch[V any](field string, matcher Matcher) Matcher {
 
 // And combines all the given matchers into a single matcher which returns true
 // when all matchers return true.
-func And[V any](matchers ...Matcher) Matcher {
+func And[V any](matchers ...AnyMatcher) AnyMatcher {
 	return func(i any, collectionValue any) bool {
 		match := true
 
@@ -103,7 +104,7 @@ func And[V any](matchers ...Matcher) Matcher {
 // will receive v. It is useful to compare build matchers dynamically at the execution time
 // rather than at the function's call time (i.e. the composed matchers won't be called until
 // the higher order matcher is called).
-func AndValue[V any](v V, matchers ...func(V) Matcher) Matcher {
+func AndValue[V any](v V, matchers ...func(V) AnyMatcher) AnyMatcher {
 	return func(i any, collectionValue any) bool {
 		match := true
 
@@ -117,7 +118,7 @@ func AndValue[V any](v V, matchers ...func(V) Matcher) Matcher {
 
 // Or combines all the given matchers into a single matcher which returns true
 // when at least one of the given matcher returns true.
-func Or[V any](matchers ...Matcher) Matcher {
+func Or[V any](matchers ...AnyMatcher) AnyMatcher {
 	return func(i any, collectionValue any) bool {
 		match := true
 
@@ -133,7 +134,7 @@ func Or[V any](matchers ...Matcher) Matcher {
 // will receive v. It is useful to compare build matchers dynamically at the execution time
 // rather than at the function's call time (i.e. the composed matchers won't be called until
 // the higher order matcher is called).
-func OrValue[V any](v V, matchers ...func(V) Matcher) Matcher {
+func OrValue[V any](v V, matchers ...func(V) AnyMatcher) AnyMatcher {
 	return func(i any, collectionValue any) bool {
 		match := true
 
