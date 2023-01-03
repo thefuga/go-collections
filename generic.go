@@ -578,3 +578,8 @@ func Pad[V any](slice []V, size int, pad V) []V {
 
 	return PadLeft(slice, -size, pad)
 }
+
+// Prepend adds `value` to the beginning of `slice`
+func Prepend[V any](slice []V, value V) []V {
+	return append([]V{value}, slice...)
+}

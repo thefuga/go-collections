@@ -72,7 +72,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] pipeThrough
 - [ ] pluck
 - [x] pop
-- [ ] prepend
+- [x] prepend
 - [ ] pull
 - [x] push
 - [x] put
