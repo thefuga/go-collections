@@ -2,6 +2,7 @@ package collections
 
 import (
 	"math"
+	"math/rand"
 	"reflect"
 	"sort"
 
@@ -582,4 +583,13 @@ func Pad[V any](slice []V, size int, pad V) []V {
 // Prepend adds `value` to the beginning of `slice`
 func Prepend[V any](slice []V, value V) []V {
 	return append([]V{value}, slice...)
+}
+
+// Random returns a random item from `slice`
+func Random[V any](slice []V) V {
+	if len(slice) == 0 {
+		return *new(V)
+	}
+
+	return slice[rand.Intn(len(slice))]
 }
