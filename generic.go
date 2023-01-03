@@ -543,9 +543,8 @@ func PadRight[V any](slice []V, size int, pad V) []V {
 	}
 
 	result := make([]V, size)
-	for i, v := range slice {
-		result[i] = v
-	}
+	copy(result, slice)
+
 	for i := len(slice); i < size; i++ {
 		result[i] = pad
 	}
@@ -563,9 +562,8 @@ func PadLeft[V any](slice []V, size int, pad V) []V {
 	offset := size - len(slice)
 
 	result := make([]V, size)
-	for i, v := range slice {
-		result[i+offset] = v
-	}
+	copy(result[offset:], slice)
+
 	for i := 0; i < offset; i++ {
 		result[i] = pad
 	}
