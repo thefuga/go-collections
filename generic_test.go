@@ -1989,35 +1989,35 @@ func TestPad(t *testing.T) {
 		name     string
 		slice    []int
 		size     int
-		filler   int
+		pad      int
 		expected []int
 	}{
 		{
 			name:     "fill to 5 with 1s",
 			slice:    []int{1, 2, 3},
 			size:     5,
-			filler:   1,
+			pad:      1,
 			expected: []int{1, 2, 3, 1, 1},
 		},
 		{
 			name:     "fill empty slice to 5 with 5s",
 			slice:    []int{},
 			size:     5,
-			filler:   5,
+			pad:      5,
 			expected: []int{5, 5, 5, 5, 5},
 		},
 		{
 			name:     "when size = len(slice), it returns the slice",
 			slice:    []int{1, 2, 3},
 			size:     3,
-			filler:   4,
+			pad:      4,
 			expected: []int{1, 2, 3},
 		},
 		{
 			name:     "when size < len(slice), it returns the slice",
 			slice:    []int{1, 2, 3},
 			size:     1,
-			filler:   4,
+			pad:      4,
 			expected: []int{1, 2, 3},
 		},
 
@@ -2026,28 +2026,28 @@ func TestPad(t *testing.T) {
 			name:     "fill to 5 with 1s",
 			slice:    []int{1, 2, 3},
 			size:     -5,
-			filler:   3,
+			pad:      3,
 			expected: []int{3, 3, 1, 2, 3},
 		},
 		{
 			name:     "fill empty slice to 5 with 5s",
 			slice:    []int{},
 			size:     -5,
-			filler:   5,
+			pad:      5,
 			expected: []int{5, 5, 5, 5, 5},
 		},
 		{
 			name:     "when size = len(slice), it returns the slice",
 			slice:    []int{1, 2, 3},
 			size:     -3,
-			filler:   4,
+			pad:      4,
 			expected: []int{1, 2, 3},
 		},
 		{
 			name:     "when size < len(slice), it returns the slice",
 			slice:    []int{1, 2, 3},
 			size:     -1,
-			filler:   4,
+			pad:      4,
 			expected: []int{1, 2, 3},
 		},
 	}
@@ -2055,7 +2055,7 @@ func TestPad(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 
-			if got := Pad(tc.slice, tc.size, tc.filler); !reflect.DeepEqual(got, tc.expected) {
+			if got := Pad(tc.slice, tc.size, tc.pad); !reflect.DeepEqual(got, tc.expected) {
 				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
 			}
 		})

@@ -534,7 +534,10 @@ func KeyBy[V any, K comparable](slice []V, f func(v V) K) map[K]V {
 	return result
 }
 
-func PadRight[V any](slice []V, size int, filler V) []V {
+// PadRigth will fill the slice with the given value and the specified size.
+// No padding will take place if the absolute value of the given size is less
+// than or equal to the length of the array
+func PadRight[V any](slice []V, size int, pad V) []V {
 	if size <= len(slice) {
 		return slice
 	}
@@ -544,12 +547,15 @@ func PadRight[V any](slice []V, size int, filler V) []V {
 		result[i] = v
 	}
 	for i := len(slice); i < size; i++ {
-		result[i] = filler
+		result[i] = pad
 	}
 	return result
 }
 
-func PadLeft[V any](slice []V, size int, filler V) []V {
+// PadLeft will fill the slice with the given value from the left to the specified size.
+// No padding will take place if the absolute value of the given size is less
+// than or equal to the length of the array
+func PadLeft[V any](slice []V, size int, pad V) []V {
 	if size <= len(slice) {
 		return slice
 	}
@@ -561,15 +567,19 @@ func PadLeft[V any](slice []V, size int, filler V) []V {
 		result[i+offset] = v
 	}
 	for i := 0; i < offset; i++ {
-		result[i] = filler
+		result[i] = pad
 	}
 	return result
 }
 
-func Pad[V any](slice []V, size int, filler V) []V {
+// Pad will fill the slice with the given value and the specified size.
+// To pad to the left, you should specify a negative size.
+// No padding will take place if the absolute value of the given size is less
+// than or equal to the length of the array
+func Pad[V any](slice []V, size int, pad V) []V {
 	if size >= 0 {
-		return PadRight(slice, size, filler)
+		return PadRight(slice, size, pad)
 	}
 
-	return PadLeft(slice, -size, filler)
+	return PadLeft(slice, -size, pad)
 }
