@@ -2061,3 +2061,34 @@ func TestPad(t *testing.T) {
 		})
 	}
 }
+
+func TestPrepend(t *testing.T) {
+	testCases := []struct {
+		name     string
+		slice    []int
+		value    int
+		expected []int
+	}{
+		{
+			name:     "prepend 0 to [1,2,3]",
+			slice:    []int{1, 2, 3},
+			value:    0,
+			expected: []int{0, 1, 2, 3},
+		},
+		{
+			name:     "prepend to empty slice",
+			slice:    []int{},
+			value:    1,
+			expected: []int{1},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+
+			if got := Prepend(tc.slice, tc.value); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
