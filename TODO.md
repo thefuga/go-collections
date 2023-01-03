@@ -65,7 +65,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] mode
 - [ ] nth
 - [x] only
-- [ ] pad
+- [x] pad
 - [x] partition
 - [ ] pipe
 - [ ] pipeInto

@@ -533,3 +533,43 @@ func KeyBy[V any, K comparable](slice []V, f func(v V) K) map[K]V {
 	}
 	return result
 }
+
+func PadRight[V any](slice []V, size int, filler V) []V {
+	if size <= len(slice) {
+		return slice
+	}
+
+	result := make([]V, size)
+	for i, v := range slice {
+		result[i] = v
+	}
+	for i := len(slice); i < size; i++ {
+		result[i] = filler
+	}
+	return result
+}
+
+func PadLeft[V any](slice []V, size int, filler V) []V {
+	if size <= len(slice) {
+		return slice
+	}
+
+	offset := size - len(slice)
+
+	result := make([]V, size)
+	for i, v := range slice {
+		result[i+offset] = v
+	}
+	for i := 0; i < offset; i++ {
+		result[i] = filler
+	}
+	return result
+}
+
+func Pad[V any](slice []V, size int, filler V) []V {
+	if size >= 0 {
+		return PadRight(slice, size, filler)
+	}
+
+	return PadLeft(slice, -size, filler)
+}
