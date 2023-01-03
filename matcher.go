@@ -57,8 +57,8 @@ func ValueLT[T internal.Number](value T) AnyMatcher {
 	}
 }
 
-	// FieldEquals uses FieldMatch composed with ValueEquals as the matcher.
-	func FieldEquals[V any](field string, value any) AnyMatcher {
+// FieldEquals uses FieldMatch composed with ValueEquals as the matcher.
+func FieldEquals[V any](field string, value any) AnyMatcher {
 	return FieldMatch[V](field, ValueEquals(value))
 }
 

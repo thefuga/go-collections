@@ -48,7 +48,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] join
 - [x] keyBy
 - [ ] keys
-- [x] last
+- [x] last (Last, LastE, LastBy, LastByE)
 - [ ] lazy
 - [ ] macro
 - [ ] make
