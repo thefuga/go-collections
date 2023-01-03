@@ -1983,3 +1983,81 @@ func TestLastByE(t *testing.T) {
 		})
 	}
 }
+
+func TestPad(t *testing.T) {
+	testCases := []struct {
+		name     string
+		slice    []int
+		size     int
+		pad      int
+		expected []int
+	}{
+		{
+			name:     "fill to 5 with 1s",
+			slice:    []int{1, 2, 3},
+			size:     5,
+			pad:      1,
+			expected: []int{1, 2, 3, 1, 1},
+		},
+		{
+			name:     "fill empty slice to 5 with 5s",
+			slice:    []int{},
+			size:     5,
+			pad:      5,
+			expected: []int{5, 5, 5, 5, 5},
+		},
+		{
+			name:     "when size = len(slice), it returns the slice",
+			slice:    []int{1, 2, 3},
+			size:     3,
+			pad:      4,
+			expected: []int{1, 2, 3},
+		},
+		{
+			name:     "when size < len(slice), it returns the slice",
+			slice:    []int{1, 2, 3},
+			size:     1,
+			pad:      4,
+			expected: []int{1, 2, 3},
+		},
+
+		// negative cases (pad left)
+		{
+			name:     "fill to 5 with 1s",
+			slice:    []int{1, 2, 3},
+			size:     -5,
+			pad:      3,
+			expected: []int{3, 3, 1, 2, 3},
+		},
+		{
+			name:     "fill empty slice to 5 with 5s",
+			slice:    []int{},
+			size:     -5,
+			pad:      5,
+			expected: []int{5, 5, 5, 5, 5},
+		},
+		{
+			name:     "when size = len(slice), it returns the slice",
+			slice:    []int{1, 2, 3},
+			size:     -3,
+			pad:      4,
+			expected: []int{1, 2, 3},
+		},
+		{
+			name:     "when size < len(slice), it returns the slice",
+			slice:    []int{1, 2, 3},
+			size:     -1,
+			pad:      4,
+			expected: []int{1, 2, 3},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+
+			if got := Pad(tc.slice, tc.size, tc.pad); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}

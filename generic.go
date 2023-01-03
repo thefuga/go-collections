@@ -533,3 +533,48 @@ func KeyBy[V any, K comparable](slice []V, f func(v V) K) map[K]V {
 	}
 	return result
 }
+
+// PadRigth will fill the slice with `pad` to the specified `size`.
+// No padding will take place if the `size` is less than or equal to the length of `slice`
+func PadRight[V any](slice []V, size int, pad V) []V {
+	if size <= len(slice) {
+		return slice
+	}
+
+	result := make([]V, size)
+	copy(result, slice)
+
+	for i := len(slice); i < size; i++ {
+		result[i] = pad
+	}
+	return result
+}
+
+// PadLeft will fill the slice with `pad` from the left to the specified `size`.
+// No padding will take place if the `size` is less than or equal to the length of `slice`
+func PadLeft[V any](slice []V, size int, pad V) []V {
+	if size <= len(slice) {
+		return slice
+	}
+
+	offset := size - len(slice)
+
+	result := make([]V, size)
+	copy(result[offset:], slice)
+
+	for i := 0; i < offset; i++ {
+		result[i] = pad
+	}
+	return result
+}
+
+// Pad will fill the slice with `pad` to the specified `size`.
+// To pad to the left, specify a negative `size`.
+// No padding will take place if the absolute value of `size` is less than or equal to the length of `slice`
+func Pad[V any](slice []V, size int, pad V) []V {
+	if size >= 0 {
+		return PadRight(slice, size, pad)
+	}
+
+	return PadLeft(slice, -size, pad)
+}
