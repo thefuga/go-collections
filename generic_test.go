@@ -2092,3 +2092,54 @@ func TestPrepend(t *testing.T) {
 		})
 	}
 }
+
+func TestRandomResultIsIncludedInSlice(t *testing.T) {
+	slice := Range(1, 10)
+
+	for i := 0; i < 10; i++ {
+		rand := Random(slice)
+		if !Contains(slice, ValueEquals(rand)) {
+			t.Errorf("expected slice '%v' to contain '%v'", slice, rand)
+		}
+	}
+}
+
+func TestRandomSampling(t *testing.T) {
+	slice := Range(1, 1000)
+
+	sampleA := make([]int, 0, 10)
+	for i := 0; i < 10; i++ {
+		sampleA = append(sampleA, Random(slice))
+	}
+
+	sampleB := make([]int, 0, 10)
+	for i := 0; i < 10; i++ {
+		sampleB = append(sampleB, Random(slice))
+	}
+
+	if reflect.DeepEqual(sampleA, sampleB) {
+		t.Errorf("got equal samples sampleA='%v' sampleB='%v'", sampleA, sampleB)
+	}
+}
+
+func TestRandomWithEmptySliceReturnsZeroValue(t *testing.T) {
+	if got := Random([]int{}); got != 0 {
+		t.Errorf("expected 0, got %d", got)
+	}
+
+	if got := Random([]string{}); got != "" {
+		t.Errorf("expected empty string, got %q", got)
+	}
+
+	if got := Random([]bool{}); got != false {
+		t.Errorf("expected false, got %t", got)
+	}
+}
+
+func TestRandomEErrorsWhenSliceIsEmpty(t *testing.T) {
+	expected := errors.NewEmptyCollectionError()
+
+	if _, got := RandomE([]int{}); got.Error() != expected.Error() {
+		t.Errorf("Expected %q. Got %q", expected, got)
+	}
+}
