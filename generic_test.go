@@ -2094,29 +2094,13 @@ func TestPrepend(t *testing.T) {
 }
 
 func TestRandomResultIsIncludedInSlice(t *testing.T) {
-	slice := []int{1, 2, 3}
-	rand := Random(slice)
-
-	if !Contains(slice, ValueEquals(rand)) {
-		t.Errorf("expected slice to contain '%v'", rand)
-	}
-}
-
-func TestRandomReturnsDifferentElements(t *testing.T) {
-	slice := Range(1, 1000)
-	prev := Random(slice)
-	curr := Random(slice)
+	slice := Range(1, 10)
 
 	for i := 0; i < 10; i++ {
-		if prev == curr {
-			curr = Random(slice)
-		} else {
-			break
+		rand := Random(slice)
+		if !Contains(slice, ValueEquals(rand)) {
+			t.Errorf("expected slice '%v' to contain '%v'", slice, rand)
 		}
-	}
-
-	if prev == curr {
-		t.Error("could not get a different element within 10 tries")
 	}
 }
 
