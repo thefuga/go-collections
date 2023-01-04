@@ -585,11 +585,17 @@ func Prepend[V any](slice []V, value V) []V {
 	return append([]V{value}, slice...)
 }
 
-// Random returns a random item from `slice`
+// Random uses RandomE, omitting the error.
 func Random[V any](slice []V) V {
+	v, _ := RandomE(slice)
+	return v
+}
+
+// Random returns a random item from `slice` and errors if `slice` is empty.
+func RandomE[V any](slice []V) (V, error) {
 	if len(slice) == 0 {
-		return *new(V)
+		return *new(V), errors.NewEmptyCollectionError()
 	}
 
-	return slice[rand.Intn(len(slice))]
+	return slice[rand.Intn(len(slice))], nil
 }

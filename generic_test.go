@@ -2135,3 +2135,11 @@ func TestRandomWithEmptySliceReturnsZeroValue(t *testing.T) {
 		t.Errorf("expected false, got %t", got)
 	}
 }
+
+func TestRandomEErrorsWhenSliceIsEmpty(t *testing.T) {
+	expected := errors.NewEmptyCollectionError()
+
+	if _, got := RandomE([]int{}); got.Error() != expected.Error() {
+		t.Errorf("Expected %q. Got %q", expected, got)
+	}
+}
