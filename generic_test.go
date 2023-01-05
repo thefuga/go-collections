@@ -2182,9 +2182,15 @@ func TestSkip(t *testing.T) {
 			expected: []int{},
 		},
 		{
-			name:     "when skip >= len(slice)",
+			name:     "when skip = len(slice)",
 			slice:    []int{1, 2, 3},
 			skip:     3,
+			expected: []int{},
+		},
+		{
+			name:     "when skip > len(slice)",
+			slice:    []int{1, 2, 3},
+			skip:     10,
 			expected: []int{},
 		},
 		{
