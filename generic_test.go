@@ -2161,3 +2161,51 @@ func TestShuffleChangesTheSlice(t *testing.T) {
 		t.Errorf("Expected '%v'. Got '%v'", got, slice)
 	}
 }
+
+func TestSkip(t *testing.T) {
+	testCases := []struct {
+		name     string
+		slice    []int
+		skip     int
+		expected []int
+	}{
+		{
+			name:     "skipping first element on a slice of length 3",
+			slice:    []int{1, 2, 3},
+			skip:     1,
+			expected: []int{2, 3},
+		},
+		{
+			name:     "skipping first element on a slice of length 1",
+			slice:    []int{1},
+			skip:     1,
+			expected: []int{},
+		},
+		{
+			name:     "when skip = len(slice)",
+			slice:    []int{1, 2, 3},
+			skip:     3,
+			expected: []int{},
+		},
+		{
+			name:     "when skip > len(slice)",
+			slice:    []int{1, 2, 3},
+			skip:     10,
+			expected: []int{},
+		},
+		{
+			name:     "skipping on an empty slice",
+			slice:    []int{},
+			skip:     10,
+			expected: []int{},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := Skip(tc.slice, tc.skip); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}

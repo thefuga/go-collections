@@ -607,3 +607,8 @@ func Shuffle[V any](slice []V) []V {
 	})
 	return slice
 }
+
+// Skip returns `slice` with `skip` elements removed from the beginning
+func Skip[V any](slice []V, skip int) []V {
+	return slice[internal.Min(skip, len(slice)):]
+}
