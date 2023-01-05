@@ -86,6 +86,13 @@ func FieldMatch[V any](field string, matcher AnyMatcher) AnyMatcher {
 	}
 }
 
+// Not inverts the result of `matcher`
+func Not(matcher AnyMatcher) AnyMatcher {
+	return func(key any, value any) bool {
+		return !matcher(key, value)
+	}
+}
+
 // And combines all the given matchers into a single matcher which returns true
 // when all matchers return true.
 func And[V any](matchers ...AnyMatcher) AnyMatcher {

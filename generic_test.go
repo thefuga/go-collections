@@ -2260,3 +2260,54 @@ func TestSkipUntil(t *testing.T) {
 		})
 	}
 }
+
+func TestSkipWhile(t *testing.T) {
+	alwaysTrueMatcher := func(_, _ any) bool { return true }
+	alwaysFalseMatcher := func(_, _ any) bool { return false }
+
+	testCases := []struct {
+		name     string
+		slice    []int
+		matcher  AnyMatcher
+		expected []int
+	}{
+		{
+			name:     "skip while value is less than 3",
+			slice:    []int{1, 2, 3, 4, 5},
+			matcher:  ValueLT(3),
+			expected: []int{3, 4, 5},
+		},
+		{
+			name:     "returns the same slice if matcher does not match",
+			slice:    []int{1, 2, 3, 4, 5},
+			matcher:  alwaysFalseMatcher,
+			expected: []int{1, 2, 3, 4, 5},
+		},
+		{
+			name:     "returns empty slice if matcher matches the first element",
+			slice:    []int{1, 2, 3, 4, 5},
+			matcher:  alwaysTrueMatcher,
+			expected: []int{},
+		},
+		{
+			name:     "not matching on an empty slice returns an empty slice",
+			slice:    []int{},
+			matcher:  alwaysFalseMatcher,
+			expected: []int{},
+		},
+		{
+			name:     "matching on an empty slice returns an empty slice",
+			slice:    []int{},
+			matcher:  alwaysTrueMatcher,
+			expected: []int{},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := SkipWhile(tc.slice, tc.matcher); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
