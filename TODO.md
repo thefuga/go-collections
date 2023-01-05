@@ -88,7 +88,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] shift
 - [x] shuffle
 - [x] skip
-- [ ] skipUntil
+- [x] skipUntil
 - [ ] skipWhile
 - [ ] sliding
 - [ ] sole

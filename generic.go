@@ -591,7 +591,7 @@ func Random[V any](slice []V) V {
 	return v
 }
 
-// Random returns a random item from `slice` and errors if `slice` is empty.
+// RandomE returns a random item from `slice` and errors if `slice` is empty.
 func RandomE[V any](slice []V) (V, error) {
 	if len(slice) == 0 {
 		return *new(V), errors.NewEmptyCollectionError()
@@ -611,4 +611,16 @@ func Shuffle[V any](slice []V) []V {
 // Skip returns `slice` with `skip` elements removed from the beginning
 func Skip[V any](slice []V, skip int) []V {
 	return slice[internal.Min(skip, len(slice)):]
+}
+
+// SkipUntil skips over items from `slice` until `matcher` returns true and
+// then returns the remaining items in the slice
+func SkipUntil[V any](slice []V, matcher AnyMatcher) []V {
+	for i := 0; i < len(slice); i++ {
+		if matcher(i, slice[i]) {
+			return slice[i:]
+		}
+	}
+
+	return slice[len(slice):]
 }
