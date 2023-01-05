@@ -2147,3 +2147,17 @@ func TestRandomEErrorsWhenSliceIsEmpty(t *testing.T) {
 		t.Errorf("Expected %q. Got %q", expected, got)
 	}
 }
+
+func TestShuffleChangesTheSlice(t *testing.T) {
+	slice := Range(1, 10)
+	copyOfSlice := Copy(slice)
+
+	got := Shuffle(slice)
+	if reflect.DeepEqual(got, copyOfSlice) {
+		t.Errorf("shuffle did not change the slice")
+	}
+
+	if !reflect.DeepEqual(slice, got) {
+		t.Errorf("Expected '%v'. Got '%v'", got, slice)
+	}
+}

@@ -599,3 +599,11 @@ func RandomE[V any](slice []V) (V, error) {
 
 	return slice[rand.Intn(len(slice))], nil
 }
+
+// Shuffle pseudo-randomizes the order of elements.
+func Shuffle[V any](slice []V) []V {
+	rand.Shuffle(len(slice), func(i, j int) {
+		slice[i], slice[j] = slice[j], slice[i]
+	})
+	return slice
+}
