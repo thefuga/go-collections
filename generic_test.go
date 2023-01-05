@@ -572,6 +572,10 @@ func TestCopy(t *testing.T) {
 	if to := Copy(from); !reflect.DeepEqual(from, to) {
 		t.Errorf("expected copied slice to be %v. got %v", from, to)
 	}
+
+	if !reflect.DeepEqual(from, []string{"foo", "bar", "baz"}) {
+		t.Errorf("copy must not change source")
+	}
 }
 
 func TestCut(t *testing.T) {
