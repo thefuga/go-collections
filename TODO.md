@@ -85,8 +85,8 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] replaceRecursive
 - [x] reverse
 - [x] search (by value)
-- [ ] shift
-- [ ] shuffle
+- [x] shift
+- [x] shuffle
 - [ ] skip
 - [ ] skipUntil
 - [ ] skipWhile
