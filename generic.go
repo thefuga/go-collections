@@ -196,7 +196,7 @@ func Sort[T any](slice []T, f func(current, next T) bool) {
 // Copy returns a copy of the input slice.
 func Copy[V any](slice []V) []V {
 	copied := make([]V, len(slice))
-	copy(slice, copied)
+	copy(copied, slice)
 	return copied
 }
 
