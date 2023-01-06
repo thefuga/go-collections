@@ -630,3 +630,20 @@ func SkipUntil[V any](slice []V, matcher AnyMatcher) []V {
 func SkipWhile[V any](slice []V, matcher AnyMatcher) []V {
 	return SkipUntil(slice, Not(matcher))
 }
+
+// Sliding returns a "sliding window" view of the items in `slice`
+func Sliding[V any](slice []V, windowSize int) [][]V {
+	if windowSize < 1 || len(slice) == 0 {
+		return [][]V{}
+	}
+
+	if windowSize >= len(slice) {
+		return [][]V{slice}
+	}
+
+	result := make([][]V, 0, len(slice)-windowSize+1)
+	for i := 0; i <= len(slice)-windowSize; i++ {
+		result = append(result, slice[i:i+windowSize])
+	}
+	return result
+}
