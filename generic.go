@@ -167,8 +167,8 @@ func SearchE[T any](v T, slice []T) (int, error) {
 // Map applies f to each element of the slice and builds a new slice with f's returned
 // value. The built slice is returned.
 // The mapped slice has the same order as the input slice.
-func Map[T any](f func(i int, v T) T, slice []T) []T {
-	mappedValues := make([]T, 0, len(slice))
+func Map[T any, R any](f func(i int, v T) R, slice []T) []R {
+	mappedValues := make([]R, 0, len(slice))
 
 	Each(func(i int, v T) {
 		mappedValues = Push(f(i, v), mappedValues)
@@ -629,6 +629,23 @@ func SkipUntil[V any](slice []V, matcher AnyMatcher) []V {
 // then returns the remaining items in the slice
 func SkipWhile[V any](slice []V, matcher AnyMatcher) []V {
 	return SkipUntil(slice, Not(matcher))
+}
+
+// Nth creates a new slice consisting of every n-th element, starting at 0.
+func Nth[V any, N internal.Integer](slice []V, n N) []V {
+	return NthOffset(slice, n, 0)
+}
+
+// NthOffset creates a new slice consisting of every n-th element, starting at the given offset.
+func NthOffset[V any, N internal.Integer](slice []V, n N, off N) []V {
+	nthLen := N((len(slice) / int(n)))
+	nthSlice := make([]V, 0, nthLen)
+
+	for nth := off; nth < N(len(slice)); nth = nth + n {
+		nthSlice = append(nthSlice, slice[nth])
+	}
+
+	return nthSlice
 }
 
 // Sliding returns a "sliding window" view of the items in `slice`

@@ -17,12 +17,10 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] count
 - [x] countBy
 - [ ] crossJoin
-- [ ] dd
 - [x] diff
 - [ ] diffAssoc
 - [ ] diffKeys
 - [ ] doesntContain
-- [ ] dump
 - [x] duplicates
 - [ ] duplicatesStrict
 - [x] each
@@ -50,8 +48,6 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] keys
 - [x] last (Last, LastE, LastBy, LastByE)
 - [ ] lazy
-- [ ] macro
-- [ ] make
 - [x] map
 - [ ] mapInto
 - [ ] mapSpread
@@ -60,7 +56,6 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] max
 - [x] median
 - [x] merge
-- [ ] mergeRecursive
 - [x] min
 - [x] mode
 - [ ] nth
@@ -82,7 +77,6 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] reduceSpread
 - [x] reject
 - [ ] replace
-- [ ] replaceRecursive
 - [x] reverse
 - [x] search (by value)
 - [x] shift
@@ -111,7 +105,6 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] toArray (ToSlice)
 - [ ] toJson
 - [ ] transform
-- [ ] undot
 - [ ] union
 - [x] unique (Unique, UniqueBy)
 - [ ] uniqueStrict
@@ -119,7 +112,6 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] unlessEmpty
 - [x] unlessNotEmpty
 - [ ] unwrap
-- [ ] value
 - [x] values (ToSlice)
 - [x] when
 - [x] whenEmpty

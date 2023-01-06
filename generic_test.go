@@ -3,6 +3,7 @@ package collections
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"testing"
 
 	"github.com/thefuga/go-collections/errors"
@@ -372,6 +373,18 @@ func TestMap(t *testing.T) {
 				)
 			}
 		})
+	}
+}
+
+func TestMappingToADifferentType(t *testing.T) {
+	slice := []int{1, 2, 3}
+	mapper := func(_ int, n int) string {
+		return strconv.Itoa(n)
+	}
+	expected := []string{"1", "2", "3"}
+
+	if got := Map(mapper, slice); !reflect.DeepEqual(got, expected) {
+		t.Errorf("Expected '%v'. Got '%v'", expected, got)
 	}
 }
 
@@ -2306,6 +2319,96 @@ func TestSkipWhile(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := SkipWhile(tc.slice, tc.matcher); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
+
+func TestNth(t *testing.T) {
+	testCases := []struct {
+		name     string
+		nth      int
+		slice    []rune
+		expected []rune
+	}{
+		{
+			name:     "slice's len is divisible by nth",
+			nth:      2,
+			slice:    []rune{'a', 'b', 'c', 'd', 'e', 'f'},
+			expected: []rune{'a', 'c', 'e'},
+		},
+		{
+			name:     "slice's len is not divisible by nth",
+			nth:      4,
+			slice:    []rune{'a', 'b', 'c', 'd', 'e', 'f'},
+			expected: []rune{'a', 'e'},
+		},
+		{
+			name:     "nth is odd",
+			nth:      3,
+			slice:    []rune{'a', 'b', 'c', 'd', 'e', 'f'},
+			expected: []rune{'a', 'd'},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := Nth(tc.slice, tc.nth)
+			if !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+
+			lenGot := len(got)
+			capGot := cap(got)
+			lenExpec := len(tc.expected)
+			capExpec := cap(tc.expected)
+
+			if lenGot != lenExpec {
+				t.Errorf("expected cap '%d' len. Got '%d'", lenExpec, lenGot)
+			}
+
+			if capGot != capExpec {
+				t.Errorf("expected cap '%d' len. Got '%d'", capExpec, capGot)
+			}
+		})
+	}
+}
+
+func TestNthOffset(t *testing.T) {
+	testCases := []struct {
+		name     string
+		nth      int
+		offset   int
+		slice    []rune
+		expected []rune
+	}{
+		{
+			name:     "slice's len is divisible by nth",
+			nth:      2,
+			offset:   1,
+			slice:    []rune{'a', 'b', 'c', 'd', 'e', 'f'},
+			expected: []rune{'b', 'd', 'f'},
+		},
+		{
+			name:     "slice's len is not divisible by nth",
+			nth:      4,
+			offset:   1,
+			slice:    []rune{'a', 'b', 'c', 'd', 'e', 'f'},
+			expected: []rune{'b', 'f'},
+		},
+		{
+			name:     "nth is odd",
+			nth:      3,
+			offset:   1,
+			slice:    []rune{'a', 'b', 'c', 'd', 'e', 'f'},
+			expected: []rune{'b', 'e'},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := NthOffset(tc.slice, tc.nth, tc.offset); !reflect.DeepEqual(got, tc.expected) {
 				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
 			}
 		})
