@@ -3,6 +3,7 @@ package collections
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"testing"
 
 	"github.com/thefuga/go-collections/errors"
@@ -372,6 +373,18 @@ func TestMap(t *testing.T) {
 				)
 			}
 		})
+	}
+}
+
+func TestMappingToADifferentType(t *testing.T) {
+	slice := []int{1, 2, 3}
+	mapper := func(_ int, n int) string {
+		return strconv.Itoa(n)
+	}
+	expected := []string{"1", "2", "3"}
+
+	if got := Map(mapper, slice); !reflect.DeepEqual(got, expected) {
+		t.Errorf("Expected '%v'. Got '%v'", expected, got)
 	}
 }
 
