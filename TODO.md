@@ -84,7 +84,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] skip
 - [x] skipUntil
 - [x] skipWhile
-- [ ] sliding
+- [x] sliding (Sliding, SlidingStep)
 - [ ] sole
 - [x] sort
 - [ ] sortBy

@@ -647,3 +647,20 @@ func NthOffset[V any, N internal.Integer](slice []V, n N, off N) []V {
 
 	return nthSlice
 }
+
+// Sliding returns a "sliding window" view of the items in `slice`
+func Sliding[V any](slice []V, windowSize int) [][]V {
+	if windowSize < 1 || len(slice) == 0 {
+		return nil
+	}
+
+	if windowSize >= len(slice) {
+		return [][]V{slice}
+	}
+
+	result := make([][]V, 0, len(slice)-windowSize+1)
+	for i := 0; i <= len(slice)-windowSize; i++ {
+		result = append(result, slice[i:i+windowSize])
+	}
+	return result
+}

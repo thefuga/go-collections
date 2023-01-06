@@ -2414,3 +2414,76 @@ func TestNthOffset(t *testing.T) {
 		})
 	}
 }
+
+func TestSliding(t *testing.T) {
+	testCases := []struct {
+		name     string
+		slice    []int
+		window   int
+		expected [][]int
+	}{
+		{
+			name:     "1 through 5 with a window of 0",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   0,
+			expected: nil,
+		},
+		{
+			name:     "1 through 5 with a window of 1",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   1,
+			expected: [][]int{{1}, {2}, {3}, {4}, {5}},
+		},
+		{
+			name:     "1 through 5 with a window of 2",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   2,
+			expected: [][]int{{1, 2}, {2, 3}, {3, 4}, {4, 5}},
+		},
+		{
+			name:     "1 through 5 with a window of 3",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   3,
+			expected: [][]int{{1, 2, 3}, {2, 3, 4}, {3, 4, 5}},
+		},
+		{
+			name:     "1 through 5 with a window of 4",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   4,
+			expected: [][]int{{1, 2, 3, 4}, {2, 3, 4, 5}},
+		},
+		{
+			name:     "1 through 5 with a window of 5",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   5,
+			expected: [][]int{{1, 2, 3, 4, 5}},
+		},
+		{
+			name:     "window > len(slice)",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   10,
+			expected: [][]int{{1, 2, 3, 4, 5}},
+		},
+		{
+			name:     "empty slice with a window o 0",
+			slice:    []int{},
+			window:   0,
+			expected: nil,
+		},
+		{
+			name:     "empty slice with a window o 1",
+			slice:    []int{},
+			window:   1,
+			expected: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := Sliding(tc.slice, tc.window); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+
+}
