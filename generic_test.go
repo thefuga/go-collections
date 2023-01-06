@@ -2323,7 +2323,7 @@ func TestSliding(t *testing.T) {
 			name:     "1 through 5 with a window of 0",
 			slice:    []int{1, 2, 3, 4, 5},
 			window:   0,
-			expected: [][]int{},
+			expected: nil,
 		},
 		{
 			name:     "1 through 5 with a window of 1",
@@ -2365,13 +2365,13 @@ func TestSliding(t *testing.T) {
 			name:     "empty slice with a window o 0",
 			slice:    []int{},
 			window:   0,
-			expected: [][]int{},
+			expected: nil,
 		},
 		{
 			name:     "empty slice with a window o 1",
 			slice:    []int{},
 			window:   1,
-			expected: [][]int{},
+			expected: nil,
 		},
 	}
 

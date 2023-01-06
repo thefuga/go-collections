@@ -634,7 +634,7 @@ func SkipWhile[V any](slice []V, matcher AnyMatcher) []V {
 // Sliding returns a "sliding window" view of the items in `slice`
 func Sliding[V any](slice []V, windowSize int) [][]V {
 	if windowSize < 1 || len(slice) == 0 {
-		return [][]V{}
+		return nil
 	}
 
 	if windowSize >= len(slice) {
