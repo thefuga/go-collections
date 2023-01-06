@@ -616,8 +616,8 @@ func Skip[V any](slice []V, skip int) []V {
 // SkipUntil skips over items from `slice` until `matcher` returns true and
 // then returns the remaining items in the slice
 func SkipUntil[V any](slice []V, matcher AnyMatcher) []V {
-	for i := 0; i < len(slice); i++ {
-		if matcher(i, slice[i]) {
+	for i, v := range slice {
+		if matcher(i, v) {
 			return slice[i:]
 		}
 	}
