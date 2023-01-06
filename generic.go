@@ -167,8 +167,8 @@ func SearchE[T any](v T, slice []T) (int, error) {
 // Map applies f to each element of the slice and builds a new slice with f's returned
 // value. The built slice is returned.
 // The mapped slice has the same order as the input slice.
-func Map[T any](f func(i int, v T) T, slice []T) []T {
-	mappedValues := make([]T, 0, len(slice))
+func Map[T any, R any](f func(i int, v T) R, slice []T) []R {
+	mappedValues := make([]R, 0, len(slice))
 
 	Each(func(i int, v T) {
 		mappedValues = Push(f(i, v), mappedValues)
