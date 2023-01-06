@@ -638,7 +638,7 @@ func Nth[V any, N internal.Integer](slice []V, n N) []V {
 
 // NthOffset creates a new slice consisting of every n-th element, starting at the given offset.
 func NthOffset[V any, N internal.Integer](slice []V, n N, off N) []V {
-	nthLen := N(math.Ceil(float64(len(slice) / int(n))))
+	nthLen := N((len(slice) / int(n)))
 	nthSlice := make([]V, 0, nthLen)
 
 	for nth := off; nth < N(len(slice)); nth = nth + n {
