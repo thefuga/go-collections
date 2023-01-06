@@ -648,19 +648,25 @@ func NthOffset[V any, N internal.Integer](slice []V, n N, off N) []V {
 	return nthSlice
 }
 
-// Sliding returns a "sliding window" view of the items in `slice`
-func Sliding[V any](slice []V, windowSize int) [][]V {
-	if windowSize < 1 || len(slice) == 0 {
+// Sliding returns a "sliding window" view of the items in `slice`. Each window
+// will by `step` items apart
+func SlidingStep[V any](slice []V, window, step int) [][]V {
+	if step < 1 || window < 1 || len(slice) == 0 {
 		return nil
 	}
 
-	if windowSize >= len(slice) {
+	if window >= len(slice) {
 		return [][]V{slice}
 	}
 
-	result := make([][]V, 0, len(slice)-windowSize+1)
-	for i := 0; i <= len(slice)-windowSize; i++ {
-		result = append(result, slice[i:i+windowSize])
+	result := make([][]V, 0, len(slice)-window+1)
+	for i := 0; i <= len(slice)-window; i += step {
+		result = append(result, slice[i:i+window])
 	}
 	return result
+}
+
+// Sliding returns a "sliding window" view of the items in `slice`
+func Sliding[V any](slice []V, window int) [][]V {
+	return SlidingStep(slice, window, 1)
 }
