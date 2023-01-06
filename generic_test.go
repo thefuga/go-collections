@@ -2485,5 +2485,100 @@ func TestSliding(t *testing.T) {
 			}
 		})
 	}
+}
 
+func TestSlidingStep(t *testing.T) {
+	testCases := []struct {
+		name     string
+		slice    []int
+		window   int
+		step     int
+		expected [][]int
+	}{
+		{
+			name:     "1 through 5 with a window of 0 and step 1",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   0,
+			step:     1,
+			expected: nil,
+		},
+		{
+			name:     "1 through 5 with a window of 1 and step 2",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   1,
+			step:     2,
+			expected: [][]int{{1}, {3}, {5}},
+		},
+		{
+			name:     "1 through 5 with a window of 1 and step 3",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   1,
+			step:     3,
+			expected: [][]int{{1}, {4}},
+		},
+		{
+			name:     "1 through 5 with a window of 1 and step 4",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   1,
+			step:     4,
+			expected: [][]int{{1}, {5}},
+		},
+		{
+			name:     "1 through 5 with a window of 3 and step 2",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   3,
+			step:     2,
+			expected: [][]int{{1, 2, 3}, {3, 4, 5}},
+		},
+		{
+			name:     "step > len(slice)",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   1,
+			step:     6,
+			expected: [][]int{{1}},
+		},
+		{
+			name:     "step = 0",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   1,
+			step:     0,
+			expected: nil,
+		},
+		{
+			name:     "step = -1",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   1,
+			step:     -1,
+			expected: nil,
+		},
+		{
+			name:     "window > len(slice)",
+			slice:    []int{1, 2, 3, 4, 5},
+			window:   10,
+			step:     1,
+			expected: [][]int{{1, 2, 3, 4, 5}},
+		},
+		{
+			name:     "empty slice with a window o 0",
+			slice:    []int{},
+			window:   0,
+			step:     1,
+			expected: nil,
+		},
+		{
+			name:     "empty slice with a window o 1",
+			slice:    []int{},
+			window:   1,
+			step:     1,
+			expected: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := SlidingStep(tc.slice, tc.window, tc.step); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
 }
