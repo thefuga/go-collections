@@ -630,3 +630,20 @@ func SkipUntil[V any](slice []V, matcher AnyMatcher) []V {
 func SkipWhile[V any](slice []V, matcher AnyMatcher) []V {
 	return SkipUntil(slice, Not(matcher))
 }
+
+// Nth creates a new slice consisting of every n-th element, starting at 0.
+func Nth[V any, N internal.Integer](slice []V, n N) []V {
+	return NthOffset(slice, n, 0)
+}
+
+// NthOffset creates a new slice consisting of every n-th element, starting at the given offset.
+func NthOffset[V any, N internal.Integer](slice []V, n N, off N) []V {
+	nthLen := N((len(slice) / int(n)))
+	nthSlice := make([]V, 0, nthLen)
+
+	for nth := off; nth < N(len(slice)); nth = nth + n {
+		nthSlice = append(nthSlice, slice[nth])
+	}
+
+	return nthSlice
+}
