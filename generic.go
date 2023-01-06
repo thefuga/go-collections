@@ -535,7 +535,7 @@ func KeyBy[V any, K comparable](slice []V, f func(v V) K) map[K]V {
 	return result
 }
 
-// PadRigth will fill the slice with `pad` to the specified `size`.
+// PadRight will fill the slice with `pad` to the specified `size`.
 // No padding will take place if the `size` is less than or equal to the length of `slice`
 func PadRight[V any](slice []V, size int, pad V) []V {
 	if size <= len(slice) {
@@ -616,11 +616,17 @@ func Skip[V any](slice []V, skip int) []V {
 // SkipUntil skips over items from `slice` until `matcher` returns true and
 // then returns the remaining items in the slice
 func SkipUntil[V any](slice []V, matcher AnyMatcher) []V {
-	for i := 0; i < len(slice); i++ {
-		if matcher(i, slice[i]) {
+	for i, v := range slice {
+		if matcher(i, v) {
 			return slice[i:]
 		}
 	}
 
 	return slice[len(slice):]
+}
+
+// SkipWhile skips over items from `slice` while `matcher` returns true and
+// then returns the remaining items in the slice
+func SkipWhile[V any](slice []V, matcher AnyMatcher) []V {
+	return SkipUntil(slice, Not(matcher))
 }

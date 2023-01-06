@@ -115,6 +115,15 @@ func TestFieldMatch(t *testing.T) {
 	}
 }
 
+func TestNot(t *testing.T) {
+	matcher := ValueEquals(1)
+	notMatcher := Not(matcher)
+
+	if notMatcher(0, 1) == matcher(0, 1) {
+		t.Error("got the same result using Not.")
+	}
+}
+
 func TestAnd(t *testing.T) {
 	i := 10
 
