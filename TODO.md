@@ -88,7 +88,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] sole
 - [x] sort
 - [x] sortBy
-- [ ] sortByDesc
+- [x] sortByDesc
 - [ ] sortDesc
 - [ ] sortKeys
 - [ ] sortKeysDesc
