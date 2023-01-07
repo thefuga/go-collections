@@ -687,6 +687,8 @@ func Sliding[V any](slice []V, window int) [][]V {
 	return SlidingStep(slice, window, 1)
 }
 
+// Splice returns a slice of items starting at the specified index,
+// and the updated slice with the items removed.
 func Splice[V any](slice []V, idx int) ([]V, []V) {
 	if idx >= len(slice) {
 		return nil, nil
@@ -694,6 +696,8 @@ func Splice[V any](slice []V, idx int) ([]V, []V) {
 	return slice[idx:], slice[:idx]
 }
 
+// Splice returns a slice of `slice` starting at the `index` with length `size`,
+// and the updated slice with the items removed.
 func SpliceN[V any](slice []V, idx, size int) ([]V, []V) {
 	if idx < 0 || size < 1 {
 		return nil, nil
