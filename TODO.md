@@ -87,7 +87,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] sliding (Sliding, SlidingStep)
 - [ ] sole
 - [x] sort
-- [ ] sortBy
+- [x] sortBy
 - [ ] sortByDesc
 - [ ] sortDesc
 - [ ] sortKeys
