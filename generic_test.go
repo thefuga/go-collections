@@ -364,6 +364,31 @@ func TestSortBy(t *testing.T) {
 	}
 }
 
+func TestSortByDesc(t *testing.T) {
+	type item struct {
+		str string
+		num int
+	}
+	byStr := func(i item) string { return i.str }
+	byNum := func(i item) int { return i.num }
+
+	a := item{"a", 3}
+	b := item{"b", 2}
+	c := item{"c", 1}
+
+	slice := []item{b, c, a}
+
+	expectedByStr := []item{c, b, a}
+	if got := SortByDesc(slice, byStr); !reflect.DeepEqual(got, expectedByStr) {
+		t.Errorf("Expected '%v', got '%v'", expectedByStr, got)
+	}
+
+	expectedByNum := []item{a, b, c}
+	if got := SortByDesc(slice, byNum); !reflect.DeepEqual(got, expectedByNum) {
+		t.Errorf("Expected '%v', got '%v'", expectedByNum, got)
+	}
+}
+
 func TestMap(t *testing.T) {
 	testCases := []struct {
 		description      string

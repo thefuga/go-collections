@@ -7,11 +7,11 @@ import (
 	"github.com/thefuga/go-collections/tests/benchmark"
 )
 
-func BenchmarkSortBy(b *testing.B) {
+func BenchmarkSortByDesc(b *testing.B) {
 	slice := Shuffle(benchmark.BuildIntSlice())
 	identity := func(i int) int { return i }
 
 	for n := 0; n < b.N; n++ {
-		SortBy(slice, identity)
+		SortByDesc(slice, identity)
 	}
 }

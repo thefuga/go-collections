@@ -201,6 +201,14 @@ func SortBy[T any, S internal.Relational](slice []T, f func(t T) S) []T {
 	return slice
 }
 
+// SortByDesc sorts desc `slice` based on f. 
+func SortByDesc[T any, S internal.Relational](slice []T, f func(t T) S) []T {
+	sort.Slice(slice, func(i, j int) bool {
+		return f(slice[i]) > f(slice[j])
+	})
+	return slice
+}
+
 // Copy returns a copy of the input slice.
 func Copy[V any](slice []V) []V {
 	copied := make([]V, len(slice))
