@@ -93,7 +93,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [ ] sortKeys
 - [ ] sortKeysDesc
 - [ ] sortKeysUsing
-- [ ] splice
+- [x] splice (Splice, SpliceN)
 - [ ] split
 - [ ] splitIn
 - [x] sum (Sum, SumBy)

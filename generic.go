@@ -201,7 +201,7 @@ func SortBy[T any, S internal.Relational](slice []T, f func(t T) S) []T {
 	return slice
 }
 
-// SortByDesc sorts desc `slice` based on f. 
+// SortByDesc sorts desc `slice` based on f.
 func SortByDesc[T any, S internal.Relational](slice []T, f func(t T) S) []T {
 	sort.Slice(slice, func(i, j int) bool {
 		return f(slice[i]) > f(slice[j])
@@ -685,4 +685,31 @@ func SlidingStep[V any](slice []V, window, step int) [][]V {
 // Sliding returns a "sliding window" view of the items in `slice`
 func Sliding[V any](slice []V, window int) [][]V {
 	return SlidingStep(slice, window, 1)
+}
+
+// Splice returns a slice of items starting at the specified index,
+// and the updated slice with the items removed.
+func Splice[V any](slice []V, idx int) ([]V, []V) {
+	if idx >= len(slice) {
+		return nil, nil
+	}
+	return slice[idx:], slice[:idx]
+}
+
+// SpliceN returns a slice of `slice` starting at the `index` with length `size`,
+// and the updated slice with the items removed.
+func SpliceN[V any](slice []V, idx, size int) ([]V, []V) {
+	if idx < 0 || size < 1 {
+		return nil, nil
+	}
+
+	if idx >= len(slice) {
+		return nil, slice
+	}
+
+	if idx+size > len(slice) {
+		size = len(slice) - idx
+	}
+
+	return Copy(slice[idx : idx+size]), append(slice[:idx], slice[idx+size:]...)
 }

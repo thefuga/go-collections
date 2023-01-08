@@ -2632,3 +2632,162 @@ func TestSlidingStep(t *testing.T) {
 		})
 	}
 }
+
+func TestSplice(t *testing.T) {
+	testCases := []struct {
+		name          string
+		slice         []int
+		idx           int
+		expectedChunk []int
+		expectedSlice []int
+	}{
+		{
+			name:          "1 through 5 splicing at 2",
+			slice:         []int{1, 2, 3, 4, 5},
+			idx:           2,
+			expectedChunk: []int{3, 4, 5},
+			expectedSlice: []int{1, 2},
+		},
+		{
+			name:          "splicing at the last element",
+			slice:         []int{1, 2, 3},
+			idx:           2,
+			expectedChunk: []int{3},
+			expectedSlice: []int{1, 2},
+		},
+		{
+			name:          "splicing after the last element",
+			slice:         []int{1, 2, 3},
+			idx:           3,
+			expectedChunk: nil,
+			expectedSlice: nil,
+		},
+		{
+			name:          "empty slice",
+			slice:         []int{},
+			idx:           2,
+			expectedChunk: nil,
+			expectedSlice: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			chunk, slice := Splice(tc.slice, tc.idx)
+
+			if !reflect.DeepEqual(chunk, tc.expectedChunk) {
+				t.Errorf("Expected chunk '%v'. Got '%v'", tc.expectedChunk, chunk)
+			}
+
+			if !reflect.DeepEqual(slice, tc.expectedSlice) {
+				t.Errorf("Expected slice to change to '%v'. Got '%v'", tc.expectedSlice, slice)
+			}
+		})
+	}
+}
+
+func TestSpliceN(t *testing.T) {
+	testCases := []struct {
+		name          string
+		slice         []int
+		idx           int
+		size          int
+		expectedChunk []int
+		expectedSlice []int
+	}{
+		{
+			name:          "1 through 5 splicing at 2 with size 1",
+			slice:         []int{1, 2, 3, 4, 5},
+			idx:           2,
+			size:          1,
+			expectedChunk: []int{3},
+			expectedSlice: []int{1, 2, 4, 5},
+		},
+		{
+			name:          "1 through 5 splicing at 2 with size 2",
+			slice:         []int{1, 2, 3, 4, 5},
+			idx:           2,
+			size:          2,
+			expectedChunk: []int{3, 4},
+			expectedSlice: []int{1, 2, 5},
+		},
+		{
+			name:          "1 through 5 splicing at 2 with size 3",
+			slice:         []int{1, 2, 3, 4, 5},
+			idx:           2,
+			size:          3,
+			expectedChunk: []int{3, 4, 5},
+			expectedSlice: []int{1, 2},
+		},
+		{
+			name:          "1 through 5 splicing at 0 with size 5",
+			slice:         []int{1, 2, 3, 4, 5},
+			idx:           0,
+			size:          5,
+			expectedChunk: []int{1, 2, 3, 4, 5},
+			expectedSlice: []int{},
+		},
+		{
+			name:          "1 through 5 splicing at 0 with size 6",
+			slice:         []int{1, 2, 3, 4, 5},
+			idx:           0,
+			size:          6,
+			expectedChunk: []int{1, 2, 3, 4, 5},
+			expectedSlice: []int{},
+		},
+		{
+			name:          "index greater than the length of the slice",
+			slice:         []int{1, 2, 3, 4, 5},
+			idx:           5,
+			size:          1,
+			expectedChunk: nil,
+			expectedSlice: []int{1, 2, 3, 4, 5},
+		},
+		{
+			name:          "index plus size greater than the length of the slice",
+			slice:         []int{1, 2, 3, 4, 5},
+			idx:           2,
+			size:          4,
+			expectedChunk: []int{3, 4, 5},
+			expectedSlice: []int{1, 2},
+		},
+		{
+			name:          "negative index",
+			slice:         []int{1, 2, 3},
+			idx:           -1,
+			size:          4,
+			expectedChunk: nil,
+			expectedSlice: nil,
+		},
+		{
+			name:          "zero size",
+			slice:         []int{1, 2, 3},
+			idx:           0,
+			size:          0,
+			expectedChunk: nil,
+			expectedSlice: nil,
+		},
+		{
+			name:          "negative size",
+			slice:         []int{1, 2, 3},
+			idx:           0,
+			size:          -1,
+			expectedChunk: nil,
+			expectedSlice: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			chunk, slice := SpliceN(tc.slice, tc.idx, tc.size)
+
+			if !reflect.DeepEqual(chunk, tc.expectedChunk) {
+				t.Errorf("Expected chunk '%v'. Got '%v'", tc.expectedChunk, chunk)
+			}
+
+			if !reflect.DeepEqual(slice, tc.expectedSlice) {
+				t.Errorf("Expected slice to change to '%v'. Got '%v'", tc.expectedSlice, slice)
+			}
+		})
+	}
+}
