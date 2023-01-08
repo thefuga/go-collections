@@ -11,8 +11,8 @@ import (
 )
 
 // Get calls GetE, omitting the error.
-func Get[T any](i int, slice []T) T {
-	v, _ := GetE(i, slice)
+func Get[T any](slice []T, i int) T {
+	v, _ := GetE(slice, i)
 	return v
 }
 
@@ -20,7 +20,7 @@ func Get[T any](i int, slice []T) T {
 // Should i be negative or greater then the slice's len, a zeroed T value and
 // an errors.ValueNotFound error is returned.
 // This function is safe to be used with empty slices.
-func GetE[T any](i int, slice []T) (T, error) {
+func GetE[T any](slice []T, i int) (T, error) {
 	if len(slice) == 0 {
 		return *new(T), errors.NewEmptyCollectionError(
 			errors.NewValueNotFoundError(),
@@ -44,11 +44,11 @@ func First[T any](slice []T) T {
 
 // FirstE simply calls GetE with the slice and 0 the target index.
 func FirstE[T any](slice []T) (T, error) {
-	return GetE(0, slice)
+	return GetE(slice, 0)
 }
 
 // Push appends v to the slice.
-func Push[T any](v T, slice []T) []T {
+func Push[T any](slice []T, v T) []T {
 	return append(slice, v)
 }
 
@@ -56,7 +56,7 @@ func Push[T any](v T, slice []T) []T {
 // a new slice with capacity to store v at i index is allocated.
 // Put preserves the original values, shifting the slice so the new  value can be
 // stored without affecting the previous values.
-func Put[T any](i int, v T, slice []T) []T {
+func Put[T any](slice []T, i int, v T) []T {
 	if len(slice) == 0 {
 		slice = make([]T, i+1)
 		slice[i] = v
@@ -111,13 +111,13 @@ func ShiftE[T any](slice *[]T) (T, error) {
 
 // Last uses LastE, omitting the error.
 func Last[T any](slice []T) T {
-	v, _ := GetE(len(slice)-1, slice)
+	v, _ := GetE(slice, len(slice)-1)
 	return v
 }
 
 // LastE simply calls GetE with the slice and len-1 as the target index.
 func LastE[T any](slice []T) (T, error) {
-	return GetE(len(slice)-1, slice)
+	return GetE(slice, len(slice)-1)
 }
 
 // LastBy uses LastByE, omitting the error.
@@ -147,14 +147,14 @@ func Each[T any](f func(i int, v T), slice []T) {
 
 // Search uses SearchE, omitting the error.
 func Search[T any](v T, slice []T) int {
-	i, _ := SearchE(v, slice)
+	i, _ := SearchE(slice, v)
 	return i
 }
 
 // SearchE searches for v in the slice. The evaluation is done using reflect.DeepEqual.
 // Should the value be found, it's index is returned. Otherwise, T's zeroed value and
 // an instance of errors.ValueNotFoundError is returned.
-func SearchE[T any](v T, slice []T) (int, error) {
+func SearchE[T any](slice []T, v T) (int, error) {
 	for i := range slice {
 		if reflect.DeepEqual(slice[i], v) {
 			return i, nil
@@ -167,11 +167,11 @@ func SearchE[T any](v T, slice []T) (int, error) {
 // Map applies f to each element of the slice and builds a new slice with f's returned
 // value. The built slice is returned.
 // The mapped slice has the same order as the input slice.
-func Map[T any, R any](f func(i int, v T) R, slice []T) []R {
+func Map[T any, R any](slice []T, f func(i int, v T) R) []R {
 	mappedValues := make([]R, 0, len(slice))
 
 	Each(func(i int, v T) {
-		mappedValues = Push(f(i, v), mappedValues)
+		mappedValues = Push(mappedValues, f(i, v))
 	}, slice)
 
 	return mappedValues
@@ -179,7 +179,7 @@ func Map[T any, R any](f func(i int, v T) R, slice []T) []R {
 
 // Reduce reduces the collection to a single value, passing the result of each
 // iteration into the subsequent iteration
-func Reduce[T, V any](f func(carry V, v T, i int) V, carry V, slice []T) V {
+func Reduce[T, V any](slice []T, f func(carry V, v T, i int) V, carry V) V {
 	Each(func(i int, v T) { carry = f(carry, v, i) }, slice)
 
 	return carry
@@ -278,7 +278,7 @@ func bounds(i int, optionalJ ...int) (int, int) {
 	return i, j
 }
 
-// TODO
+// Tally counts the occurrence of each element on the slice.
 func Tally[T comparable](slice []T) map[T]int {
 	m := map[T]int{}
 	for _, v := range slice {

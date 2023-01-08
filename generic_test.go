@@ -42,8 +42,8 @@ func TestGet(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			getV := Get(tc.i, tc.sut)
-			getEV, err := GetE(tc.i, tc.sut)
+			getV := Get(tc.sut, tc.i)
+			getEV, err := GetE(tc.sut, tc.i)
 
 			if tc.v != getV || tc.v != getEV {
 				t.Errorf("expected get values to be %d and %d. got %d", getV, getEV, tc.v)
@@ -62,7 +62,7 @@ func TestPush(t *testing.T) {
 	expectedPushed := []int{1}
 	var sut []int
 
-	if pushed := Push(1, sut); !reflect.DeepEqual(pushed, expectedPushed) {
+	if pushed := Push(sut, 1); !reflect.DeepEqual(pushed, expectedPushed) {
 		t.Errorf("expected slice after push to be %v. got %v", expectedPushed, pushed)
 	}
 }
@@ -121,7 +121,7 @@ func TestPut(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			actual := Put(tc.i, tc.v, tc.sut)
+			actual := Put(tc.sut, tc.i, tc.v)
 
 			if !reflect.DeepEqual(actual, tc.expectation) {
 				t.Errorf("expected %v. got %v", tc.expectation, actual)
@@ -313,7 +313,7 @@ func TestSearchE(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			i, err := SearchE(tc.input, tc.sut)
+			i, err := SearchE(tc.sut, tc.input)
 
 			if i != tc.i {
 				t.Errorf("expected resulting index to be %d. got %d", tc.i, i)
@@ -413,7 +413,7 @@ func TestMap(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			mappedCollection := Map(f, tc.sut)
+			mappedCollection := Map(tc.sut, f)
 
 			if !reflect.DeepEqual(mappedCollection, tc.mappedCollection) {
 				t.Errorf(
@@ -433,7 +433,7 @@ func TestMappingToADifferentType(t *testing.T) {
 	}
 	expected := []string{"1", "2", "3"}
 
-	if got := Map(mapper, slice); !reflect.DeepEqual(got, expected) {
+	if got := Map(slice, mapper); !reflect.DeepEqual(got, expected) {
 		t.Errorf("Expected '%v'. Got '%v'", expected, got)
 	}
 }
@@ -486,7 +486,7 @@ func TestReduce(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			actual := Reduce(tc.fn, tc.initial, tc.input)
+			actual := Reduce(tc.input, tc.fn, tc.initial)
 
 			if !reflect.DeepEqual(actual, tc.expected) {
 				t.Errorf("expected %d. got %d", tc.expected, actual)
