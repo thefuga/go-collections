@@ -23,16 +23,16 @@ func (c Collection[V]) Contains(matcher collections.AnyMatcher) bool {
 }
 
 // Get passes the collection and the given params to the generic Get function.
-func (c Collection[V]) Get(i int) V { return collections.Get(i, c) }
+func (c Collection[V]) Get(i int) V { return collections.Get(c, i) }
 
 // GetE passes the collection and the given params to the generic GetE function.
-func (c Collection[V]) GetE(i int) (V, error) { return collections.GetE(i, c) }
+func (c Collection[V]) GetE(i int) (V, error) { return collections.GetE(c, i) }
 
 // Push passes the collection and the given params to the generic Push function.
 func (c Collection[V]) Push(v V) Collection[V] { return append(c, v) }
 
 // Put passes the collection and the given params to the generic Put function.
-func (c Collection[V]) Put(i int, v V) Collection[V] { return collections.Put(i, v, c) }
+func (c Collection[V]) Put(i int, v V) Collection[V] { return collections.Put(c, i, v) }
 
 // Pop passes the collection and the given params to the generic Pop function.
 func (c *Collection[V]) Pop() V { return collections.Pop((*[]V)(c)) }
@@ -53,10 +53,10 @@ func (c Collection[V]) IsEmpty() bool { return c.Count() == 0 }
 func (c Collection[V]) Search(v V) int { return collections.Search(v, c) }
 
 // SearchE passes the collection and the given params to the generic SearchE function.
-func (c Collection[V]) SearchE(v V) (int, error) { return collections.SearchE(v, c) }
+func (c Collection[V]) SearchE(v V) (int, error) { return collections.SearchE(c, v) }
 
 // Map passes the collection and the given params to the generic Map function.
-func (c Collection[V]) Map(f func(i int, v V) V) Collection[V] { return collections.Map(f, c) }
+func (c Collection[V]) Map(f func(i int, v V) V) Collection[V] { return collections.Map(c, f) }
 
 // First passes the collection and the given params to the generic First function.
 func (c Collection[V]) First() V { return collections.First(c) }
