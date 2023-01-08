@@ -2791,3 +2791,69 @@ func TestSpliceN(t *testing.T) {
 		})
 	}
 }
+
+func TestSplit(t *testing.T) {
+	testCases := []struct {
+		name     string
+		slice    []int
+		n        int
+		expected [][]int
+	}{
+		{
+			name:     "1 through 5 splitting in 3",
+			slice:    []int{1, 2, 3, 4, 5},
+			n:        3,
+			expected: [][]int{{1, 2}, {3, 4}, {5}},
+		},
+		{
+			name:     "1 through 6 splitting in 3",
+			slice:    []int{1, 2, 3, 4, 5, 6},
+			n:        3,
+			expected: [][]int{{1, 2}, {3, 4}, {5, 6}},
+		},
+		{
+			name:     "1 through 7 splitting in 3",
+			slice:    []int{1, 2, 3, 4, 5, 6, 7},
+			n:        3,
+			expected: [][]int{{1, 2, 3}, {4, 5}, {6, 7}},
+		},
+		{
+			name:     "1 through 5 splitting in 2",
+			slice:    []int{1, 2, 3, 4, 5},
+			n:        2,
+			expected: [][]int{{1, 2, 3}, {4, 5}},
+		},
+		{
+			name:     "1 through 5 splitting in 5",
+			slice:    []int{1, 2, 3, 4, 5},
+			n:        5,
+			expected: [][]int{{1}, {2}, {3}, {4}, {5}},
+		},
+		{
+			name:     "1 through 5 splitting in 4",
+			slice:    []int{1, 2, 3, 4, 5},
+			n:        4,
+			expected: [][]int{{1, 2}, {3}, {4}, {5}},
+		},
+		{
+			name:     "1 through 5 splitting in 6",
+			slice:    []int{1, 2, 3, 4, 5},
+			n:        6,
+			expected: [][]int{{1}, {2}, {3}, {4}, {5}},
+		},
+		{
+			name:     "empty slice returns nil",
+			slice:    []int{},
+			n:        3,
+			expected: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := Split(tc.slice, tc.n); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
