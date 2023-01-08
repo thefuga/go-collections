@@ -713,3 +713,26 @@ func SpliceN[V any](slice []V, idx, size int) ([]V, []V) {
 
 	return Copy(slice[idx : idx+size]), append(slice[:idx], slice[idx+size:]...)
 }
+
+// Split breaks `slice` into the given number of groups
+func Split[V any](slice []V, numberOfGroups int) [][]V {
+	if len(slice) == 0 {
+		return nil
+	}
+
+	numberOfGroups = internal.Min(len(slice), numberOfGroups)
+	groupSize := internal.DivFloor(len(slice), numberOfGroups)
+	remain := len(slice) % numberOfGroups
+
+	result := make([][]V, numberOfGroups)
+	start := 0
+	for i := 0; i < numberOfGroups; i++ {
+		size := groupSize
+		if i < remain {
+			size++
+		}
+		result[i] = slice[start:internal.Min(start+size, len(slice))]
+		start += size
+	}
+	return result
+}
