@@ -96,7 +96,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] split
 - [ ] splitIn
 - [x] sum (Sum, SumBy)
-- [ ] take
+- [x] take
 - [ ] takeUntil
 - [ ] takeWhile
 - [x] tap

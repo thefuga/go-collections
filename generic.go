@@ -766,3 +766,14 @@ func Split[V any](slice []V, numberOfGroups int) [][]V {
 	}
 	return result
 }
+
+// Take returns a slice with the specified number of items from `slice`.
+// You may also pass a negative integer to take the specified number of items from the end of the `slice`.
+func Take[V any](slice []V, n int) []V {
+	if n < 0 {
+		i := len(slice) - internal.Min(-n, len(slice))
+		return slice[i:]
+	}
+
+	return slice[:internal.Min(n, len(slice))]
+}

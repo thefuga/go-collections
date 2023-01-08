@@ -2890,3 +2890,77 @@ func TestSplit(t *testing.T) {
 		})
 	}
 }
+
+func TestTake(t *testing.T) {
+	testCases := []struct {
+		name     string
+		slice    []int
+		n        int
+		expected []int
+	}{
+		{
+			name:     "1 through 3 take 0",
+			slice:    []int{1, 2, 3},
+			n:        0,
+			expected: []int{},
+		},
+		{
+			name:     "1 through 3 take 1",
+			slice:    []int{1, 2, 3},
+			n:        1,
+			expected: []int{1},
+		},
+		{
+			name:     "1 through 3 take 2",
+			slice:    []int{1, 2, 3},
+			n:        2,
+			expected: []int{1, 2},
+		},
+		{
+			name:     "1 through 3 take 3",
+			slice:    []int{1, 2, 3},
+			n:        3,
+			expected: []int{1, 2, 3},
+		},
+		{
+			name:     "1 through 3 take 4",
+			slice:    []int{1, 2, 3},
+			n:        4,
+			expected: []int{1, 2, 3},
+		},
+
+		// negative cases
+		{
+			name:     "1 through 3 take -1",
+			slice:    []int{1, 2, 3},
+			n:        -1,
+			expected: []int{3},
+		},
+		{
+			name:     "1 through 3 take -2",
+			slice:    []int{1, 2, 3},
+			n:        -2,
+			expected: []int{2, 3},
+		},
+		{
+			name:     "1 through 3 take -3",
+			slice:    []int{1, 2, 3},
+			n:        -3,
+			expected: []int{1, 2, 3},
+		},
+		{
+			name:     "1 through 3 take -4",
+			slice:    []int{1, 2, 3},
+			n:        -4,
+			expected: []int{1, 2, 3},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := Take(tc.slice, tc.n); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
