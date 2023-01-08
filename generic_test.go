@@ -1322,6 +1322,39 @@ func TestDiffWithString(t *testing.T) {
 	}
 }
 
+func TestIntersect(t *testing.T) {
+	testCases := []struct {
+		name     string
+		left     []string
+		right    []string
+		expected []string
+	}{
+		{
+			name:     "edges intersect",
+			right:    []string{"foo", "bar", "baz", "qux"},
+			left:     []string{"foo", "fred", "qux"},
+			expected: []string{"foo", "qux"},
+		},
+		{
+			name:     "middle intersects",
+			left:     []string{"foo", "bar", "baz", "qux"},
+			right:    []string{"fred", "bar", "baz", "thud"},
+			expected: []string{"bar", "baz"},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := Intersect(tc.left, tc.right)
+
+			if !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected intersection to be '%v', got '%v'", tc.expected, got)
+			}
+		})
+	}
+
+}
+
 func TestZip(t *testing.T) {
 	testCases := []struct {
 		name     string

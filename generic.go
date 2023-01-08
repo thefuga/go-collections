@@ -372,12 +372,9 @@ func Duplicates[V comparable](slice []V) []V {
 
 // Diff returns a slice containing the elements that appear in the Left slice but not in the Right slice.
 func Diff[V comparable](leftSlice, rightSlice []V) []V {
-	seen := make(map[V]struct{}, len(rightSlice))
-	for _, v := range rightSlice {
-		seen[v] = struct{}{}
-	}
-
+	seen := makeSeenMap(rightSlice)
 	diff := []V{}
+
 	for _, v := range leftSlice {
 		if _, ok := seen[v]; !ok {
 			diff = append(diff, v)
@@ -386,6 +383,39 @@ func Diff[V comparable](leftSlice, rightSlice []V) []V {
 	}
 
 	return diff
+}
+
+// Intersect creates a new slice containing the elements present in both left
+// and right slices. The given slices are left untoutched.
+func Intersect[V comparable](leftSlice, rightSlice []V) []V {
+	if len(rightSlice) > len(leftSlice) {
+		return intersect(rightSlice, leftSlice)
+	}
+
+	return intersect(leftSlice, rightSlice)
+}
+
+func intersect[V comparable](leftSlice, rightSlice []V) []V {
+	seen := makeSeenMap(rightSlice)
+	intersection := []V{}
+
+	for _, v := range leftSlice {
+		if _, ok := seen[v]; ok {
+			intersection = append(intersection, v)
+		}
+
+	}
+
+	return intersection
+}
+
+func makeSeenMap[V comparable](slice []V) map[V]struct{} {
+	seen := make(map[V]struct{}, len(slice))
+	for _, v := range slice {
+		seen[v] = struct{}{}
+	}
+
+	return seen
 }
 
 // Zip merges the values of the given slices at their corresponding indexes
