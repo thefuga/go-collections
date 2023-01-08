@@ -18,13 +18,12 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] countBy
 - [ ] crossJoin
 - [x] diff
-- [ ] diffAssoc
-- [ ] diffKeys
+- [ ] diffAssoc (only map)
+- [ ] diffKeys (only map)
 - [ ] doesntContain
 - [x] duplicates
 - [ ] duplicatesStrict
 - [x] each
-- [ ] eachSpread
 - [x] every
 - [ ] except
 - [x] filter
@@ -39,8 +38,8 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] get
 - [x] groupBy
 - [ ] implode
-- [ ] intersect
-- [ ] intersectByKeys
+- [x] intersect
+- [ ] intersectByKeys (only map)
 - [x] isEmpty
 - [ ] isNotEmpty
 - [ ] join
