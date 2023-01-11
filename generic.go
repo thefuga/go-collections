@@ -777,3 +777,14 @@ func Take[V any](slice []V, n int) []V {
 
 	return slice[:internal.Min(n, len(slice))]
 }
+
+// TakeWhile returns items in the `slice` until `matcher` returns false
+func TakeWhile[V any](slice []V, matcher AnyMatcher) []V {
+	for i, v := range slice {
+		if !matcher(i, v) {
+			return slice[:i]
+		}
+	}
+
+	return slice
+}

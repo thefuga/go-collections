@@ -98,7 +98,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] sum (Sum, SumBy)
 - [x] take
 - [ ] takeUntil
-- [ ] takeWhile
+- [x] takeWhile
 - [x] tap
 - [ ] times
 - [x] toArray (ToSlice)
