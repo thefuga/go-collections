@@ -788,3 +788,8 @@ func TakeWhile[V any](slice []V, matcher AnyMatcher) []V {
 
 	return slice
 }
+
+// TakeUntil returns items in the `slice` until `matcher` returns true
+func TakeUntil[V any](slice []V, matcher AnyMatcher) []V {
+	return TakeWhile(slice, Not(matcher))
+}
