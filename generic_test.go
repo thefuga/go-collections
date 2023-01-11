@@ -2979,7 +2979,7 @@ func TestTakeWhile(t *testing.T) {
 			expected: []int{1, 2},
 		},
 		{
-			name:     "1 through 5 take while 10",
+			name:     "1 through 5 take while less than 10",
 			slice:    []int{1, 2, 3, 4, 5},
 			matcher:  ValueLT(10),
 			expected: []int{1, 2, 3, 4, 5},
@@ -3007,6 +3007,54 @@ func TestTakeWhile(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := TakeWhile(tc.slice, tc.matcher); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}
+
+func TestTakeUntil(t *testing.T) {
+	testCases := []struct {
+		name     string
+		slice    []int
+		matcher  AnyMatcher
+		expected []int
+	}{
+		{
+			name:     "1 through 5 take until greater than 3",
+			slice:    []int{1, 2, 3, 4, 5},
+			matcher:  ValueGT(3),
+			expected: []int{1, 2, 3},
+		},
+		{
+			name:     "1 through 5 take until less than 10",
+			slice:    []int{1, 2, 3, 4, 5},
+			matcher:  ValueLT(10),
+			expected: []int{},
+		},
+		{
+			name:     "1 through 5 take until less than 0",
+			slice:    []int{1, 2, 3, 4, 5},
+			matcher:  ValueLT(0),
+			expected: []int{1, 2, 3, 4, 5},
+		},
+		{
+			name:     "empty slice with matcher returning true",
+			slice:    []int{},
+			matcher:  func(_, _ any) bool { return true },
+			expected: []int{},
+		},
+		{
+			name:     "empty slice with matcher returning false",
+			slice:    []int{},
+			matcher:  func(_, _ any) bool { return false },
+			expected: []int{},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := TakeUntil(tc.slice, tc.matcher); !reflect.DeepEqual(got, tc.expected) {
 				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
 			}
 		})
