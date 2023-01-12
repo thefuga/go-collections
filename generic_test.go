@@ -3060,3 +3060,45 @@ func TestTakeUntil(t *testing.T) {
 		})
 	}
 }
+
+func TestTimes(t *testing.T) {
+	testCases := []struct {
+		name     string
+		n        int
+		f        func(n int) int
+		expected []int
+	}{
+		{
+			name:     "identity, 10 times",
+			n:        10,
+			f:        func(i int) int { return i },
+			expected: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+		},
+		{
+			name:     "x*2, 10 times",
+			n:        10,
+			f:        func(i int) int { return i * 2 },
+			expected: []int{2, 4, 6, 8, 10, 12, 14, 16, 18, 20},
+		},
+		{
+			name:     "x+10, 10 times",
+			n:        10,
+			f:        func(i int) int { return i + 10 },
+			expected: []int{11, 12, 13, 14, 15, 16, 17, 18, 19, 20},
+		},
+		{
+			name:     "identity, 0 times",
+			n:        0,
+			f:        func(i int) int { return i },
+			expected: []int{},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := Times(tc.n, tc.f); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("Expected '%v'. Got '%v'", tc.expected, got)
+			}
+		})
+	}
+}

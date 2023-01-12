@@ -100,7 +100,7 @@ Not all methods will make sense on Go and won't be implemented.
 - [x] takeUntil
 - [x] takeWhile
 - [x] tap
-- [ ] times
+- [x] times
 - [x] toArray (ToSlice)
 - [ ] toJson
 - [ ] transform
