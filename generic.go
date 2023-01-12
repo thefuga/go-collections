@@ -796,9 +796,9 @@ func TakeUntil[V any](slice []V, matcher AnyMatcher) []V {
 
 // Times creates a new slice by invoking `f` `n` times:
 func Times[V any](n int, f func(i int) V) []V {
-	result := make([]V, n)
+	result := make([]V, 0, n)
 	for i := range result {
-		result[i] = f(i + 1)
+		result = append(result, f(i+1))
 	}
 	return result
 }
