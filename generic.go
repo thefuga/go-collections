@@ -793,3 +793,12 @@ func TakeWhile[V any](slice []V, matcher AnyMatcher) []V {
 func TakeUntil[V any](slice []V, matcher AnyMatcher) []V {
 	return TakeWhile(slice, Not(matcher))
 }
+
+// Times creates a new slice by invoking `f` `n` times:
+func Times[V any](n int, f func(i int) V) []V {
+	result := make([]V, n)
+	for i := range result {
+		result[i] = f(i + 1)
+	}
+	return result
+}

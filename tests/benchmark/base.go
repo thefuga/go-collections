@@ -1,11 +1,11 @@
 package benchmark
 
-const collectionSize = 1000
+const CollectionSize = 1000
 
 func BuildIntSlice() []int {
-	slice := make([]int, 0, collectionSize)
+	slice := make([]int, 0, CollectionSize)
 
-	for i := 0; i < collectionSize; i++ {
+	for i := 0; i < CollectionSize; i++ {
 		slice = append(slice, i)
 	}
 
