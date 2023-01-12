@@ -3086,6 +3086,12 @@ func TestTimes(t *testing.T) {
 			f:        func(i int) int { return i + 10 },
 			expected: []int{11, 12, 13, 14, 15, 16, 17, 18, 19, 20},
 		},
+		{
+			name:     "identity, 0 times",
+			n:        0,
+			f:        func(i int) int { return i },
+			expected: []int{},
+		},
 	}
 
 	for _, tc := range testCases {
