@@ -17,11 +17,28 @@ func TestKeyEquals(t *testing.T) {
 }
 
 func TestValueEquals(t *testing.T) {
-	if !ValueEquals("foo")(nil, "foo") {
+	if !ValueEquals[int]("foo")(1, "foo") {
 		t.Error("both values are equal")
 	}
 
-	if ValueEquals("foo")(nil, "bar") {
+	if ValueEquals[int]("foo")(1, "bar") {
+		t.Error("values are different")
+	}
+}
+
+func TestValueDeepEquals(t *testing.T) {
+	type user struct {
+		name string
+	}
+	bob1 := user{"bob"}
+	bob2 := user{"bob"}
+	alice := user{"alice"}
+
+	if !ValueDeepEquals[int](bob1)(1, bob2) {
+		t.Error("both values are equal")
+	}
+
+	if ValueDeepEquals[int](bob1)(1, alice) {
 		t.Error("values are different")
 	}
 }
@@ -116,7 +133,7 @@ func TestFieldMatch(t *testing.T) {
 }
 
 func TestNot(t *testing.T) {
-	matcher := ValueEquals(1)
+	matcher := ValueEquals[int](1)
 	notMatcher := Not(matcher)
 
 	if notMatcher(0, 1) == matcher(0, 1) {

@@ -536,19 +536,19 @@ func TestContains(t *testing.T) {
 	testCases := []struct {
 		description string
 		collection  Collection[int]
-		matcher     collections.AnyMatcher
+		matcher     collections.Matcher[int, int]
 		contains    bool
 	}{
 		{
 			"collection contains at least one matching value",
 			Collect(1, 2, 3, 4),
-			collections.ValueEquals(3),
+			collections.ValueEquals[int](3),
 			true,
 		},
 		{
 			"collection does not contain matching values",
 			Collect(1, 2, 3, 4),
-			collections.ValueEquals(5),
+			collections.ValueEquals[int](5),
 			false,
 		},
 	}

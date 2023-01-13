@@ -19,11 +19,19 @@ func KeyEquals(key any) AnyMatcher {
 	}
 }
 
-// ValueEquals builds a matcher to compare the given value (with reflect.DeepEqual)
+// ValueDeepEquals builds a matcher to compare the given value (with reflect.DeepEqual)
 // to the value passed by the matcher caller.
-func ValueEquals(value any) AnyMatcher {
-	return func(_ any, collectionValue any) bool {
+func ValueDeepEquals[K any, V any](value V) Matcher[K, V] {
+	return func(_ K, collectionValue V) bool {
 		return reflect.DeepEqual(value, collectionValue)
+	}
+}
+
+// ValueEquals builds a matcher to compare the given value (with ==)
+// to the value passed by the matcher caller.
+func ValueEquals[K any, V comparable](value V) Matcher[K, V] {
+	return func(_ K, collectionValue V) bool {
+		return value == collectionValue
 	}
 }
 
@@ -59,7 +67,7 @@ func ValueLT[T internal.Number](value T) AnyMatcher {
 
 // FieldEquals uses FieldMatch composed with ValueEquals as the matcher.
 func FieldEquals[V any](field string, value any) AnyMatcher {
-	return FieldMatch[V](field, ValueEquals(value))
+	return FieldMatch[V](field, ValueDeepEquals[any, any](value))
 }
 
 // FieldMatch will attempt to retrieve the value corresponding to the given struct
@@ -87,8 +95,8 @@ func FieldMatch[V any](field string, matcher AnyMatcher) AnyMatcher {
 }
 
 // Not inverts the result of `matcher`
-func Not(matcher AnyMatcher) AnyMatcher {
-	return func(key any, value any) bool {
+func Not[K any, V any](matcher Matcher[K, V]) Matcher[K, V] {
+	return func(key K, value V) bool {
 		return !matcher(key, value)
 	}
 }
