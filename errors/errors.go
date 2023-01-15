@@ -1,4 +1,4 @@
-// errors holds custom errors common to all collections types.
+// Package errors holds custom errors common to all collections types.
 package errors
 
 import "fmt"

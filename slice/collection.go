@@ -1,4 +1,4 @@
-// slice package provides a custom slice collection type, functions and methods
+// Package slice provides a custom slice collection type, functions and methods
 // related to slices.
 package slice
 

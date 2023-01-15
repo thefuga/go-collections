@@ -282,7 +282,7 @@ func TestSearch(t *testing.T) {
 			-1,
 		},
 		{
-			"searching a nonexisting element",
+			"searching a nonexistent element",
 			Collection[any]{1, "foo", 1.0},
 			"bar",
 			-1,
@@ -322,7 +322,7 @@ func TestSearchE(t *testing.T) {
 			fmt.Errorf("value not found"),
 		},
 		{
-			"searching a nonexisting element",
+			"searching a nonexistent element",
 			Collection[any]{1, "foo", 1.0},
 			"bar",
 			-1,
@@ -580,7 +580,7 @@ func TestForgetE(t *testing.T) {
 		err         error
 	}{
 		{
-			"deleting a nonexisting key",
+			"deleting a nonexistent key",
 			Collect("foo", "bar", "baz"),
 			Collect("foo", "bar", "baz"),
 			3,
