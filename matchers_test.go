@@ -160,7 +160,7 @@ func TestAnd(t *testing.T) {
 func TestAndValue(t *testing.T) {
 	i := 10
 
-	if !AndValue[int, int](
+	if !AndValue(
 		11,
 		func(v int) Matcher[int, int] { return ValueGT[int](-v) },
 		func(v int) Matcher[int, int] { return ValueLT[int](v) },
@@ -172,7 +172,7 @@ func TestAndValue(t *testing.T) {
 func TestOr(t *testing.T) {
 	i := 11
 
-	if !Or[int](ValueGT[int](9), ValueLT[int](10))(0, i) {
+	if !Or(ValueGT[int](9), ValueLT[int](10))(0, i) {
 		t.Error("11 is greater than 9 and 10")
 	}
 }
@@ -180,32 +180,32 @@ func TestOr(t *testing.T) {
 func TestOrReturningFalse(t *testing.T) {
 	i := 1
 
-	if Or[int](ValueGT[int](1), ValueLT[int](1))(0, i) {
+	if Or(ValueGT[int](1), ValueLT[int](1))(0, i) {
 		t.Error("1 is not less, nor greater than 1")
 	}
 }
 
 func TestOrValue(t *testing.T) {
-	i := 1
-
-	if OrValue[int](
-		1,
-		func(v int) Matcher[int, int] { return ValueGT[int](v) },
-		func(v int) Matcher[int, int] { return ValueLT[int](v) },
-	)(0, i) {
-		t.Error("1 is not less, nor greater than 1")
-	}
-}
-
-func TestOrValueReturningFalse(t *testing.T) {
 	i := 11
 
-	if OrValue[int](
+	if !OrValue(
 		10,
 		func(v int) Matcher[int, int] { return ValueGT[int](v) },
 		func(v int) Matcher[int, int] { return ValueLT[int](2 * v) },
 	)(0, i) {
 		t.Error("11 is greater than 10 and lesser than 20")
+	}
+}
+
+func TestOrValueReturningFalse(t *testing.T) {
+	i := 1
+
+	if OrValue(
+		1,
+		func(v int) Matcher[int, int] { return ValueGT[int](1) },
+		func(v int) Matcher[int, int] { return ValueLT[int](1) },
+	)(0, i) {
+		t.Error("1 is not less, nor greater than 1")
 	}
 }
 
