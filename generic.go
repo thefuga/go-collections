@@ -256,7 +256,7 @@ func DeleteE[V any](slice *[]V, i int, optionalJ ...int) error {
 
 	copy((*slice)[i:], (*slice)[i+1:])
 	(*slice)[sliceLen-1] = *new(V)
-	(*slice) = (*slice)[:sliceLen-1]
+	*slice = (*slice)[:sliceLen-1]
 
 	return nil
 }
@@ -290,7 +290,7 @@ func Tally[T comparable](slice []T) map[T]int {
 // Mode returns the values that appear most often in the slice. Order is not guaranteed.
 func Mode[T comparable](slice []T) []T {
 	maxCount := 0
-	mode := []T{}
+	var mode []T
 
 	for v, count := range Tally(slice) {
 		if count > maxCount {
@@ -355,7 +355,7 @@ func FirstWhereFieldE[V any](slice []V, field string, matcher AnyMatcher) (V, er
 
 func Duplicates[V comparable](slice []V) []V {
 	seen := make(map[V]uint8)
-	duplicates := []V{}
+	var duplicates []V
 
 	for _, n := range slice {
 		switch seen[n] {
@@ -373,7 +373,7 @@ func Duplicates[V comparable](slice []V) []V {
 // Diff returns a slice containing the elements that appear in the Left slice but not in the Right slice.
 func Diff[V comparable](leftSlice, rightSlice []V) []V {
 	seen := makeSeenMap(rightSlice)
-	diff := []V{}
+	var diff []V
 
 	for _, v := range leftSlice {
 		if _, ok := seen[v]; !ok {
@@ -386,7 +386,7 @@ func Diff[V comparable](leftSlice, rightSlice []V) []V {
 }
 
 // Intersect creates a new slice containing the elements present in both left
-// and right slices. The given slices are left untoutched.
+// and right slices. The given slices are left untouched.
 func Intersect[V comparable](leftSlice, rightSlice []V) []V {
 	if len(rightSlice) > len(leftSlice) {
 		return intersect(rightSlice, leftSlice)
@@ -397,7 +397,7 @@ func Intersect[V comparable](leftSlice, rightSlice []V) []V {
 
 func intersect[V comparable](leftSlice, rightSlice []V) []V {
 	seen := makeSeenMap(rightSlice)
-	intersection := []V{}
+	var intersection []V
 
 	for _, v := range leftSlice {
 		if _, ok := seen[v]; ok {
@@ -445,7 +445,7 @@ func Zip[V any](slices ...[]V) [][]V {
 
 // Unique returns all distinct items in the slice
 func Unique[V comparable](slice []V) []V {
-	unique := []V{}
+	var unique []V
 
 	seen := map[V]struct{}{}
 	for _, v := range slice {
@@ -458,9 +458,9 @@ func Unique[V comparable](slice []V) []V {
 	return unique
 }
 
-// Unique uses the returned value of `f` to return distinct values in `slice`
+// UniqueBy uses the returned value of `f` to return distinct values in `slice`
 func UniqueBy[V any, T comparable](slice []V, f func(v V) T) []V {
-	unique := []V{}
+	var unique []V
 
 	seen := map[T]struct{}{}
 	for _, v := range slice {
@@ -493,7 +493,7 @@ func GroupBy[V any, T comparable](slice []V, f func(v V) T) map[T][]V {
 // Partition divides the slice into two slices based on the given predicate function.
 // It returns a slice of elements that satisfy the predicate and a slice of elements that do not.
 func Partition[V any](slice []V, predicate func(v V) bool) ([]V, []V) {
-	pass, reject := []V{}, []V{}
+	var pass, reject []V
 	for _, v := range slice {
 		if predicate(v) {
 			pass = append(pass, v)
@@ -684,7 +684,7 @@ func Nth[V any, N internal.Integer](slice []V, n N) []V {
 
 // NthOffset creates a new slice consisting of every n-th element, starting at the given offset.
 func NthOffset[V any, N internal.Integer](slice []V, n N, off N) []V {
-	nthLen := N((len(slice) / int(n)))
+	nthLen := N(len(slice) / int(n))
 	nthSlice := make([]V, 0, nthLen)
 
 	for nth := off; nth < N(len(slice)); nth = nth + n {
@@ -694,7 +694,7 @@ func NthOffset[V any, N internal.Integer](slice []V, n N, off N) []V {
 	return nthSlice
 }
 
-// Sliding returns a "sliding window" view of the items in `slice`. Each window
+// SlidingStep returns a "sliding window" view of the items in `slice`. Each window
 // will by `step` items apart
 func SlidingStep[V any](slice []V, window, step int) [][]V {
 	if step < 1 || window < 1 || len(slice) == 0 {

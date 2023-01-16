@@ -71,7 +71,7 @@ func TestCombineE(t *testing.T) {
 		err         error
 	}{
 		{
-			"mismatching keys and values lenghts",
+			"mismatching keys and values lengths",
 			[]string{"a", "b"},
 			[]string{"foo", "bar", "baz"},
 			map[string]string{},

@@ -13,13 +13,13 @@ var (
 )
 
 func buildIntSlice(n int) []int {
-	slice := make([]int, 0, n)
+	result := make([]int, 0, n)
 
 	for i := 0; i < n; i++ {
-		slice = append(slice, i)
+		result = append(result, i)
 	}
 
-	return slice
+	return result
 }
 
 func BenchmarkSliceCollectionPush(b *testing.B) {

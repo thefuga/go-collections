@@ -84,7 +84,7 @@ func Max[T internal.Number](slice []T) T {
 func Median[T internal.Number](slice []T) float64 {
 	Sort(slice, Asc[T]())
 
-	halfway := int(len(slice) / 2)
+	halfway := len(slice) / 2
 	if len(slice)%2 == 0 {
 		return float64(slice[halfway]+slice[halfway-1]) / 2.0
 	}

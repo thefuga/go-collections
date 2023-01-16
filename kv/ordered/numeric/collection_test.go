@@ -124,7 +124,7 @@ func TestDuplicates(t *testing.T) {
 		{
 			"no duplicates",
 			Collect(1, 2, 3, 4),
-			[]int{},
+			nil,
 		},
 		{
 			"1 appearing twice",

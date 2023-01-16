@@ -14,7 +14,7 @@ type Collection[K comparable, V internal.Number] struct {
 
 // Collect returns an ordered numeric collection containing the given values
 func Collect[V internal.Number](n ...V) Collection[int, V] {
-	return Collection[int, V]{ordered.Collect(n...)}
+	return Collection[int, V]{Collection: ordered.Collect(n...)}
 }
 
 // Average calculates the average value stored on the collection. Should the slice be empty,
