@@ -256,7 +256,7 @@ func TestSearch(t *testing.T) {
 			-1,
 		},
 		{
-			"searching a nonexisting element",
+			"searching a nonexistent element",
 			[]any{1, "foo", 1.0},
 			"bar",
 			-1,
@@ -296,7 +296,7 @@ func TestSearchE(t *testing.T) {
 			fmt.Errorf("value not found"),
 		},
 		{
-			"searching a nonexisting element",
+			"searching a nonexistent element",
 			[]any{1, "foo", 1.0},
 			"bar",
 			-1,
@@ -743,7 +743,7 @@ func TestForgetE(t *testing.T) {
 		err         error
 	}{
 		{
-			"deleting a nonexisting key",
+			"deleting a nonexistent key",
 			[]string{"foo", "bar", "baz"},
 			[]string{"foo", "bar", "baz"},
 			3,
@@ -787,7 +787,7 @@ func TestDeleteE(t *testing.T) {
 		err         error
 	}{
 		{
-			"deleting a nonexisting key",
+			"deleting a nonexistent key",
 			[]string{"foo", "bar", "baz"},
 			[]string{"foo", "bar", "baz"},
 			3,
@@ -1224,7 +1224,7 @@ func TestDuplicates(t *testing.T) {
 		{
 			"no duplicates",
 			[]string{"1", "2", "3", "4"},
-			[]string{},
+			nil,
 		},
 		{
 			"1 appearing twice",
@@ -1274,7 +1274,7 @@ func TestDiffWithInteger(t *testing.T) {
 			[]int{4, 5},
 		},
 		{
-			"unordored values",
+			"unordered values",
 			[]int{5, 4, 3, 2, 1},
 			[]int{3, 2, 1},
 			[]int{5, 4},
@@ -1598,7 +1598,7 @@ func TestPartition(t *testing.T) {
 			name:          "all false",
 			input:         []int{1, 2, 3, 4},
 			f:             func(_ int) bool { return false },
-			expectedLeft:  []int{},
+			expectedLeft:  nil,
 			expectedRight: []int{1, 2, 3, 4},
 		},
 	}

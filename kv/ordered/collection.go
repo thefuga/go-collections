@@ -76,10 +76,9 @@ func Get[K comparable, T, V any](c Collection[K, V], k K) (T, error) {
 	return internal.AssertE[T](genericValue)
 }
 
-// TODO
+// CountBy calls `f` with every value in `c` and counts the numbers of occurrences of the return value
 func CountBy[T comparable, K comparable, V any](c Collection[K, V], f func(v V) T) map[T]int {
 	return kv.CountBy(c.values, f)
-
 }
 
 // Put inserts v in the key represented by k. If k already exists on the map, it
@@ -111,7 +110,7 @@ func (c *Collection[K, V]) Pop() V {
 	return v
 }
 
-// Pop takes the last element of the collection, deletes and returns it.
+// PopE takes the last element of the collection, deletes and returns it.
 func (c *Collection[K, V]) PopE() (V, error) {
 	if c.IsEmpty() {
 		return *new(V), errors.NewEmptyCollectionError()
@@ -278,16 +277,16 @@ func (c Collection[K, V]) LastE() (V, error) {
 // ToSlice makes a new slice containing all values from the collection. The values
 // are obtained through the keys collection, which guarantees ordering.
 func (c Collection[K, V]) ToSlice() []V {
-	slice := make([]V, len(c.keys))
+	result := make([]V, len(c.keys))
 
 	for i, key := range c.keys {
-		slice[i] = c.values[key]
+		result[i] = c.values[key]
 	}
 
-	return slice
+	return result
 }
 
-// ToSlice collection simply returns ToSlice as a slice.Collection type
+// ToSliceCollection collection simply returns ToSlice as a slice.Collection type
 func (c Collection[K, V]) ToSliceCollection() slice.Collection[V] {
 	return c.ToSlice()
 }

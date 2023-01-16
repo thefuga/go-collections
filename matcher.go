@@ -6,10 +6,11 @@ import (
 	"github.com/thefuga/go-collections/internal"
 )
 
+type Matcher[K any, V any] func(key K, value V) bool
+
 // AnyMatcher is used by matchers on functions that  must compare keys and values from
 // a collection.
 // It is used as a functional option. To learn more, see: https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
-type Matcher[K any, V any] func(key K, value V) bool
 type AnyMatcher = Matcher[any, any]
 
 // KeyEquals builds a matcher to compare the given key to the key passed by the matcher caller.

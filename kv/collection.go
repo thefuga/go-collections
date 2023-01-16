@@ -1,4 +1,4 @@
-// kv package provides a custom map collection type, functions and methods
+// Package kv provides a custom map collection type, functions and methods
 // related to maps.
 // The types and methods from kv don't guarantee order. See kv/ordered for that.
 package kv
@@ -67,7 +67,7 @@ func CombineE[K comparable, V any](
 	return collection, nil
 }
 
-// TODO
+// CountBy calls `f` with every value in `c` and counts the numbers of occurrences of the return value
 func CountBy[T comparable, K comparable, V any](c Collection[K, V], f func(v V) T) map[T]int {
 	count := map[T]int{}
 
@@ -261,7 +261,7 @@ func (c Collection[K, V]) Flip() Collection[K, V] {
 	return v
 }
 
-// Flip makes a new collection, flipping the values with the keys.
+// FlipE makes a new collection, flipping the values with the keys.
 func (c Collection[K, V]) FlipE() (Collection[K, V], error) {
 	if _, err := internal.AssertE[V](*new(K)); err != nil {
 		return c, err

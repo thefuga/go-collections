@@ -48,7 +48,7 @@ func TestGetMethod(t *testing.T) {
 
 	if _, err = collection.GetE(3); err.Error() != "key '3' not found" {
 		t.Error(err)
-		t.Error("Getting a nonexisting key must return an error!")
+		t.Error("Getting a nonexistent key must return an error!")
 	}
 }
 
@@ -125,7 +125,7 @@ func TestSearchEMethod(t *testing.T) {
 	}
 
 	if _, err := collection.SearchE('a'); err.Error() != "value not found" {
-		t.Error("searching a nonexisting item must return an error")
+		t.Error("searching a nonexistent item must return an error")
 	}
 }
 
@@ -361,15 +361,15 @@ func TestToSlice(t *testing.T) {
 	values := []int{1, 2, 3, 4}
 	collection := CollectSlice(values)
 
-	slice := collection.ToSlice()
+	asSlice := collection.ToSlice()
 
-	if !reflect.DeepEqual(slice, values) {
+	if !reflect.DeepEqual(asSlice, values) {
 		t.Error("ToSlice method didn't return the correct underlying values")
 	}
 
 	valuesLen := len(values)
-	sliceCap := cap(slice)
-	sliceLen := len(slice)
+	sliceCap := cap(asSlice)
+	sliceLen := len(asSlice)
 
 	if sliceCap != valuesLen || sliceLen != valuesLen {
 		t.Errorf("Expected sliceLen and sliceCap to equal valuesLen\n"+
@@ -382,15 +382,15 @@ func TestToSliceCollection(t *testing.T) {
 	values := slice.Collect(1, 2, 3, 4)
 	collection := CollectSlice(values)
 
-	slice := collection.ToSliceCollection()
+	asSlice := collection.ToSliceCollection()
 
-	if !reflect.DeepEqual(slice, values) {
+	if !reflect.DeepEqual(asSlice, values) {
 		t.Error("ToSlice method didn't return the correct underlying values")
 	}
 
 	valuesLen := len(values)
-	sliceCap := cap(slice)
-	sliceLen := len(slice)
+	sliceCap := cap(asSlice)
+	sliceLen := len(asSlice)
 
 	if sliceCap != valuesLen || sliceLen != valuesLen {
 		t.Errorf("Expected sliceLen and sliceCap to equal valuesLen\n"+
