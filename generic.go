@@ -316,14 +316,14 @@ func Contains[V any](slice []V, matcher Matcher[int, V]) bool {
 }
 
 // FirstWhere uses FirstWhereE, omitting the error.
-func FirstWhere[V any](slice []V, matcher AnyMatcher) V {
+func FirstWhere[V any](slice []V, matcher Matcher[int, V]) V {
 	v, _ := FirstWhereE(slice, matcher)
 	return v
 }
 
 // FirstWhereE returns the first value matched by the given matcher. Should no value
 // match, an instance of errors.ValueNotFoundError is returned.
-func FirstWhereE[V any](slice []V, matcher AnyMatcher) (V, error) {
+func FirstWhereE[V any](slice []V, matcher Matcher[int, V]) (V, error) {
 	for i, v := range slice {
 		if matcher(i, v) {
 			return v, nil
@@ -661,19 +661,18 @@ func Skip[V any](slice []V, skip int) []V {
 
 // SkipUntil skips over items from `slice` until `matcher` returns true and
 // then returns the remaining items in the slice
-func SkipUntil[V any](slice []V, matcher AnyMatcher) []V {
+func SkipUntil[V any](slice []V, matcher Matcher[int, V]) []V {
 	for i, v := range slice {
 		if matcher(i, v) {
 			return slice[i:]
 		}
 	}
-
 	return slice[len(slice):]
 }
 
 // SkipWhile skips over items from `slice` while `matcher` returns true and
 // then returns the remaining items in the slice
-func SkipWhile[V any](slice []V, matcher AnyMatcher) []V {
+func SkipWhile[V any](slice []V, matcher Matcher[int, V]) []V {
 	return SkipUntil(slice, Not(matcher))
 }
 
@@ -779,7 +778,7 @@ func Take[V any](slice []V, n int) []V {
 }
 
 // TakeWhile returns items in the `slice` until `matcher` returns false
-func TakeWhile[V any](slice []V, matcher AnyMatcher) []V {
+func TakeWhile[V any](slice []V, matcher Matcher[int, V]) []V {
 	for i, v := range slice {
 		if !matcher(i, v) {
 			return slice[:i]
@@ -790,7 +789,7 @@ func TakeWhile[V any](slice []V, matcher AnyMatcher) []V {
 }
 
 // TakeUntil returns items in the `slice` until `matcher` returns true
-func TakeUntil[V any](slice []V, matcher AnyMatcher) []V {
+func TakeUntil[V any](slice []V, matcher Matcher[int, V]) []V {
 	return TakeWhile(slice, Not(matcher))
 }
 

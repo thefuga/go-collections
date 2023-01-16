@@ -9,7 +9,7 @@ import (
 
 func BenchmarkTakeWhile(b *testing.B) {
 	slice := benchmark.BuildIntSlice()
-	matcher := ValueLT(len(slice) / 2)
+	matcher := ValueLT[int](len(slice) / 2)
 
 	for n := 0; n < b.N; n++ {
 		TakeWhile(slice, matcher)

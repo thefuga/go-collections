@@ -9,7 +9,7 @@ import (
 
 func BenchmarkTakeUntil(b *testing.B) {
 	slice := benchmark.BuildIntSlice()
-	matcher := ValueGT(len(slice) / 2)
+	matcher := ValueGT[int](len(slice) / 2)
 
 	for n := 0; n < b.N; n++ {
 		TakeUntil(slice, matcher)

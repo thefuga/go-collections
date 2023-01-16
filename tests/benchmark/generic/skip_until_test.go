@@ -10,7 +10,7 @@ import (
 func BenchmarkSkipUntil(b *testing.B) {
 	slice := benchmark.BuildIntSlice()
 	halfway := len(slice) / 2
-	matcher := func(i, _ any) bool { return i.(int) == halfway }
+	matcher := func(i, _ int) bool { return i == halfway }
 
 	for n := 0; n < b.N; n++ {
 		SkipUntil(slice, matcher)

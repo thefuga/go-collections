@@ -46,7 +46,14 @@ func ValueDiffers(value any) AnyMatcher {
 
 // ValueGT compares the given numeric value to check if it is greater than the value
 // given by the matcher's caller.
-func ValueGT[T internal.Number](value T) AnyMatcher {
+func ValueGT[K any, V internal.Relational](value V) Matcher[K, V] {
+	return func(_ K, collectionValue V) bool {
+		return collectionValue > value
+	}
+}
+
+// ValueCastGT acts just like ValueGT, but using AnyMatcher and performing a cast on the collection value.
+func ValueCastGT[T internal.Number](value T) AnyMatcher {
 	return func(_ any, collectionValue any) bool {
 		if cast, ok := collectionValue.(T); ok {
 			return value < cast
@@ -57,7 +64,14 @@ func ValueGT[T internal.Number](value T) AnyMatcher {
 
 // ValueLT compares the given numeric value to check if it is lesser than the value
 // given by the matcher's caller.
-func ValueLT[T internal.Number](value T) AnyMatcher {
+func ValueLT[K any, V internal.Relational](value V) Matcher[K, V] {
+	return func(_ K, collectionValue V) bool {
+		return collectionValue < value
+	}
+}
+
+// ValueCastLT acts just like ValueGT, but using AnyMatcher and performing a cast on the collection value.
+func ValueCastLT[T internal.Number](value T) AnyMatcher {
 	return func(_ any, collectionValue any) bool {
 		if cast, ok := collectionValue.(T); ok {
 			return value > cast
@@ -120,29 +134,27 @@ func And[V any](matchers ...AnyMatcher) AnyMatcher {
 // will receive v. It is useful to compare build matchers dynamically at the execution time
 // rather than at the function's call time (i.e. the composed matchers won't be called until
 // the higher order matcher is called).
-func AndValue[V any](v V, matchers ...func(V) AnyMatcher) AnyMatcher {
-	return func(i any, collectionValue any) bool {
-		match := true
-
+func AndValue[K any, V any](v V, matchers ...func(V) Matcher[K, V]) Matcher[K, V] {
+	return func(i K, collectionValue V) bool {
 		for _, matcher := range matchers {
-			match = match && matcher(v)(i, collectionValue)
+			if !matcher(v)(i, collectionValue) {
+				return false
+			}
 		}
-
-		return match
+		return true
 	}
 }
 
 // Or combines all the given matchers into a single matcher which returns true
 // when at least one of the given matcher returns true.
-func Or[V any](matchers ...AnyMatcher) AnyMatcher {
-	return func(i any, collectionValue any) bool {
-		match := true
-
+func Or[K any, V any](matchers ...Matcher[K, V]) Matcher[K, V] {
+	return func(i K, collectionValue V) bool {
 		for _, matcher := range matchers {
-			match = match || matcher(i, collectionValue)
+			if matcher(i, collectionValue) {
+				return true
+			}
 		}
-
-		return match
+		return false
 	}
 }
 
@@ -150,15 +162,15 @@ func Or[V any](matchers ...AnyMatcher) AnyMatcher {
 // will receive v. It is useful to compare build matchers dynamically at the execution time
 // rather than at the function's call time (i.e. the composed matchers won't be called until
 // the higher order matcher is called).
-func OrValue[V any](v V, matchers ...func(V) AnyMatcher) AnyMatcher {
-	return func(i any, collectionValue any) bool {
-		match := true
-
+func OrValue[K any, V any](v V, matchers ...func(V) Matcher[K, V]) Matcher[K, V] {
+	return func(i K, collectionValue V) bool {
 		for _, matcher := range matchers {
-			match = match || matcher(v)(i, collectionValue)
+			if matcher(v)(i, collectionValue) {
+				return true
+			}
 		}
 
-		return match
+		return false
 	}
 }
 
