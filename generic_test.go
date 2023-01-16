@@ -971,7 +971,7 @@ func TestFirstWhereField(t *testing.T) {
 			"slice contains a matching object",
 			users,
 			"Name",
-			ValueEquals("Alice"),
+			ValueDeepEquals[any, any]("Alice"),
 			user{Name: "Alice", Email: "alice@collections.go", Age: 40},
 		},
 		{
@@ -1012,7 +1012,7 @@ func TestFirstWhereFieldE(t *testing.T) {
 			"slice contains a matching object",
 			users,
 			"Name",
-			ValueEquals("Alice"),
+			ValueDeepEquals[any, any]("Alice"),
 			user{Name: "Alice", Email: "alice@collections.go", Age: 40},
 			nil,
 		},
@@ -1189,19 +1189,19 @@ func TestContains(t *testing.T) {
 	testCases := []struct {
 		description string
 		slice       []int
-		matcher     AnyMatcher
+		matcher     Matcher[int, int]
 		contains    bool
 	}{
 		{
 			"collection contains at least one matching value",
 			[]int{1, 2, 3, 4},
-			ValueEquals(3),
+			ValueEquals[int](3),
 			true,
 		},
 		{
 			"collection does not contain matching values",
 			[]int{1, 2, 3, 4},
-			ValueEquals(5),
+			ValueEquals[int](5),
 			false,
 		},
 	}
@@ -2198,7 +2198,7 @@ func TestRandomResultIsIncludedInSlice(t *testing.T) {
 
 	for i := 0; i < 10; i++ {
 		rand := Random(slice)
-		if !Contains(slice, ValueEquals(rand)) {
+		if !Contains(slice, ValueEquals[int](rand)) {
 			t.Errorf("expected slice '%v' to contain '%v'", slice, rand)
 		}
 	}
@@ -2319,7 +2319,7 @@ func TestSkipUntil(t *testing.T) {
 		{
 			name:     "after 3",
 			slice:    []int{1, 2, 3, 4, 5},
-			matcher:  ValueEquals(3),
+			matcher:  ValueDeepEquals[any, any](3),
 			expected: []int{3, 4, 5},
 		},
 		{

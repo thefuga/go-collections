@@ -551,7 +551,7 @@ func TestContainsKey(t *testing.T) {
 func TestContainsValue(t *testing.T) {
 	collection := CollectMap(map[string]string{"foo": "a", "bar": "b"})
 
-	if !collection.Contains(collections.ValueEquals("a")) {
+	if !collection.Contains(collections.ValueDeepEquals[any, any]("a")) {
 		t.Error("collection should contain 'a' value")
 	}
 }
@@ -559,13 +559,13 @@ func TestContainsValue(t *testing.T) {
 func TestEvery(t *testing.T) {
 	collection := Collect(2, 2, 2, 2)
 
-	if !collection.Every(collections.ValueEquals(2)) {
+	if !collection.Every(collections.ValueDeepEquals[any, any](2)) {
 		t.Error("all elements in the collection are equal")
 	}
 
 	collection.Put(4, 1)
 
-	if collection.Every(collections.ValueEquals(2)) {
+	if collection.Every(collections.ValueDeepEquals[any, any](2)) {
 		t.Error("the collection contains a different element")
 	}
 }
@@ -579,7 +579,7 @@ func TestFirstOrFail(t *testing.T) {
 		collection = Collect("foo", "bar")
 	)
 
-	foundKey, foundValue, foundErr = collection.FirstOrFail(collections.ValueEquals("bar"))
+	foundKey, foundValue, foundErr = collection.FirstOrFail(collections.ValueDeepEquals[any, any]("bar"))
 	if foundKey != 1 || foundValue != "bar" || foundErr != nil {
 		t.Errorf(
 			"Expected %d, %s, %v, got %d, %s, %v",
@@ -588,7 +588,7 @@ func TestFirstOrFail(t *testing.T) {
 		)
 	}
 
-	foundKey, foundValue, foundErr = collection.FirstOrFail(collections.ValueEquals("baz"))
+	foundKey, foundValue, foundErr = collection.FirstOrFail(collections.ValueDeepEquals[any, any]("baz"))
 	if foundKey != 0 || foundValue != "" || foundErr == nil {
 		t.Errorf(
 			"Expected %d, %s, %v, got %d, %s, %v",

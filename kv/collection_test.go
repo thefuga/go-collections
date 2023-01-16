@@ -534,7 +534,7 @@ func TestContains(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			if contains := tc.collection.Contains(collections.ValueEquals(tc.value)); contains != tc.contains {
+			if contains := tc.collection.Contains(collections.ValueEquals[int](tc.value)); contains != tc.contains {
 				t.Errorf("Contains result should be %v. got %v", tc.contains, contains)
 			}
 		})
@@ -564,7 +564,7 @@ func TestEvery(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			if contains := tc.collection.Every(collections.ValueEquals(tc.value)); contains != tc.contains {
+			if contains := tc.collection.Every(collections.ValueDeepEquals[any, any](tc.value)); contains != tc.contains {
 				t.Errorf("Contains result should be %v. got %v", tc.contains, contains)
 			}
 		})

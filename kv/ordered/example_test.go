@@ -215,7 +215,7 @@ func ExampleCollection_Contains() {
 func ExampleCollection_Every() {
 	c := Collect(2, 2, 2, 2)
 
-	fmt.Printf("%v", c.Every(collections.ValueEquals(2)))
+	fmt.Printf("%v", c.Every(collections.ValueDeepEquals[any, any](2)))
 	// Output:
 	// true
 }

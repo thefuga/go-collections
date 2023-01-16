@@ -240,7 +240,7 @@ func (c Collection[K, V]) Concat(concatTo Collection[K, V]) Collection[K, V] {
 }
 
 // Contains checks if any values on the Collection match f.
-func (c Collection[K, V]) Contains(f collections.AnyMatcher) bool {
+func (c Collection[K, V]) Contains(f collections.Matcher[int, V]) bool {
 	return c.Values().Contains(f)
 }
 

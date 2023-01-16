@@ -305,7 +305,7 @@ func Mode[T comparable](slice []T) []T {
 }
 
 // Contains checks if the slice holds at least one value matching the given matcher.
-func Contains[V any](slice []V, matcher AnyMatcher) bool {
+func Contains[V any](slice []V, matcher Matcher[int, V]) bool {
 	for i, v := range slice {
 		if matcher(i, v) {
 			return true
