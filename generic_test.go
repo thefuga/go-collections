@@ -978,7 +978,7 @@ func TestFirstWhereField(t *testing.T) {
 			"criteria doesn't match slice elements",
 			users,
 			"Age",
-			ValueGT(50),
+			ValueCastGT(50),
 			user{},
 		},
 	}
@@ -1020,7 +1020,7 @@ func TestFirstWhereFieldE(t *testing.T) {
 			"slice contains an object matching custom matcher",
 			users,
 			"Age",
-			ValueGT(30),
+			ValueCastGT(30),
 			user{Name: "Jon", Email: "jon@collections.go", Age: 33},
 			nil,
 		},
@@ -1028,7 +1028,7 @@ func TestFirstWhereFieldE(t *testing.T) {
 			"criteria doesn't match slice elements",
 			users,
 			"Age",
-			ValueGT(50),
+			ValueCastGT(50),
 			user{},
 			fmt.Errorf("value not found"),
 		},
@@ -1057,21 +1057,21 @@ func TestFirstWhereE(t *testing.T) {
 	testCases := []struct {
 		description string
 		sut         []int
-		matcher     AnyMatcher
+		matcher     Matcher[int, int]
 		v           int
 		err         error
 	}{
 		{
 			"slice contains a matching value",
 			slice,
-			ValueGT(3),
+			ValueGT[int](3),
 			4,
 			nil,
 		},
 		{
 			"slice does not contain matching values",
 			slice,
-			ValueGT(5),
+			ValueGT[int](5),
 			*new(int),
 			fmt.Errorf("value not found"),
 		},
@@ -1106,7 +1106,7 @@ func TestFirstWhereWithComposedMatchers(t *testing.T) {
 		description string
 		sut         []user
 		field       string
-		matcher     AnyMatcher
+		matcher     Matcher[int, user]
 		user        user
 		err         error
 	}{
@@ -1114,7 +1114,7 @@ func TestFirstWhereWithComposedMatchers(t *testing.T) {
 			"slice contains a matching object composed with 'AndValue'",
 			users,
 			"Name",
-			AndValue(user{Name: "Alice", Age: 40}, usernameMatch, ageMatch),
+			AndValue[int](user{Name: "Alice", Age: 40}, usernameMatch[int], ageMatch[int]),
 			user{Name: "Alice", Email: "alice@collections.go", Age: 40},
 			nil,
 		},
@@ -1122,7 +1122,7 @@ func TestFirstWhereWithComposedMatchers(t *testing.T) {
 			"slice contains a matching object composed with 'OrValue'",
 			users,
 			"Name",
-			OrValue(user{Name: "Alice", Age: 33}, usernameMatch, ageMatch),
+			OrValue[int](user{Name: "Alice", Age: 33}, usernameMatch[int], ageMatch[int]),
 			user{Name: "Jon", Email: "jon@collections.go", Age: 33},
 			nil,
 		},
@@ -1130,7 +1130,7 @@ func TestFirstWhereWithComposedMatchers(t *testing.T) {
 			"slice does not contain matching objects",
 			users,
 			"Name",
-			AndValue(user{Name: "Alice", Age: 33}, usernameMatch, ageMatch),
+			AndValue[int](user{Name: "Alice", Age: 33}, usernameMatch[int], ageMatch[int]),
 			user{},
 			fmt.Errorf("value not found"),
 		},
@@ -1159,19 +1159,19 @@ func TestFirstWhere(t *testing.T) {
 	testCases := []struct {
 		description string
 		sut         []int
-		matcher     AnyMatcher
+		matcher     Matcher[int, int]
 		v           int
 	}{
 		{
 			"slice contains a matching value",
 			slice,
-			ValueGT(3),
+			ValueGT[int](3),
 			4,
 		},
 		{
 			"slice does not contain matching values",
 			slice,
-			ValueGT(5),
+			ValueGT[int](5),
 			*new(int),
 		},
 	}
@@ -2307,19 +2307,19 @@ func TestSkip(t *testing.T) {
 }
 
 func TestSkipUntil(t *testing.T) {
-	alwaysTrueMatcher := func(_, _ any) bool { return true }
-	alwaysFalseMatcher := func(_, _ any) bool { return false }
+	alwaysTrueMatcher := func(_, _ int) bool { return true }
+	alwaysFalseMatcher := func(_, _ int) bool { return false }
 
 	testCases := []struct {
 		name     string
 		slice    []int
-		matcher  AnyMatcher
+		matcher  Matcher[int, int]
 		expected []int
 	}{
 		{
 			name:     "after 3",
 			slice:    []int{1, 2, 3, 4, 5},
-			matcher:  ValueDeepEquals[any, any](3),
+			matcher:  ValueEquals[int](3),
 			expected: []int{3, 4, 5},
 		},
 		{
@@ -2358,19 +2358,19 @@ func TestSkipUntil(t *testing.T) {
 }
 
 func TestSkipWhile(t *testing.T) {
-	alwaysTrueMatcher := func(_, _ any) bool { return true }
-	alwaysFalseMatcher := func(_, _ any) bool { return false }
+	alwaysTrueMatcher := func(_, _ int) bool { return true }
+	alwaysFalseMatcher := func(_, _ int) bool { return false }
 
 	testCases := []struct {
 		name     string
 		slice    []int
-		matcher  AnyMatcher
+		matcher  Matcher[int, int]
 		expected []int
 	}{
 		{
 			name:     "skip while value is less than 3",
 			slice:    []int{1, 2, 3, 4, 5},
-			matcher:  ValueLT(3),
+			matcher:  ValueLT[int](3),
 			expected: []int{3, 4, 5},
 		},
 		{
@@ -2969,37 +2969,37 @@ func TestTakeWhile(t *testing.T) {
 	testCases := []struct {
 		name     string
 		slice    []int
-		matcher  AnyMatcher
+		matcher  Matcher[int, int]
 		expected []int
 	}{
 		{
 			name:     "1 through 5 take while less than 3",
 			slice:    []int{1, 2, 3, 4, 5},
-			matcher:  ValueLT(3),
+			matcher:  ValueLT[int](3),
 			expected: []int{1, 2},
 		},
 		{
 			name:     "1 through 5 take while less than 10",
 			slice:    []int{1, 2, 3, 4, 5},
-			matcher:  ValueLT(10),
+			matcher:  ValueLT[int](10),
 			expected: []int{1, 2, 3, 4, 5},
 		},
 		{
 			name:     "1 through 5 take while less than 0",
 			slice:    []int{1, 2, 3, 4, 5},
-			matcher:  ValueLT(0),
+			matcher:  ValueLT[int](0),
 			expected: []int{},
 		},
 		{
 			name:     "empty slice with matcher returning true",
 			slice:    []int{},
-			matcher:  func(_, _ any) bool { return true },
+			matcher:  func(_, _ int) bool { return true },
 			expected: []int{},
 		},
 		{
 			name:     "empty slice with matcher returning false",
 			slice:    []int{},
-			matcher:  func(_, _ any) bool { return false },
+			matcher:  func(_, _ int) bool { return false },
 			expected: []int{},
 		},
 	}
@@ -3017,37 +3017,37 @@ func TestTakeUntil(t *testing.T) {
 	testCases := []struct {
 		name     string
 		slice    []int
-		matcher  AnyMatcher
+		matcher  Matcher[int, int]
 		expected []int
 	}{
 		{
 			name:     "1 through 5 take until greater than 3",
 			slice:    []int{1, 2, 3, 4, 5},
-			matcher:  ValueGT(3),
+			matcher:  ValueGT[int](3),
 			expected: []int{1, 2, 3},
 		},
 		{
 			name:     "1 through 5 take until less than 10",
 			slice:    []int{1, 2, 3, 4, 5},
-			matcher:  ValueLT(10),
+			matcher:  ValueLT[int](10),
 			expected: []int{},
 		},
 		{
 			name:     "1 through 5 take until less than 0",
 			slice:    []int{1, 2, 3, 4, 5},
-			matcher:  ValueLT(0),
+			matcher:  ValueLT[int](0),
 			expected: []int{1, 2, 3, 4, 5},
 		},
 		{
 			name:     "empty slice with matcher returning true",
 			slice:    []int{},
-			matcher:  func(_, _ any) bool { return true },
+			matcher:  func(_, _ int) bool { return true },
 			expected: []int{},
 		},
 		{
 			name:     "empty slice with matcher returning false",
 			slice:    []int{},
-			matcher:  func(_, _ any) bool { return false },
+			matcher:  func(_, _ int) bool { return false },
 			expected: []int{},
 		},
 	}

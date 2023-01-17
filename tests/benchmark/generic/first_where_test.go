@@ -7,12 +7,11 @@ import (
 	"github.com/thefuga/go-collections/tests/benchmark"
 )
 
-func BenchmarkSkipUntil(b *testing.B) {
+func BenchmarkFirstWhere(b *testing.B) {
 	slice := benchmark.BuildIntSlice()
-	halfway := len(slice) / 2
-	matcher := func(i, _ int) bool { return i == halfway }
+	half := len(slice) / 2
 
 	for n := 0; n < b.N; n++ {
-		SkipUntil(slice, matcher)
+		FirstWhere(slice, ValueEquals[int](half))
 	}
 }

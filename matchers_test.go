@@ -127,8 +127,16 @@ func TestFieldEquals(t *testing.T) {
 func TestFieldMatch(t *testing.T) {
 	u := user{Name: "Jon", Email: "jon@collections.go", Age: 33}
 
-	if !FieldMatch[user]("Age", ValueGT(30))(0, u) {
+	if !FieldMatch[user]("Age", ValueCastGT(30))(0, u) {
 		t.Error("user should've matched")
+	}
+}
+
+func TestFieldMatchWithDifferentTypes(t *testing.T) {
+	u := user{Name: "Jon", Email: "jon@collections.go", Age: 33}
+
+	if FieldMatch[user]("Age", ValueDeepEquals[any, any]("foo"))(0, u) {
+		t.Error("should not match string 'foo' against Age number")
 	}
 }
 
@@ -144,7 +152,7 @@ func TestNot(t *testing.T) {
 func TestAnd(t *testing.T) {
 	i := 10
 
-	if !And[int](ValueGT(9), ValueLT(11))(0, i) {
+	if !And[int](ValueCastGT(9), ValueCastLT(11))(0, i) {
 		t.Error("10 is greater than 9 and lesser than 11")
 	}
 }
@@ -154,8 +162,8 @@ func TestAndValue(t *testing.T) {
 
 	if !AndValue(
 		11,
-		func(v int) AnyMatcher { return ValueGT(-v) },
-		func(v int) AnyMatcher { return ValueLT(v) },
+		func(v int) Matcher[int, int] { return ValueGT[int](-v) },
+		func(v int) Matcher[int, int] { return ValueLT[int](v) },
 	)(0, i) {
 		t.Error("10 is greater than -11 and lesser than 11")
 	}
@@ -164,8 +172,16 @@ func TestAndValue(t *testing.T) {
 func TestOr(t *testing.T) {
 	i := 11
 
-	if !Or[int](ValueGT(9), ValueLT(10))(0, i) {
+	if !Or(ValueGT[int](9), ValueLT[int](10))(0, i) {
 		t.Error("11 is greater than 9 and 10")
+	}
+}
+
+func TestOrReturningFalse(t *testing.T) {
+	i := 1
+
+	if Or(ValueGT[int](1), ValueLT[int](1))(0, i) {
+		t.Error("1 is not less, nor greater than 1")
 	}
 }
 
@@ -174,9 +190,81 @@ func TestOrValue(t *testing.T) {
 
 	if !OrValue(
 		10,
-		func(v int) AnyMatcher { return ValueGT(v) },
-		func(v int) AnyMatcher { return ValueLT(2 * v) },
+		func(v int) Matcher[int, int] { return ValueGT[int](v) },
+		func(v int) Matcher[int, int] { return ValueLT[int](2 * v) },
 	)(0, i) {
 		t.Error("11 is greater than 10 and lesser than 20")
+	}
+}
+
+func TestOrValueReturningFalse(t *testing.T) {
+	i := 1
+
+	if OrValue(
+		1,
+		func(v int) Matcher[int, int] { return ValueGT[int](1) },
+		func(v int) Matcher[int, int] { return ValueLT[int](1) },
+	)(0, i) {
+		t.Error("1 is not less, nor greater than 1")
+	}
+}
+
+func TestValueCastLT(t *testing.T) {
+	testCases := []struct {
+		matcherValue    int
+		collectionValue int
+		expected        bool
+	}{
+		{
+			matcherValue:    1,
+			collectionValue: 2,
+			expected:        false,
+		},
+		{
+			matcherValue:    1,
+			collectionValue: 0,
+			expected:        true,
+		},
+		{
+			matcherValue:    1,
+			collectionValue: -1,
+			expected:        true,
+		},
+	}
+
+	for _, tc := range testCases {
+		if got := ValueCastLT(tc.matcherValue)(nil, tc.collectionValue); got != tc.expected {
+			t.Errorf("Expected %t, Got %t", tc.expected, got)
+		}
+	}
+}
+
+func TestValueCastGT(t *testing.T) {
+	testCases := []struct {
+		matcherValue    int
+		collectionValue int
+		expected        bool
+	}{
+		{
+			matcherValue:    1,
+			collectionValue: 2,
+			expected:        true,
+		},
+		{
+			matcherValue:    1,
+			collectionValue: 0,
+			expected:        false,
+		},
+		{
+			matcherValue:    1,
+			collectionValue: -1,
+			expected:        false,
+		},
+	}
+
+	for _, tc := range testCases {
+		if got := ValueCastGT(tc.matcherValue)(nil, tc.collectionValue); got != tc.expected {
+			t.Errorf("Expected %t, Got %t", tc.expected, got)
+		}
 	}
 }
