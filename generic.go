@@ -1,7 +1,6 @@
 package collections
 
 import (
-	"math"
 	"math/rand"
 	"reflect"
 	"sort"
@@ -506,7 +505,7 @@ func Partition[V any](slice []V, predicate func(v V) bool) ([]V, []V) {
 
 // Chunk breaks the slice into multiple, smaller slices of a given size
 func Chunk[V any](slice []V, size int) [][]V {
-	resultLen := int(math.Ceil(float64(len(slice)) / float64(size)))
+	resultLen := internal.DivCeil(len(slice), size)
 	result := make([][]V, resultLen)
 
 	for i := range result {
