@@ -25,7 +25,7 @@ func genericFunction() {
 				fmt.Println(v) // 1, 2, 3, 4
 				return v + 1
 			},
-			[]int{1, 2, 3, 4}i
+			[]int{1, 2, 3, 4},
 		),
 	)
 }
