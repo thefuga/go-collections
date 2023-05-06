@@ -532,6 +532,38 @@ func TestIsEmpty(t *testing.T) {
 	}
 }
 
+func TestCopy(t *testing.T) {
+	testCases := []struct {
+		description string
+		collection  Collection[int]
+		expected    Collection[int]
+	}{
+		{
+			"does not change empty collection",
+			Collection[int]{},
+			Collection[int]{},
+		},
+		{
+			"does not change collection with a single element",
+			Collection[int]{1},
+			Collection[int]{1},
+		},
+		{
+			"does not change collection with 100 elements",
+			Collect(collections.Range(1, 100)...),
+			Collect(collections.Range(1, 100)...),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			if got := tc.collection.Copy(); !reflect.DeepEqual(got, tc.expected) {
+				t.Errorf("expected  %v, got %v", got, got)
+			}
+		})
+	}
+}
+
 func TestContains(t *testing.T) {
 	testCases := []struct {
 		description string
