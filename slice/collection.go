@@ -82,6 +82,11 @@ func (c Collection[V]) Each(f func(i int, v V)) Collection[V] {
 	return c
 }
 
+// Reverse reverses the collection
+func (c Collection[V]) Reverse() Collection[V] {
+	return collections.Reverse(c)
+}
+
 // Sort passes the collection and the given params to the generic Sort function and
 // returns the collection.
 func (c Collection[V]) Sort(f func(current, next V) bool) Collection[V] {

@@ -39,3 +39,9 @@ func BenchmarkCollectionSlicePut(b *testing.B) {
 		sliceCollection = sliceCollection.Put(sliceCollection.Count()/2, n)
 	}
 }
+
+func BenchmarkSliceCollectionReverse(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		sliceCollection = sliceCollection.Reverse()
+	}
+}

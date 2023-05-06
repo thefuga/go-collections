@@ -267,6 +267,48 @@ func TestTap(t *testing.T) {
 		t.Errorf("expected returned collection to equal %v. got %v", sut, c)
 	}
 }
+func TestReversingTwiceYieldsTheSameCollection(t *testing.T) {
+	coll := Collect(1, 2, 3, 4, 5)
+	reversedTwice := coll.Copy().Reverse().Reverse()
+
+	if !reflect.DeepEqual(coll, reversedTwice) {
+		t.Errorf("expected %v, got %v", coll, reversedTwice)
+	}
+}
+
+func TestReverse(t *testing.T) {
+	testCases := []struct {
+		description string
+		input       Collection[int]
+		expected    Collection[int]
+	}{
+		{
+			"reversing empty collection",
+			Collection[int]{},
+			Collection[int]{},
+		},
+		{
+			"reversing collection with a single element",
+			Collection[int]{1},
+			Collection[int]{1},
+		},
+		{
+			"reversing a collection with 10 elements",
+			Collection[int]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+			Collection[int]{10, 9, 8, 7, 6, 5, 4, 3, 2, 1},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			got := tc.input.Reverse()
+
+			if !reflect.DeepEqual(tc.expected, got) {
+				t.Errorf("expected %v, got %v", tc.expected, got)
+			}
+		})
+	}
+}
 
 func TestSearch(t *testing.T) {
 	testCases := []struct {
