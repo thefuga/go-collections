@@ -22,6 +22,12 @@ func buildIntSlice(n int) []int {
 	return result
 }
 
+func BenchmarkSliceCollectionCopy(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		sliceCollection = sliceCollection.Copy()
+	}
+}
+
 func BenchmarkSliceCollectionPush(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		sliceCollection = sliceCollection.Push(n)

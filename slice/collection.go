@@ -17,6 +17,11 @@ func Collect[V any](values ...V) Collection[V] {
 	return values
 }
 
+// Copy returns a copy of this collection.
+func (c Collection[V]) Copy() Collection[V] {
+	return Collect(collections.Copy(c)...)
+}
+
 // Contains passes the collection and the given params to the generic Contains function.
 func (c Collection[V]) Contains(matcher collections.Matcher[int, V]) bool {
 	return collections.Contains(c, matcher)
