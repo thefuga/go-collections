@@ -268,13 +268,11 @@ func TestTap(t *testing.T) {
 	}
 }
 func TestReversingTwiceYieldsTheSameCollection(t *testing.T) {
-	coll := Collect(collections.Range(1, 10)...)
+	coll := Collect(1, 2, 3, 4, 5)
+	reversedTwice := coll.Copy().Reverse().Reverse()
 
-	expected := coll.Copy()
-	got := coll.Reverse().Reverse()
-
-	if !reflect.DeepEqual(expected, got) {
-		t.Errorf("expected %v, got %v", expected, got)
+	if !reflect.DeepEqual(coll, reversedTwice) {
+		t.Errorf("expected %v, got %v", coll, reversedTwice)
 	}
 }
 
