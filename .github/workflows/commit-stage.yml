@@ -72,7 +72,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - run: go test -coverprofile=coverage.txt ./...
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: test-coverage
           path: ./coverage.txt
@@ -110,7 +110,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - run: go test ./tests/benchmark/... -bench=. -benchmem > benchmark_result.txt
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: benchmark_result
           path: ./benchmark_result.txt
