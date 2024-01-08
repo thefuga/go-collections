@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"reflect"
 	"sort"
+	"time"
 
 	"github.com/thefuga/go-collections/errors"
 	"github.com/thefuga/go-collections/internal"
@@ -647,7 +648,10 @@ func RandomE[V any](slice []V) (V, error) {
 
 // Shuffle pseudo-randomizes the order of elements.
 func Shuffle[V any](slice []V) []V {
-	rand.Shuffle(len(slice), func(i, j int) {
+	seed := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(seed)
+
+	r.Shuffle(len(slice), func(i, j int) {
 		slice[i], slice[j] = slice[j], slice[i]
 	})
 	return slice
